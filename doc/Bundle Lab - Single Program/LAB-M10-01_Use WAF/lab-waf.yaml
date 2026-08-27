@@ -1,0 +1,188 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Architecting on AWS Accelerator - Lab 
+
+Parameters:
+  KeyName:
+    Description: EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: My-SEC-LAB-KP
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+    
+  LinuxAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: lab-vpc
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: lab-igw
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+      CidrBlock: 10.1.0.0/24
+      VpcId: !Ref VPC
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: lab-subnet-public
+
+  ExternalRoutingTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Public RouteTable
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref ExternalRoutingTable
+
+  ExternalNetworkRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref ExternalRoutingTable
+      SubnetId: !Ref PublicSubnet
+
+  WebServerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: WebServerSG
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: WebServerSG
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  RootRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      Policies:
+        - PolicyName: web-admin
+          PolicyDocument:
+            Statement:
+              - Action:
+                  - waf:ListIPSets
+                  - waf:UpdateIPSet
+                  - waf:GetChangeToken
+                  - ec2:DescribeSecurityGroups
+                  - ec2:CreateSecurityGroup
+                  - ec2:AuthorizeSecurityGroupIngress
+                  - ec2:RevokeSecurityGroupIngress
+                  - ec2:CreateSecurityGroup
+                  - ec2:DescribeInstances
+                  - ec2:ModifyInstanceAttribute
+                  - ssm:*
+                  - wafv2:ListIPSets
+                  - wafv2:UpdateIPSet
+                  - waf-regional:GetChangeToken
+                Resource:
+                  - "*"
+                Effect: Allow
+
+  RootInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref RootRole
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: AttachGateway
+    # CreationPolicy:
+    # ResourceSignal:
+    # Count: 1
+    # Timeout: PT15M
+    Properties:
+      ImageId: !Ref LinuxAmiId
+      Tags:
+        - Key: Name
+          Value: WebServer
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref WebServerSG
+      IamInstanceProfile: !Ref RootInstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -ex
+          yum -y update
+          yum install -y amazon-linux-extras
+          amazon-linux-extras enable python3.8
+          yum install -y python3.8
+          yum -y install httpd php python3-pip
+          # update apache config to log X-Forwarded-For
+          echo 'LogFormat "%h (%{X-Forwarded-For}i) %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined' >> /etc/httpd/conf/httpd.conf
+          chkconfig httpd on
+          cd /var/www/html
+          wget https://raw.githubusercontent.com/ahmadzahoory/awssaacc/master/lab-18-01-code.zip
+          unzip lab-18-01-code.zip
+          service httpd start
+          pip3 install --upgrade awscli
+          pip3 install tabulate boto3 ipaddress
+          su ec2-user <<'EOF'
+          mkdir  /home/ec2-user/.aws &&
+          echo '[default]' > /home/ec2-user/.aws/config &&
+          echo 'region = ${AWS::Region}' >> /home/ec2-user/.aws/config &&
+          cd /home/ec2-user
+          wget https://raw.githubusercontent.com/ahmadzahoory/awssaacc/master/lab-18-01-script.zip
+          unzip lab-18-01-script.zip
+          EOF
+          /opt/aws/bin/cfn-signal --stack ${AWS::StackName} --resource WebInstance --region ${AWS::Region}
+
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref WebInstance
+ 
+Outputs:
+  EC2PublicIP:
+    Value: !Ref EIP
+
+  WebsiteURL:
+    Value: !Sub http://${WebInstance.PublicDnsName}

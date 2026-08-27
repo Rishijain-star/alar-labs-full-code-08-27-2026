@@ -1,0 +1,50 @@
+[
+  {
+    "id": "aws-account-setup",
+    "title": "AWS Account Setup",
+    "description": "Get help setting up and configuring your AWS account with best practices.",
+    "icon": "Cloud",
+    "requires_login": true,
+    "features": ["Account creation", "IAM setup", "Billing alerts", "Security baseline"]
+  },
+  {
+    "id": "azure-subscription-management",
+    "title": "Azure Subscription Management",
+    "description": "Expert guidance for Azure subscription setup and management.",
+    "icon": "Server",
+    "requires_login": true,
+    "features": ["Subscription setup", "RBAC configuration", "Cost management", "Resource groups"]
+  },
+  {
+    "id": "gcp-project-configuration",
+    "title": "GCP Project Configuration",
+    "description": "Professional setup for Google Cloud Platform projects.",
+    "icon": "Cloud",
+    "requires_login": true,
+    "features": ["Project creation", "IAM policies", "Billing accounts", "API enablement"]
+  },
+  {
+    "id": "multi-cloud-strategy",
+    "title": "Multi-Cloud Strategy",
+    "description": "Consultation for multi-cloud architecture and implementation.",
+    "icon": "Settings",
+    "requires_login": false,
+    "features": ["Architecture design", "Cost optimization", "Security review", "Migration planning"]
+  },
+  {
+    "id": "cloud-security-assessment",
+    "title": "Cloud Security Assessment",
+    "description": "Comprehensive security review of your cloud infrastructure.",
+    "icon": "Shield",
+    "requires_login": true,
+    "features": ["Security audit", "Compliance check", "Vulnerability scan", "Recommendations"]
+  },
+  {
+    "id": "enterprise-support",
+    "title": "Enterprise Support",
+    "description": "Dedicated support for enterprise cloud environments.",
+    "icon": "Users",
+    "requires_login": true,
+    "features": ["24/7 support", "Dedicated engineer", "SLA guarantee", "Priority response"]
+  }
+]

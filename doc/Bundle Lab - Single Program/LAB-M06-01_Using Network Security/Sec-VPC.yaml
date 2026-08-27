@@ -1,0 +1,349 @@
+Description: 'Lab: Deploy VPC, Load Balancer, Web Server and Database Server'
+
+Parameters:
+  KeyName:
+    Description: EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: My-Sec-LAB-KP
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  
+  UbuntuAmiId:
+    Description: The name of the Ubuntu AMI to find based on search
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /aws/service/canonical/ubuntu/server/18.04/stable/current/amd64/hvm/ebs-gp2/ami-id	
+    
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 192.168.0.0/21
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: Sec VPC
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Sec VPC IGW
+
+  InternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+
+  LBSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs '' ]
+      CidrBlock: 192.168.0.0/24
+      Tags:
+        - Key: Name
+          Value: LB Subnet 1
+
+  LBSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: 192.168.1.0/24
+      Tags:
+        - Key: Name
+          Value: LB Subnet 2
+
+  AppSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: 192.168.2.0/24
+      Tags:
+        - Key: Name
+          Value: App Subnet 1
+
+  AppSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: 192.168.3.0/24
+      Tags:
+        - Key: Name
+          Value: App Subnet 2
+
+  DBSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
+      CidrBlock: 192.168.4.0/24
+      Tags:
+        - Key: Name
+          Value: DB Subnet 1
+
+  DBSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
+      CidrBlock: 192.168.5.0/24
+      Tags:
+        - Key: Name
+          Value: DB Subnet 2
+
+  LBRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Sec VPC LB Route Table
+
+  DefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: InternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref LBRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  LBSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref LBRouteTable
+      SubnetId: !Ref LBSubnet1
+
+  LBSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref LBRouteTable
+      SubnetId: !Ref LBSubnet2
+
+  AppRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Sec VPC App Route Table
+
+  AppSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable
+      SubnetId: !Ref AppSubnet1
+
+  AppSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable
+      SubnetId: !Ref AppSubnet2
+
+  NATGateway:
+   Type: AWS::EC2::NatGateway
+   Properties:
+      AllocationId: 
+         Fn::GetAtt:
+         - EIP
+         - AllocationId
+      SubnetId:
+         Ref: LBSubnet1
+      Tags:
+      - Key: Name
+        Value: Sec VPC NGW
+  EIP:
+   Type: AWS::EC2::EIP
+   Properties:
+      Domain: vpc
+
+  Route:
+   Type: AWS::EC2::Route
+   DependsOn: NATGateway
+   Properties:
+      RouteTableId:
+         Ref: AppRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+         Ref: NATGateway
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Secure VPC DB Subnet Group
+      DBSubnetGroupName: Secure VPC DB Subnet Group
+      SubnetIds:
+        - !Ref DBSubnet1
+        - !Ref DBSubnet2
+      Tags:
+        -
+          Key: Name
+          Value: DBSubnetGroup
+
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: DB-SG
+      GroupDescription: DB-SG
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: DB-SG
+
+  RDSDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: prod_schema
+      DBInstanceIdentifier: inventory-db
+      AllocatedStorage: "5"
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      MasterUsername: master
+      MasterUserPassword: lab-password
+      MultiAZ: false
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      Tags:
+        - Key: Name
+          Value: inventory-db
+
+  RootRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  RootInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref RootRole		  
+
+  WebServerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Web-SG
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Web-SG
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  WebInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref UbuntuAmiId
+      Tags:
+        - Key: Name
+          Value: Web Server
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      SubnetId: !Ref AppSubnet1
+      SecurityGroupIds:
+        - !Ref WebServerSG
+      IamInstanceProfile: !Ref RootInstanceProfile
+      UserData:
+        Fn::Base64: !Sub |
+            #!/bin/bash
+            apt-get -y update
+            apt-get install -y apache2
+            apt-get install -y unzip
+            apt-get install -y php7.2
+            apt-get install -y php7.2-mysql
+            apt-get install -y mysql-client
+            systemctl restart apache2.service
+            cd /var/www/html
+            rm index.html
+            wget https://raw.githubusercontent.com/ahmadzahoory/awssec/master/code-security-srv-3t.zip
+            unzip code-security-srv-3t.zip
+
+  ELBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: LB-SG
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: LB-SG
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+  
+  EC2TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 15
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: '200'
+      Name: EC2TargetGroup
+      Port: 80
+      Protocol: HTTP
+      TargetGroupAttributes:
+      - Key: deregistration_delay.timeout_seconds
+        Value: '20'
+      Targets:
+      - Id: !Ref WebInstance
+        Port: '80'
+      VpcId: !Ref VPC
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref EC2TargetGroup
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      Subnets:
+      - !Ref LBSubnet1
+      - !Ref LBSubnet2
+      SecurityGroups:
+        - !GetAtt ELBSecurityGroup.GroupId
+
+Outputs:
+  DBEndpoint:
+    Value: !GetAtt
+      - RDSDatabase
+      - Endpoint.Address
+    Description: Database endpoint
+
+  LBEndpoint:
+    Value: !GetAtt [ApplicationLoadBalancer, DNSName] 
+    Description: LoadBalancer endpoint
+
+  WebServerPrivateIP:  
+    Value: !GetAtt [WebInstance, PrivateIp] 
+    Description: WebServer Private IP

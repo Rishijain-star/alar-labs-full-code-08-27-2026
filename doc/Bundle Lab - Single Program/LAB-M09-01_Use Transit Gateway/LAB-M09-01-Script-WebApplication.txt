@@ -1,0 +1,12 @@
+#!/bin/bash
+sudo apt-get -y update
+sudo apt-get install -y apache2
+sudo apt-get install -y unzip
+sudo apt-get install -y php7.2
+sudo apt-get install -y php7.2-mysql
+sudo apt-get install -y mysql-client
+sudo systemctl restart apache2.service
+cd /var/www/html/
+sudo rm index.html
+sudo wget https://raw.githubusercontent.com/ahmadzahoory/awssaacc/master/lab-05-01-code.zip
+sudo unzip lab-05-01-code.zip

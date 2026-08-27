@@ -1,0 +1,163 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: AWS Security Lab template
+
+# Shared Services VPC with 2 private subnets [Used for VPC Peering]
+# DB Subnet Group across the 2 private subnets
+# RDS Database
+
+Parameters:
+  KeyName:
+    Description: EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: My-SEC-LAB-KP
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+
+Resources:
+
+###########
+# VPC with Internet Gateway
+###########
+
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.5.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: Shared VPC
+
+###########
+# Private Route Table
+###########
+
+  SharedVPCRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: Shared-VPC Route Table
+
+###########
+# Private Subnets x 2
+###########
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.5.0.0/23
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs
+          Ref: AWS::Region
+      Tags:
+        - Key: Name
+          Value: Shared VPC Subnet 1
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: 10.5.2.0/23
+      AvailabilityZone: !Select
+        - 1
+        - !GetAZs
+          Ref: AWS::Region
+      Tags:
+        - Key: Name
+          Value: Shared VPC Subnet 2
+
+  PrivateRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedVPCRouteTable
+      SubnetId: !Ref PrivateSubnet1
+
+  PrivateRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref SharedVPCRouteTable
+      SubnetId: !Ref PrivateSubnet2
+
+
+###########
+# DB Subnet Group
+###########
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Shared VPC DB Subnet Group
+      DBSubnetGroupName: Shared VPC DB Subnet Group
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Tags:
+        -
+          Key: Name
+          Value: DBSubnetGroup
+
+###########
+# DB Security Group
+###########
+
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: Shared-VPC-DB-SG
+      GroupDescription: Enable access to MySQL
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: Shared-VPC-DB-SG
+
+###########
+# RDS Database
+###########
+
+  RDSDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBName: prod_schema
+      DBInstanceIdentifier: inventory-db
+      AllocatedStorage: "5"
+      DBInstanceClass: db.t2.micro
+      Engine: MySQL
+      MasterUsername: master
+      MasterUserPassword: lab-password
+      MultiAZ: false
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      Tags:
+        -
+          Key: Name
+          Value: inventory-db
+
+
+###########
+# Outputs
+#
+# These are provided to configure VPC Peering
+#
+###########
+
+Outputs:
+
+  Endpoint:
+    Value: !GetAtt
+      - RDSDatabase
+      - Endpoint.Address
+    Description: Database endpoint
+
+  Region:
+    Value: !Ref AWS::Region
+    Description: Shared VPC and Database Region 

@@ -1,0 +1,1 @@
+AWS Identity and Access Management (IAM) provides fine-grained access control across all of AWS.

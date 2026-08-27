@@ -1,0 +1,332 @@
+@import "./styles/ckeditor.css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    .progress-primary-secondary {
+        background-color: hsl(var(--secondary));
+    }
+
+    .progress-primary-secondary>div {
+        background-color: hsl(var(--primary));
+    }
+
+    :root {
+        /* Primary - Deep Blue */
+        --primary: 220 80% 50%;
+        --primary-foreground: 0 0% 100%;
+        --primary-light: 220 80% 60%;
+        --primary-dark: 220 80% 40%;
+
+        /* Background & Surface - Clean White */
+        --background: 0 0% 100%;
+        --foreground: 220 20% 15%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 220 20% 15%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 220 20% 15%;
+
+        /* Secondary - Orange Accent */
+        --secondary: 25 95% 53%;
+        --secondary-foreground: 0 0% 100%;
+
+        /* Muted - Light Gray */
+        --muted: 220 15% 96%;
+        --muted-foreground: 220 10% 45%;
+
+
+        /* Accent */
+        --accent: 220 20% 96%;
+        --accent-foreground: 220 80% 50%;
+
+        /* Status Colors */
+        --success: 145 65% 42%;
+        --success-foreground: 0 0% 100%;
+        --success-light: 145 65% 95%;
+
+        --premium: 25 95% 53%;
+        --premium-foreground: 0 0% 100%;
+        --premium-light: 25 95% 95%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        --warning: 58 100% 58.82%;
+        --warning-foreground: 332 100% 54.51%;
+        --warning-light: 25 95% 90%;
+
+        /* Border & Input */
+        --border: 220 15% 92%;
+        --input: 220 15% 92%;
+        --ring: 220 80% 50%;
+
+        --radius: 0.5rem;
+
+        /* Sidebar */
+        --sidebar-background: 220 20% 15%;
+        --sidebar-foreground: 220 10% 90%;
+        --sidebar-primary: 220 80% 55%;
+        --sidebar-primary-foreground: 0 0% 100%;
+        --sidebar-accent: 220 20% 20%;
+        --sidebar-accent-foreground: 220 10% 90%;
+        --sidebar-border: 220 20% 25%;
+        --sidebar-ring: 220 80% 55%;
+    }
+
+    @keyframes marquee {
+        0% {
+            transform: translateX(0);
+        }
+
+        100% {
+            transform: translateX(-33.333%);
+        }
+    }
+
+    .animate-marquee {
+        animation: marquee 10s linear infinite;
+    }
+    
+    .animate-marquee:hover {
+        animation-play-state: paused;
+    }
+
+    .dark {
+        --background: 220 20% 10%;
+        --foreground: 220 10% 95%;
+
+        --card: 220 20% 13%;
+        --card-foreground: 220 10% 95%;
+
+        --popover: 220 20% 13%;
+        --popover-foreground: 220 10% 95%;
+
+        --primary: 220 80% 55%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 25 95% 53%;
+        --secondary-foreground: 0 0% 100%;
+
+        --muted: 220 15% 18%;
+        --muted-foreground: 220 10% 60%;
+
+        --accent: 220 15% 18%;
+        --accent-foreground: 220 10% 90%;
+
+        --border: 220 15% 20%;
+        --input: 220 15% 20%;
+        --ring: 220 80% 55%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-semibold tracking-tight;
+    }
+}
+
+@layer components {
+    .badge-free {
+        @apply inline-flex items-center py-1 rounded-full text-xs font-semibold;
+        background: hsl(var(--success));
+        color: hsl(var(--success-foreground));
+    }
+
+    .badge-paid {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+        background: hsl(var(--secondary));
+        color: hsl(var(--secondary-foreground));
+    }
+
+    .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .locked-overlay {
+        @apply absolute inset-0 backdrop-blur-md bg-background/70 flex items-center justify-center;
+    }
+
+    .section {
+        @apply py-16 md:py-24;
+    }
+
+    .container-custom {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    /* Horizontal scroll container */
+    .scroll-container {
+        @apply flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scroll-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scroll-item {
+        @apply flex-shrink-0 snap-start min-h-0;
+    }
+}
+
+@layer utilities {
+    .animate-fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .animate-slide-up {
+        animation: slideUp 0.5s ease-out forwards;
+    }
+
+    .animate-scale-in {
+        animation: scaleIn 0.3s ease-out forwards;
+    }
+
+    .animate-slide-from-left {
+        animation: slideFromLeft 0.8s ease-out forwards;
+    }
+
+    .animate-slide-to-right {
+        animation: slideToRight 0.8s ease-out forwards;
+    }
+
+    .animate-delay-100 {
+        animation-delay: 100ms;
+    }
+
+    .animate-delay-200 {
+        animation-delay: 200ms;
+    }
+
+    .animate-delay-300 {
+        animation-delay: 300ms;
+    }
+
+    .animate-delay-400 {
+        animation-delay: 400ms;
+    }
+
+    .animate-delay-500 {
+        animation-delay: 500ms;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideFromLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideToRight {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+}

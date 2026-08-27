@@ -1,0 +1,118 @@
+Description: 'Lab: VPC-03'
+Parameters:
+  KeyName:
+    Description: EC2 KeyPair to enable SSH access to the instances
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: My-SEC-LAB-KP-R2
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  UbuntuAmiId:
+    Description: The name of the Ubuntu AMI to find based on search
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: /aws/service/canonical/ubuntu/server/18.04/stable/current/amd64/hvm/ebs-gp2/ami-id
+Resources:
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 192.168.0.0/24
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: LAB VPC02-R2
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties:
+      Tags:
+        - Key: Name
+          Value: LAB VPC02-R2_IGW
+  AttachGateway:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      CidrBlock: 192.168.0.0/24
+      VpcId: !Ref VPC
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: LAB VPC02-R2_Public-Subnet
+  ExternalRoutingTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: LAB VPC02-R2_Public-Route-Table
+  DefaultRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: AttachGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref ExternalRoutingTable
+  ExternalNetworkRouteAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      RouteTableId: !Ref ExternalRoutingTable
+      SubnetId: !Ref PublicSubnet
+  WebServerSG:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: WebApp-Server-02_R2
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: WebApp-Server-02_R2
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+  WebInstance:
+    Type: 'AWS::EC2::Instance'
+    DependsOn: AttachGateway
+    Properties:
+      ImageId: !Ref UbuntuAmiId
+      Tags:
+        - Key: Name
+          Value: WebApp-Server-02_R2
+      InstanceType: t2.micro
+      KeyName: !Ref KeyName
+      SubnetId: !Ref PublicSubnet
+      SecurityGroupIds:
+        - !Ref WebServerSG
+      UserData:
+        Fn::Base64: !Sub |
+            #!/bin/bash
+            apt-get -y update
+            apt-get install -y apache2
+            apt-get install -y unzip
+            apt-get install -y php7.2
+            apt-get install -y php7.2-mysql
+            systemctl restart apache2.service
+            cd /var/www/html
+            rm index.html
+            wget https://raw.githubusercontent.com/ahmadzahoory/awssaacc/master/lab-06-01-code.zip
+            unzip lab-06-01-code.zip
+  EIP:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      InstanceId: !Ref WebInstance
+Outputs:
+  EC2PublicIP:
+    Value: !Ref EIP
+  PrivateIP:
+    Value: !GetAtt [WebInstance, PrivateIp] 
+  VPC:
+    Value: !Ref VPC
+  Region:
+    Value: !Ref 'AWS::Region'

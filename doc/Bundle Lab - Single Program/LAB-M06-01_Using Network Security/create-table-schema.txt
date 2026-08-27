@@ -1,0 +1,4 @@
+mysql -h DB-INSTANCE-IP -u master -p'lab-password' -e "
+use prod_schema
+create table products (id int NOT NULL AUTO_INCREMENT, name varchar(255), quantity varchar(255), price varchar(255), PRIMARY KEY (id));
+describe prod_schema.products;"

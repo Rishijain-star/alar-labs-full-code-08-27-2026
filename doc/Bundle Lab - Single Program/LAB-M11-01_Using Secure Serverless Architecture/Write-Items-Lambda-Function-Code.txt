@@ -1,0 +1,20 @@
+'use strict'; 
+ 
+var AWS = require('aws-sdk'), 
+  	mydocumentClient = new AWS.DynamoDB.DocumentClient();  
+  
+ 
+exports.handler = function(event, context, callback){ 
+  	var params = { 
+  		Item : { 
+  			"empid" :event.empid, 
+  			"empfirstname" : event.empfirstname, 
+  			"emplastname" : event.emplastname, 
+  			"empage" : event.empage 
+  		}, 
+  		TableName : process.env.TABLE_NAME 
+  	}; 
+  	mydocumentClient.put(params, function(err, data){ 
+  		callback(err, data); 
+  	}); 
+}   
