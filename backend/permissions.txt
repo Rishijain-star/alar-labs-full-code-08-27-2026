@@ -1,0 +1,30 @@
+ALAR Labs — permission ↔ admin / app surface (reference)
+========================================================
+
+Run `npm run migrate` so `20260503160000-add-category-columns.js` applies before relying on category filters.
+
+Public routes (usually no RBAC): /, /labs, /labs/:slug, /courses, /courses/:slug, /training, /assessment, /certification, /vouchers, /cloud-services, /careers, /programs/:sectionKey, /support/chat/:ticketId
+
+Admin app base: /app/* (Layout + RouteGuard)
+
+Common permission keys used in this repo (sidebar / RouteGuard):
+- manage_categories, view_categories (alias: manage_categories implies granular in roleService)
+- view_courses, create_courses, edit_courses, delete_courses, publish_courses, approve_courses
+- view_labs, create_labs, edit_labs, delete_labs, publish_labs, approve_labs
+- view_programs, manage_programs — Digital Programs sections (Technology Readiness, Expert-Led Training, etc.)
+- view_webinars, create_webinars, edit_webinars, delete_webinars — Live webinars admin
+- manage_vouchers, view_vouchers — voucher admin
+- view_users, create_users, edit_users, delete_users, manage_user_roles, manage_user_permissions
+- manage_access_control — roles/permissions UI
+- view_support, manage_support — support tickets / chat
+- view_settings, edit_settings — owner settings
+- manage_banners, view_content — site banners / content
+- view_enrollments / admin learning — enrollment lists (check RouteGuard on route)
+
+Certificate download (learner): GET /api/me/courses/:courseId/certificate?format=html|json|pdf
+  — Requires JWT; course certificate settings not disabled; all published labs in bundle completed.
+
+SQL inserts for missing permission rows (same shape as your phpMyAdmin export):
+  See `permissions_inserts_from_export.sql` (generated) and re-run:
+  `node scripts/generate-permission-inserts.js "path/to/permissions (1).json"`
+  If your `permissions.id` column is UUID, map string ids to UUIDs or change column type before inserting.

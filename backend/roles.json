@@ -1,0 +1,940 @@
+{
+    "success": true,
+    "status": 200,
+    "message": "Roles retrieved successfully",
+    "data": {
+        "roles": [
+            {
+                "id": "13d3cc02-2adc-410e-b41b-fe2af5cfd7f8",
+                "name": "Testing",
+                "description": "Testing",
+                "is_active": true,
+                "priority": 0,
+                "created_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "updated_by": null,
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-03-03T16:41:44.000Z",
+                "updatedAt": "2026-03-03T16:41:44.000Z",
+                "deletedAt": null,
+                "permissions": [
+                    {
+                        "id": "view_content",
+                        "label": "View Content",
+                        "description": "Can view content and banners",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_courses",
+                        "label": "View Courses",
+                        "description": "Can view courses",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_labs",
+                        "label": "View Labs",
+                        "description": "Can view labs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_programs",
+                        "label": "View Programs",
+                        "description": "Can view digital programs",
+                        "action": "read"
+                    }
+                ]
+            },
+            {
+                "id": "4a220c10-e4b9-4667-9e2a-f91d555faa64",
+                "name": "Test",
+                "description": "Test user",
+                "is_active": true,
+                "priority": 0,
+                "created_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "updated_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-15T03:18:56.000Z",
+                "updatedAt": "2026-02-15T03:19:13.000Z",
+                "deletedAt": null,
+                "permissions": [
+                    {
+                        "id": "view_programs",
+                        "label": "View Programs",
+                        "description": "Can view digital programs",
+                        "action": "read"
+                    }
+                ]
+            },
+            {
+                "id": "8e537974-b9e8-4314-8e13-2ca9f92fdc67",
+                "name": "Guest",
+                "description": "adsf",
+                "is_active": true,
+                "priority": 0,
+                "created_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "updated_by": null,
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-11T11:53:44.000Z",
+                "updatedAt": "2026-02-11T11:53:44.000Z",
+                "deletedAt": null,
+                "permissions": []
+            },
+            {
+                "id": "d4f7781e-4070-4596-b14c-148a59b0992e",
+                "name": "Student",
+                "description": "Basic student access to view courses and labs",
+                "is_active": true,
+                "priority": 11,
+                "created_by": "system",
+                "updated_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:50.000Z",
+                "updatedAt": "2026-02-12T11:15:10.000Z",
+                "deletedAt": null,
+                "permissions": [
+                    {
+                        "id": "view_labs",
+                        "label": "View Labs",
+                        "description": "Can view labs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_roles",
+                        "label": "View Roles",
+                        "description": "Can view roles",
+                        "action": "read"
+                    }
+                ]
+            },
+            {
+                "id": "ab9fd3a4-1353-405e-8f32-630fe985b9a8",
+                "name": "Support Agent",
+                "description": "Handles support tickets and user assistance",
+                "is_active": true,
+                "priority": 30,
+                "created_by": "system",
+                "updated_by": null,
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:46.000Z",
+                "updatedAt": "2026-02-07T11:10:46.000Z",
+                "deletedAt": null,
+                "permissions": []
+            },
+            {
+                "id": "1bc21b9c-6624-47d6-895d-2c78f259a9c7",
+                "name": "Approver",
+                "description": "Approves course submissions",
+                "is_active": true,
+                "priority": 40,
+                "created_by": "system",
+                "updated_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:42.000Z",
+                "updatedAt": "2026-02-12T13:31:04.000Z",
+                "deletedAt": null,
+                "permissions": [
+                    {
+                        "id": "create_courses",
+                        "label": "Create Courses",
+                        "description": "Can create new courses",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_programs",
+                        "label": "Create Programs",
+                        "description": "Can create new programs",
+                        "action": "create"
+                    },
+                    {
+                        "id": "delete_courses",
+                        "label": "Delete Courses",
+                        "description": "Can delete courses",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "edit_courses",
+                        "label": "Edit Courses",
+                        "description": "Can edit courses",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_programs",
+                        "label": "Edit Programs",
+                        "description": "Can edit programs",
+                        "action": "update"
+                    },
+                    {
+                        "id": "manage_programs",
+                        "label": "Manage Programs",
+                        "description": "Can manage digital programs",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "purchase_courses",
+                        "label": "Purchase Courses",
+                        "description": "Can purchase courses",
+                        "action": "purchase"
+                    },
+                    {
+                        "id": "view_courses",
+                        "label": "View Courses",
+                        "description": "Can view courses",
+                        "action": "read"
+                    }
+                ]
+            },
+            {
+                "id": "57aa41a9-3722-4da0-801c-3def3c5426f2",
+                "name": "Course Instructor",
+                "description": "Creates and manages courses and labs",
+                "is_active": true,
+                "priority": 50,
+                "created_by": "system",
+                "updated_by": null,
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:38.000Z",
+                "updatedAt": "2026-02-07T11:10:38.000Z",
+                "deletedAt": null,
+                "permissions": []
+            },
+            {
+                "id": "855e58ad-ff9f-4fd7-8bd6-2de9e35fae30",
+                "name": "Content Manager",
+                "description": "Manages content, banners, and digital programs",
+                "is_active": true,
+                "priority": 60,
+                "created_by": "system",
+                "updated_by": null,
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:34.000Z",
+                "updatedAt": "2026-02-07T11:10:34.000Z",
+                "deletedAt": null,
+                "permissions": []
+            },
+            {
+                "id": "b80aae54-858d-4b52-b0b9-a53502231750",
+                "name": "Admin",
+                "description": "Administrative access for managing courses, labs, and users",
+                "is_active": true,
+                "priority": 80,
+                "created_by": "system",
+                "updated_by": null,
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:24.000Z",
+                "updatedAt": "2026-02-07T11:10:24.000Z",
+                "deletedAt": null,
+                "permissions": []
+            },
+            {
+                "id": "23ea22ce-e1f5-4435-8cd2-162756cb4be0",
+                "name": "Super Admin",
+                "description": "Full system access with all permissions",
+                "is_active": true,
+                "priority": 100,
+                "created_by": "system",
+                "updated_by": "a0ad4454-4441-488c-9c4f-ac247f97c962",
+                "deleted_by": null,
+                "deleted_at": null,
+                "createdAt": "2026-02-07T11:10:12.000Z",
+                "updatedAt": "2026-02-08T10:49:29.000Z",
+                "deletedAt": null,
+                "permissions": [
+                    {
+                        "id": "approve_content",
+                        "label": "Approve Content",
+                        "description": "Can approve/reject content",
+                        "action": "approve"
+                    },
+                    {
+                        "id": "approve_courses",
+                        "label": "Approve Courses",
+                        "description": "Can approve/reject courses",
+                        "action": "approve"
+                    },
+                    {
+                        "id": "approve_labs",
+                        "label": "Approve Labs",
+                        "description": "Can approve/reject labs",
+                        "action": "approve"
+                    },
+                    {
+                        "id": "assign_permissions",
+                        "label": "Assign Permissions",
+                        "description": "Can assign permissions to roles",
+                        "action": "assign"
+                    },
+                    {
+                        "id": "assign_roles",
+                        "label": "Assign Roles",
+                        "description": "Can assign roles to users",
+                        "action": "assign"
+                    },
+                    {
+                        "id": "change_own_password",
+                        "label": "Change Own Password",
+                        "description": "Can change own password",
+                        "action": "update"
+                    },
+                    {
+                        "id": "change_own_role",
+                        "label": "Change Own Role",
+                        "description": "Admin can change their own role",
+                        "action": "update"
+                    },
+                    {
+                        "id": "course_purchase_view",
+                        "label": "Course Purchase View",
+                        "description": "Can view course purchase details",
+                        "action": "view"
+                    },
+                    {
+                        "id": "create_comments",
+                        "label": "Create Comments",
+                        "description": "Can create comments and reviews",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_content",
+                        "label": "Create Content",
+                        "description": "Can create new content",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_courses",
+                        "label": "Create Courses",
+                        "description": "Can create new courses",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_labs",
+                        "label": "Create Labs",
+                        "description": "Can create new labs",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_notifications",
+                        "label": "Create Notifications",
+                        "description": "Can create and send notifications",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_permissions",
+                        "label": "Create Permissions",
+                        "description": "Can create permission groups",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_programs",
+                        "label": "Create Programs",
+                        "description": "Can create new programs",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_roles",
+                        "label": "Create Roles",
+                        "description": "Can create new roles",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_users",
+                        "label": "Create Users",
+                        "description": "Can create new users",
+                        "action": "create"
+                    },
+                    {
+                        "id": "create_vouchers",
+                        "label": "Create Vouchers",
+                        "description": "Can create new vouchers",
+                        "action": null
+                    },
+                    {
+                        "id": "create_webinars",
+                        "label": "Create Webinars",
+                        "description": "Can create new webinars",
+                        "action": null
+                    },
+                    {
+                        "id": "delete_comments",
+                        "label": "Delete Comments",
+                        "description": "Can delete comments",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_content",
+                        "label": "Delete Content",
+                        "description": "Can delete content",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_courses",
+                        "label": "Delete Courses",
+                        "description": "Can delete courses",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_files",
+                        "label": "Delete Files",
+                        "description": "Can delete files and media",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_labs",
+                        "label": "Delete Labs",
+                        "description": "Can delete labs",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_notifications",
+                        "label": "Delete Notifications",
+                        "description": "Can delete notifications",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_permissions",
+                        "label": "Delete Permissions",
+                        "description": "Can delete permissions",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_programs",
+                        "label": "Delete Programs",
+                        "description": "Can delete programs",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_roles",
+                        "label": "Delete Roles",
+                        "description": "Can delete roles",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_users",
+                        "label": "Delete Users",
+                        "description": "Can delete users",
+                        "action": "delete"
+                    },
+                    {
+                        "id": "delete_webinars",
+                        "label": "Delete Webinars",
+                        "description": "Can delete webinars",
+                        "action": null
+                    },
+                    {
+                        "id": "disable_2fa",
+                        "label": "Disable 2FA",
+                        "description": "Can disable two-factor authentication",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_comments",
+                        "label": "Edit Comments",
+                        "description": "Can edit comments",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_content",
+                        "label": "Edit Content",
+                        "description": "Can edit content",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_courses",
+                        "label": "Edit Courses",
+                        "description": "Can edit courses",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_files",
+                        "label": "Edit Files",
+                        "description": "Can edit file information",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_labs",
+                        "label": "Edit Labs",
+                        "description": "Can edit labs",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_notifications",
+                        "label": "Edit Notifications",
+                        "description": "Can edit notifications",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_own_profile",
+                        "label": "Edit Own Profile",
+                        "description": "Can edit own profile",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_permissions",
+                        "label": "Edit Permissions",
+                        "description": "Can edit permissions",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_programs",
+                        "label": "Edit Programs",
+                        "description": "Can edit programs",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_roles",
+                        "label": "Edit Roles",
+                        "description": "Can edit roles",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_settings",
+                        "label": "Edit Settings",
+                        "description": "Can edit system settings",
+                        "action": null
+                    },
+                    {
+                        "id": "edit_users",
+                        "label": "Edit Users",
+                        "description": "Can edit user information",
+                        "action": "update"
+                    },
+                    {
+                        "id": "edit_webinars",
+                        "label": "Edit Webinars",
+                        "description": "Can edit webinar details",
+                        "action": null
+                    },
+                    {
+                        "id": "enable_2fa",
+                        "label": "Enable 2FA",
+                        "description": "Can enable two-factor authentication",
+                        "action": "update"
+                    },
+                    {
+                        "id": "export_data",
+                        "label": "Export Data",
+                        "description": "Can export data and reports",
+                        "action": "read"
+                    },
+                    {
+                        "id": "force_password_change",
+                        "label": "Force Password Change",
+                        "description": "Can force users to change password",
+                        "action": "update"
+                    },
+                    {
+                        "id": "generate_certificates",
+                        "label": "Generate Certificates",
+                        "description": "Can generate certificates",
+                        "action": "create"
+                    },
+                    {
+                        "id": "generate_reports",
+                        "label": "Generate Reports",
+                        "description": "Can generate custom reports",
+                        "action": "create"
+                    },
+                    {
+                        "id": "manage_2fa_settings",
+                        "label": "Manage 2FA Settings",
+                        "description": "Can manage two-factor authentication settings",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_access_control",
+                        "label": "Manage Access Control",
+                        "description": "Can manage roles and permissions",
+                        "action": null
+                    },
+                    {
+                        "id": "manage_achievements",
+                        "label": "Manage Achievements",
+                        "description": "Can manage achievements system",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_audit_logs",
+                        "label": "Manage Audit Logs",
+                        "description": "Can manage audit log settings",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_banners",
+                        "label": "Manage Banners",
+                        "description": "Can manage banner sections",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_billing",
+                        "label": "Manage Billing",
+                        "description": "Can manage billing and payment methods",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_categories",
+                        "label": "Manage Categories",
+                        "description": "Can create, edit, and delete course categories",
+                        "action": null
+                    },
+                    {
+                        "id": "manage_certificates",
+                        "label": "Manage Certificates",
+                        "description": "Can manage certificate templates",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_email_templates",
+                        "label": "Manage Email Templates",
+                        "description": "Can manage email templates",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_media_library",
+                        "label": "Manage Media Library",
+                        "description": "Can manage media library",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_notification_settings",
+                        "label": "Manage Notification Settings",
+                        "description": "Can manage notification preferences",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_profile_settings",
+                        "label": "Manage Profile Settings",
+                        "description": "Can manage profile settings",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_programs",
+                        "label": "Manage Programs",
+                        "description": "Can manage digital programs",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_purchases",
+                        "label": "Manage Purchases",
+                        "description": "Can manage purchases and transactions",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_security_settings",
+                        "label": "Manage Security Settings",
+                        "description": "Can manage system security settings",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_support",
+                        "label": "Manage Support",
+                        "description": "Can manage support tickets and responses",
+                        "action": null
+                    },
+                    {
+                        "id": "manage_system_settings",
+                        "label": "Manage System Settings",
+                        "description": "Can manage system configuration",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_user_permissions",
+                        "label": "Manage User Permissions",
+                        "description": "Can assign and remove permissions from users",
+                        "action": null
+                    },
+                    {
+                        "id": "manage_user_roles",
+                        "label": "Manage User Roles",
+                        "description": "Can assign and remove roles from users",
+                        "action": null
+                    },
+                    {
+                        "id": "manage_users",
+                        "label": "Manage Users",
+                        "description": "Full user management access",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "manage_vouchers",
+                        "label": "Manage Vouchers",
+                        "description": "Can manage voucher settings and redemptions",
+                        "action": null
+                    },
+                    {
+                        "id": "moderate_comments",
+                        "label": "Moderate Comments",
+                        "description": "Can moderate and approve comments",
+                        "action": "manage"
+                    },
+                    {
+                        "id": "publish_courses",
+                        "label": "Publish Courses",
+                        "description": "Can publish or unpublish courses",
+                        "action": null
+                    },
+                    {
+                        "id": "publish_labs",
+                        "label": "Publish Labs",
+                        "description": "Can publish or unpublish labs",
+                        "action": null
+                    },
+                    {
+                        "id": "purchase_courses",
+                        "label": "Purchase Courses",
+                        "description": "Can purchase courses",
+                        "action": "purchase"
+                    },
+                    {
+                        "id": "purchase_labs",
+                        "label": "Purchase Labs",
+                        "description": "Can purchase labs",
+                        "action": "purchase"
+                    },
+                    {
+                        "id": "refund_purchases",
+                        "label": "Refund Purchases",
+                        "description": "Can process refunds",
+                        "action": "update"
+                    },
+                    {
+                        "id": "reset_2fa",
+                        "label": "Reset 2FA",
+                        "description": "Can reset two-factor authentication for users",
+                        "action": "update"
+                    },
+                    {
+                        "id": "reset_user_password",
+                        "label": "Reset User Password",
+                        "description": "Can reset other users passwords",
+                        "action": "update"
+                    },
+                    {
+                        "id": "send_bulk_notifications",
+                        "label": "Send Bulk Notifications",
+                        "description": "Can send notifications to multiple users",
+                        "action": "create"
+                    },
+                    {
+                        "id": "send_emails",
+                        "label": "Send Emails",
+                        "description": "Can send emails to users",
+                        "action": "create"
+                    },
+                    {
+                        "id": "system_backup",
+                        "label": "System Backup",
+                        "description": "Can perform system backups",
+                        "action": "create"
+                    },
+                    {
+                        "id": "system_restore",
+                        "label": "System Restore",
+                        "description": "Can restore system from backup",
+                        "action": "update"
+                    },
+                    {
+                        "id": "upload_files",
+                        "label": "Upload Files",
+                        "description": "Can upload files and media",
+                        "action": "create"
+                    },
+                    {
+                        "id": "view_2fa_settings",
+                        "label": "View 2FA Settings",
+                        "description": "Can view two-factor authentication settings",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_achievements",
+                        "label": "View Achievements",
+                        "description": "Can view achievements and badges",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_analytics",
+                        "label": "View Analytics",
+                        "description": "Can view analytics and statistics",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_approvals",
+                        "label": "View Approvals",
+                        "description": "Can view pending approvals",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_audit_logs",
+                        "label": "View Audit Logs",
+                        "description": "Can view system audit logs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_billing",
+                        "label": "View Billing",
+                        "description": "Can view billing information",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_certificates",
+                        "label": "View Certificates",
+                        "description": "Can view certificates",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_comments",
+                        "label": "View Comments",
+                        "description": "Can view comments and reviews",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_content",
+                        "label": "View Content",
+                        "description": "Can view content and banners",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_courses",
+                        "label": "View Courses",
+                        "description": "Can view courses",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_email_logs",
+                        "label": "View Email Logs",
+                        "description": "Can view email sending logs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_email_templates",
+                        "label": "View Email Templates",
+                        "description": "Can view email templates",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_files",
+                        "label": "View Files",
+                        "description": "Can view uploaded files and media",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_labs",
+                        "label": "View Labs",
+                        "description": "Can view labs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_notifications",
+                        "label": "View Notifications",
+                        "description": "Can view notifications",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_own_profile",
+                        "label": "View Own Profile",
+                        "description": "Can view own profile",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_permissions",
+                        "label": "View Permissions",
+                        "description": "Can view permissions",
+                        "action": "view"
+                    },
+                    {
+                        "id": "view_programs",
+                        "label": "View Programs",
+                        "description": "Can view digital programs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_purchases",
+                        "label": "View Purchases",
+                        "description": "Can view purchase history",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_reports",
+                        "label": "View Reports",
+                        "description": "Can view system reports",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_roles",
+                        "label": "View Roles",
+                        "description": "Can view roles",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_security_settings",
+                        "label": "View Security Settings",
+                        "description": "Can view security settings",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_settings",
+                        "label": "View Settings",
+                        "description": "Can view system settings",
+                        "action": null
+                    },
+                    {
+                        "id": "view_support",
+                        "label": "View Support",
+                        "description": "Can view support tickets and help resources",
+                        "action": null
+                    },
+                    {
+                        "id": "view_system_settings",
+                        "label": "View System Settings",
+                        "description": "Can view system settings",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_user_activity",
+                        "label": "View User Activity",
+                        "description": "Can view user activity logs",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_user_profiles",
+                        "label": "View User Profiles",
+                        "description": "Can view other user profiles",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_users",
+                        "label": "View Users",
+                        "description": "Can view user list and profiles",
+                        "action": "read"
+                    },
+                    {
+                        "id": "view_vouchers",
+                        "label": "View Vouchers",
+                        "description": "Can view vouchers and redemptions",
+                        "action": null
+                    },
+                    {
+                        "id": "view_webinars",
+                        "label": "View Webinars",
+                        "description": "Can view webinar list and details",
+                        "action": null
+                    }
+                ]
+            }
+        ],
+        "pagination": {
+            "page": 1,
+            "limit": 20,
+            "total": 10,
+            "totalPages": 1,
+            "hasNextPage": false,
+            "hasPrevPage": false
+        }
+    }
+}

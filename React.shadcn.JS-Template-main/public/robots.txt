@@ -1,0 +1,27 @@
+# public/robots.txt
+# ─────────────────────────────────────────────────────────────────────────────
+# Tells search engine crawlers what they can and cannot index.
+# Place this file in your /public folder so it's served at /robots.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+User-agent: *
+
+# ✅ Allow public pages
+Allow: /
+Allow: /courses
+Allow: /labs
+Allow: /programs
+Allow: /about
+Allow: /contact
+
+# 🚫 Block admin/private routes from indexing
+Disallow: /app/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /api/
+Disallow: /admin/
+
+# Sitemap location
+Sitemap: https://alarlabs.com/sitemap.xml

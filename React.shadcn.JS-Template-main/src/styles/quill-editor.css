@@ -1,0 +1,301 @@
+/* Quill editor — sticky toolbar + scrollable content area */
+
+.quill-rich-editor {
+  display: flex;
+  flex-direction: column;
+  max-height: var(--editor-max-height, 400px);
+  position: relative;
+}
+
+/* ReactQuill root wrapper */
+.quill-rich-editor > div {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.quill-rich-editor .ql-toolbar.ql-snow {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  border: none;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  padding: 8px;
+  flex-wrap: wrap;
+}
+
+.quill-rich-editor .ql-container.ql-snow {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  border: none;
+  font-family: inherit;
+  font-size: 0.9375rem;
+}
+
+.quill-rich-editor .ql-editor {
+  position: relative;
+  min-height: var(--editor-min-height, 160px);
+  color: #1e293b;
+  line-height: 1.65;
+}
+
+.quill-rich-editor .ql-editor.ql-blank::before {
+  color: #94a3b8;
+  font-style: normal;
+}
+
+.quill-rich-editor .ql-editor img {
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.quill-rich-editor .ql-editor img:not([height]):not([style*="height"]) {
+  height: auto;
+}
+
+/* Allow text to wrap beside floated / inline images */
+.quill-rich-editor .ql-editor p.quill-image-float-wrap,
+.quill-rich-editor .ql-editor p:has(> img[style*="float"]) {
+  overflow: hidden;
+}
+
+.quill-rich-editor .ql-editor img[style*="float: left"],
+.quill-rich-editor .ql-editor img[style*="float:left"] {
+  float: left;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.quill-rich-editor .ql-editor img[style*="float: right"],
+.quill-rich-editor .ql-editor img[style*="float:right"] {
+  float: right;
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.quill-rich-editor .ql-editor img[style*="inline-block"] {
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* Empty line below floated images — click here to type below the image */
+.quill-rich-editor .ql-editor p.quill-image-block-after {
+  clear: both;
+}
+
+.quill-rich-editor .ql-editor img.quill-image-selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+  cursor: grab;
+}
+
+.quill-rich-editor .ql-editor img.quill-image-dragging {
+  opacity: 0.55;
+  cursor: grabbing;
+  outline-style: dashed;
+}
+
+/* Hierarchy / outline lists — native 1 → a → i (resets per parent) */
+.quill-rich-editor .ql-editor .ql-outline-list,
+.quill-rich-editor .ql-editor .quill-nested-outline,
+.quill-rich-editor .ql-editor .ql-hierarchy-embed {
+  margin: 0.35em 0;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.quill-rich-editor .ql-editor .ql-outline-list:hover,
+.quill-rich-editor .ql-editor .quill-nested-outline:hover,
+.quill-rich-editor .ql-editor .ql-hierarchy-embed:hover {
+  outline: 1px dashed #94a3b8;
+  outline-offset: 2px;
+}
+
+.quill-rich-editor .ql-editor ol.ql-hierarchy-list,
+.quill-rich-editor .ql-editor ol.quill-nested-list {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-left: 1.5em;
+  margin: 0.35em 0;
+}
+
+.quill-rich-editor .ql-editor ol.ql-hierarchy-list ol.ql-hierarchy-list,
+.quill-rich-editor .ql-editor ol.quill-nested-list ol.quill-nested-list {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  padding-left: 1.5em;
+}
+
+.quill-rich-editor .ql-editor ol.ql-hierarchy-list li,
+.quill-rich-editor .ql-editor ol.quill-nested-list li {
+  list-style-type: inherit;
+  list-style-position: outside;
+  display: list-item;
+  padding-left: 0;
+  position: static;
+  margin: 0.2em 0;
+}
+
+/* Quill snow.css adds li::before counters — disable inside nested lists */
+.quill-rich-editor .ql-editor ol.ql-hierarchy-list li::before,
+.quill-rich-editor .ql-editor ol.quill-nested-list li::before {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
+}
+
+.quill-rich-editor .ql-editor ol.ql-hierarchy-list .ql-ui,
+.quill-rich-editor .ql-editor ol.quill-nested-list .ql-ui {
+  display: none !important;
+}
+
+/* Toolbar: structured outline list button */
+.quill-rich-editor .ql-toolbar button.ql-outline-list {
+  width: auto !important;
+  min-width: 28px;
+  padding: 0 6px !important;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.quill-rich-editor .ql-toolbar button.ql-outline-list::before {
+  content: "1a";
+}
+
+/* Overlay for image toolbar + resize handles (not clipped by scroll) */
+.quill-image-overlay-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  overflow: visible;
+}
+
+.quill-image-tools {
+  position: absolute;
+  z-index: 41;
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #0f172a;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.35);
+  max-width: calc(100% - 16px);
+}
+
+.quill-image-tools-label {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.quill-image-tools-hint {
+  color: #94a3b8;
+  font-size: 10px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.quill-image-tools button {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  cursor: pointer;
+  line-height: 1.2;
+}
+
+.quill-image-tools button:hover,
+.quill-image-tools button.is-active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.quill-image-tools-sep {
+  width: 1px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.25);
+  margin: 0 2px;
+}
+
+.quill-image-handle {
+  position: absolute;
+  z-index: 42;
+  pointer-events: auto;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: #3b82f6;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: nwse-resize;
+}
+
+.quill-image-handle-ne,
+.quill-image-handle-sw {
+  cursor: nesw-resize;
+}
+
+.quill-image-handle-n,
+.quill-image-handle-s {
+  cursor: ns-resize;
+}
+
+.quill-image-handle-e,
+.quill-image-handle-w {
+  cursor: ew-resize;
+}
+
+.rich-text-content img {
+  max-width: 100%;
+}
+
+.rich-text-content img:not([height]):not([style*="height"]) {
+  height: auto;
+}
+
+.rich-text-content img[style*="inline-block"] {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.rich-text-content img[style*="float: left"],
+.rich-text-content img[style*="float:left"] {
+  float: left;
+  margin-right: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.rich-text-content img[style*="float: right"],
+.rich-text-content img[style*="float:right"] {
+  float: right;
+  margin-left: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.rich-text-content img[style*="margin-left: auto"],
+.rich-text-content img[style*="margin: 0px auto"],
+.rich-text-content img[style*="margin: 0 auto"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}

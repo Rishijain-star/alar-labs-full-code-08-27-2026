@@ -1,0 +1,1186 @@
+{
+  "info": {
+    "_postman_id": "f098f218-a92a-4cbf-aa9b-8f676b49487f",
+    "name": "Croupon",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "34363794",
+    "_collection_link": "https://go.postman.co/collection/34363794-f098f218-a92a-4cbf-aa9b-8f676b49487f?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Enable Start",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzY5NzYyNDgwLCJleHAiOjE3Njk3NjI3ODAsImF1ZCI6ImFwaSIsImlzcyI6ImF1dGgtc2VydmljZSJ9.o-Zcw0UES9sQFJmtGpR8yLimrjQws5H29zkzEgQt2JU",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"admin2@example.com\",\n    \"password\": \"Jain@123\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/mfa/enable/start",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "mfa",
+                "enable",
+                "start"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enable Start Complete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzY5NzYzMjMzLCJleHAiOjE3Njk3NjM1MzMsImF1ZCI6ImFwaSIsImlzcyI6ImF1dGgtc2VydmljZSJ9.kpq9TywNK2YC8pzhmS9KXx2CTocUtFY__B0i0RH92fU",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"code\": \"062228\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/mfa/enable/complete",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "mfa",
+                "enable",
+                "complete"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "device/verify",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"otpToken\": \"062228\",\n    \"otp\": \"444644\",\n    \"deviceInfo\": \"\",\n    \"rememberMe\": false\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/device/verify",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "device",
+                "verify"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enable Start Status",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"code\": \"062228\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/mfa/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "mfa",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sessionId\": \"8ca62d23-edd1-46fd-9d25-2f0befaba77e\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/refresh",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "refresh"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sessionId\": \"8ca62d23-edd1-46fd-9d25-2f0befaba77e\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/logout",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "mfa/disable",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"8ca62d23-edd1-46fd-9d25-2f0befaba77e\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/mfa/disable",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "mfa",
+                "disable"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "/mfa/backup-codes/regenerate",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"sessionId\": \"8ca62d23-edd1-46fd-9d25-2f0befaba77e\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/mfa/backup-codes/regenerate",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "mfa",
+                "backup-codes",
+                "regenerate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Session",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/validate?sessionId=8ca62d23-edd1-46fd-9d25-2f0befaba77e",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "validate"
+              ],
+              "query": [
+                {
+                  "key": "sessionId",
+                  "value": "8ca62d23-edd1-46fd-9d25-2f0befaba77e"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Roles",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/rbac/roles",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "rbac",
+                "roles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete sessions/:sessionId",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/sessions/9c07f69f-e4d6-469b-addf-0298eb992128",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "sessions",
+                "9c07f69f-e4d6-469b-addf-0298eb992128"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Sessions",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3003/api/owner/sessions",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3003",
+              "path": [
+                "api",
+                "owner",
+                "sessions"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Device",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/devices",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "devices"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "me",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/me",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "audit-logs",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/audit-logs",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "audit-logs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-security-overview",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/get-security-overview",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "get-security-overview"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-ip-whitelist",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/get-ip-whitelist",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "get-ip-whitelist"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "add-ip-whitelist",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"ip\":\"::1\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/add-ip-whitelist",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "add-ip-whitelist"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ip-whitelist/toggle",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{user_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Cookie",
+                "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "\r\n{\r\n    \"roleId\":\"admin\"\r\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3000/api/owner/123/role",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "api",
+                "owner",
+                "123",
+                "role"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "forgot-password",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"identifier\": \"admin2@example.com\",\r\n    \"password\": \"Jain@123\",\r\n    \"phone\":\"12345678\",\r\n    \"full_name\":\"dasf\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/api/auth/forgot-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "api",
+            "auth",
+            "forgot-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "forgot-password/verify-otp",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"otpToken\": \"80ad716331e6a2e3ba6c96eac231180571e31b62fc746a67f44f41239637dedd\",\r\n    \"otp\": \"742770\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/api/auth/forgot-password/verify-otp",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "api",
+            "auth",
+            "forgot-password",
+            "verify-otp"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "reset-password",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"resetToken\": \"99b6c213995d302b57d79dbebf1764e75a84ff0905fbd7dbffdf04073ec1c6cc\",\r\n    \"newPassword\": \"12345678\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3003/api/auth/reset-password",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "api",
+            "auth",
+            "reset-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Register",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"karan.jain@yopmail.in\",\r\n    \"password\": \"Jain@123\",\r\n    \"phone\":\"1234567381\",\r\n    \"full_name\":\"dasf\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "auth",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "/otp/resend",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"email\": \"admin2@example.com\",\r\n    \"password\": \"Jain@123\",\r\n    \"phone\":\"12345678\",\r\n    \"full_name\":\"dasf\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/otp/resend",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "auth",
+            "otp",
+            "resend"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "MFA Verify",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"mfaToken\": \"b81c240f5ec06aea84ac51fc7baed785e9060dfe15d9bb8a980e0b455b59c906\",\n    \"code\":\"311848\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:3003/api/auth/mfa/verify",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3003",
+          "path": [
+            "api",
+            "auth",
+            "mfa",
+            "verify"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "register/verify",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"otpToken\": \"aac8c82ac28a5fc1a26a7d038941a99120ccfc2ddd2d57a33b6b012919b63bbf\",\n    \"otp\": \"468200\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/register/verify",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "auth",
+            "register",
+            "verify"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Cookie",
+            "value": "sid=b03a4511-d7f2-46d0-9cd4-c4d3f131ea1b"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\": \"karan.jain@yopmail.in\",\n    \"password\": \"Jain@123\",\n    \"rememberMe\": true,\n    \"deviceInfo\": {\n        \"deviceFingerprint\": \"f2c9b1a7c8e94d1a8a0f3c7b9d123456\",\n        \"deviceName\": \"Karan's Laptop\",\n        \"deviceType\": \"desktop\",\n        \"browser\": \"Chrome\",\n        \"browserVersion\": \"122.0.0\",\n        \"os\": \"Windows\",\n        \"osVersion\": \"10\",\n        \"userAgent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64)\",\n        \"ipAddress\": \"103.21.45.10\",\n        \"isTrusted\": true\n    }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:3000/api/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "3000",
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

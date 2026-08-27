@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Details</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --bg: #0c0c0c;
+            --card: #141414;
+            --border: #222;
+            --accent: #e8ff47;
+            --text: #f0f0f0;
+            --muted: #555;
+            --ok: #4dffb0;
+            --err: #ff5050;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Syne', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2.5rem 1.5rem;
+        }
+
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .course-header {
+            margin-bottom: 2rem;
+        }
+
+        .course-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.04em;
+        }
+
+        .course-meta-top {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            text-transform: uppercase;
+        }
+
+        .badge.accent {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        .course-thumb-main {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        p {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .media-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .media-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .media-item:hover {
+            border-color: var(--accent);
+        }
+
+        .video-container {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+        }
+
+        .media-info {
+            padding: 1.2rem;
+        }
+
+        .media-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .media-type {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .err {
+            color: var(--err);
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-family: 'IBM Plex Mono', monospace;
+            color: var(--muted);
+        }
+
+        .tag-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <div id="content">
+            <div class="loading">Loading course...</div>
+        </div>
+    </div>
+
+    <script>
+        const API = "http://localhost:3000";
+
+        async function init() {
+            const container = document.getElementById('content');
+            const params = new URLSearchParams(window.location.search);
+            const slug = params.get('slug');
+
+            if (!slug) {
+                container.innerHTML = '<div class="card"><p class="err">No course slug provided.</p></div>';
+                return;
+            }
+
+            try {
+                // Fetch course by slug (now includes media)
+                const res = await fetch(`${API}/api/courses/slug/${slug}`);
+                if (!res.ok) throw new Error('Course not found');
+                const { data } = await res.json();
+                const course = data.course;
+
+                renderCourse(course);
+            } catch (e) {
+                container.innerHTML = `<div class="card"><p class="err">Error: ${e.message}</p></div>`;
+            }
+        }
+
+        function renderCourse(course) {
+            const container = document.getElementById('content');
+
+            const tagsHtml = (course.tags || []).map(t => `<span class="tag">#${t}</span>`).join('');
+
+            let mediaHtml = '<p>No content available for this course.</p>';
+            if (course.media && course.media.length > 0) {
+                mediaHtml = course.media.map((item, idx) => {
+                    const isVideo = item.type === 'video';
+                    const videoId = `video-${idx}`;
+
+                    return `
+                        <div class="media-item">
+                            ${isVideo ? `
+                                <div class="video-container">
+                                    <video id="${videoId}" controls poster="${item.thumbnail ? API + item.thumbnail : ''}"></video>
+                                </div>
+                            ` : `
+                                <div class="media-info">
+                                    <p>File: <a href="${item.url}" target="_blank">${item.title}</a></p>
+                                </div>
+                            `}
+                            <div class="media-info">
+                                <div class="media-type">${item.type}</div>
+                                <div class="media-title">${item.title}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            container.innerHTML = `
+                <div class="course-header">
+                    <div class="course-meta-top">
+                        <span class="badge accent">${course.level}</span>
+                        <span class="badge">${course.status}</span>
+                        <span class="badge">${course.isFree ? 'Free' : '$' + course.price}</span>
+                    </div>
+                    <h1 class="course-title">${course.title}</h1>
+                    ${course.thumbnail ? `<img src="${API}${course.thumbnail}" class="course-thumb-main" alt="Thumbnail">` : ''}
+                    <p>${course.description || 'No description available.'}</p>
+                    <div class="tag-list">${tagsHtml}</div>
+                </div>
+
+                <div class="section-title">Course Content</div>
+                <div class="media-list">
+                    ${mediaHtml}
+                </div>
+            `;
+
+            // Initialize HLS for each video
+            if (course.media) {
+                course.media.forEach((item, idx) => {
+                    if (item.type === 'video' && item.url) {
+                        setupHls(`video-${idx}`, API + item.url);
+                    }
+                });
+            }
+        }
+
+        function setupHls(elementId, streamUrl) {
+            const video = document.getElementById(elementId);
+            if (!video) return;
+
+            if (Hls.isSupported()) {
+                const hls = new Hls({
+                    xhrSetup: (xhr) => {
+                        xhr.withCredentials = false; // or true if needed
+                    }
+                });
+                hls.loadSource(streamUrl);
+                hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = streamUrl;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

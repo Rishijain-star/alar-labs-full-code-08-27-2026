@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Video Upload</title>
+</head>
+<body>
+  <h1>Test Video Upload</h1>
+  <form action="http://localhost:3000/api/owner/courses/create-full" method="post" enctype="multipart/form-data">
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title" value="Test Course"><br><br>
+    <label for="slug">Slug:</label>
+    <input type="text" id="slug" name="slug" value="test-course"><br><br>
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" value="This is a test course"><br><br>
+    <label for="level">Level:</label>
+    <input type="text" id="level" name="level" value="beginner"><br><br>
+    <label for="media">Media:</label>
+    <input type="text" id="media" name="media" value='[{"lessonId":"lesson_123","type":"video","order":0}]'><br><br>
+    <label for="mediaFiles">Video:</label>
+    <input type="file" id="mediaFiles" name="mediaFiles"><br><br>
+    <input type="submit" value="Submit">
+  </form>
+</body>
+</html>

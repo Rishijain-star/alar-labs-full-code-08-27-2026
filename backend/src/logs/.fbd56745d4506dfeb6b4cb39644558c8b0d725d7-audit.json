@@ -1,0 +1,60 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\.fbd56745d4506dfeb6b4cb39644558c8b0d725d7-audit.json",
+    "files": [
+        {
+            "date": 1786000439584,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-06.log",
+            "hash": "79c70b44bd8e54196829d7da8993b96b25501e0547586b8ca9ec9cadd695bc2f"
+        },
+        {
+            "date": 1786087168679,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-07.log",
+            "hash": "0a9c0eee0fa84a7357697ace446901cbe3e3663214bf066f9b4f06380109f281"
+        },
+        {
+            "date": 1786169424843,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-08.log",
+            "hash": "686295f7a5765cbd423e1fb9577d809ecc4c9a624612d11caeb3624b18953f8b"
+        },
+        {
+            "date": 1786707217526,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-14.log",
+            "hash": "1c5a4c38291588e89224ad83a106f83fff89782fe1a6901d994f39d697ad62f6"
+        },
+        {
+            "date": 1786767714135,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-15.log",
+            "hash": "b7b94762af77451e80c7807ffafcc2754ab1cc5c921286ab821930ccd8335fb2"
+        },
+        {
+            "date": 1786978754956,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-17.log",
+            "hash": "c30ae455179ded4b974a2d92f962dddb6d9591899f40221f75d7083b62f890e4"
+        },
+        {
+            "date": 1787060465934,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-18.log",
+            "hash": "1df8a7036b7cb6e2460c930880154a6333d08c5680184d4fc5dcdb334cd9c3d6"
+        },
+        {
+            "date": 1787665119601,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-25.log",
+            "hash": "ee05234aff08981f06fdd3ca0f9f58e2b5a6fed2ca7b8118ecbf68ef582b0db7"
+        },
+        {
+            "date": 1787725619555,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-26.log",
+            "hash": "006d900f1003dc2c882f9d9f8f37c3f4eea8fe60f31dac086fc9fb9e8c51a47a"
+        },
+        {
+            "date": 1787805563312,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\warn-2026-08-27.log",
+            "hash": "534b3a8498175e46bd1cc7f0a3f5d902533769013f815241c118801b8e5d6315"
+        }
+    ],
+    "hashType": "sha256"
+}

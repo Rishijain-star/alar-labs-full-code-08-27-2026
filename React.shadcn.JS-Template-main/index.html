@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- ✅ Fallback title & description (react-helmet-async overrides these per page) -->
+    <title>Alar Labs</title>
+    <meta name="description" content="Alar Labs — Modern learning platform." />
+
+    <!-- ✅ Favicon -->
+    <link rel="icon"             type="image/svg+xml" href="/alarlabslogo.png" />
+    <link rel="icon"             type="image/png"     href="/alarlabslogo.png" />
+    <link rel="apple-touch-icon"                      href="/apple-touch-icon.png" />
+
+    <!-- ✅ Theme color (browser tab / mobile status bar color) -->
+    <meta name="theme-color" content="#0f172a" />
+
+    <!-- ✅ Preconnect to speed up external fonts / APIs -->
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com" /> -->
+
+    <!-- ✅ Base Open Graph fallbacks (Helmet overrides per page) -->
+    <meta property="og:site_name" content="Alar Labs" />
+    <meta property="og:type"      content="website" />
+    <meta property="og:image"     content="/og-default.png" />
+
+    <!-- ✅ Prevent telephone number auto-detection on iOS -->
+    <meta name="format-detection" content="telephone=no" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/entry.jsx"></script>
+  </body>
+</html>

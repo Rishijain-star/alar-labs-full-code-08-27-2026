@@ -1,0 +1,441 @@
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Loader2, Plus, Trash2, Save, Eye, CheckCircle2, Star } from "lucide-react";
+import {
+  useGetAdminCareerOfferingsQuery,
+  useCreateCareerOfferingMutation,
+  useUpdateCareerOfferingMutation,
+  useDeleteCareerOfferingMutation,
+  useGetCareerRequestsQuery,
+  useUpdateCareerRequestStatusMutation,
+} from "@/store/api/careerOfferingApi";
+import { confirmDelete } from "@/lib/confirmAction";
+import QuillRichEditor from "@/components/editor/QuillRichEditor";
+import RichTextContent from "@/components/learning/RichTextContent";
+import { sanitizeCourseDescriptionHtml } from "@/lib/sanitizeCourseHtml";
+import { stripHtmlToPlain } from "@/lib/stripHtml";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogBody,
+} from "@/components/ui/dialog";
+import { permissionStore } from "@/utils/permissions";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+
+export default function CareersAdmin() {
+  const canEdit = permissionStore.hasPermission("manage_career_offerings");
+  const { data: offeringsData, isLoading: loadingOfferings, refetch: refetchOfferings } =
+    useGetAdminCareerOfferingsQuery();
+  const [createOffering] = useCreateCareerOfferingMutation();
+  const [updateOffering] = useUpdateCareerOfferingMutation();
+  const [deleteOffering] = useDeleteCareerOfferingMutation();
+
+  const { data: requestsData, isLoading: loadingRequests, refetch: refetchRequests } =
+    useGetCareerRequestsQuery();
+  const [updateRequestStatus] = useUpdateCareerRequestStatusMutation();
+
+  const [editingOffering, setEditingOffering] = useState(null);
+  const [itemsText, setItemsText] = useState("");
+  const [offerings, setOfferings] = useState([]);
+
+  useEffect(() => {
+    if (offeringsData?.data?.rows) {
+      setOfferings(offeringsData.data.rows);
+    }
+  }, [offeringsData]);
+
+  const handleAddOffering = () => {
+    setItemsText("");
+    setEditingOffering({
+      title: "New Career Offering",
+      description: "",
+      items: "",
+      rating: 4.8,
+      is_active: true,
+      sort_order: offerings.length,
+    });
+  };
+
+  const handleEditOffering = (offering) => {
+    // If the offering has a pending draft, use that data for editing
+    const dataToEdit = offering.draft_data || offering;
+    
+    // Legacy support: convert array items to HTML string for editor
+    let parsedItems = dataToEdit.items;
+    if (typeof parsedItems === "string") {
+      try { parsedItems = JSON.parse(parsedItems); } catch (e) { /* ignore */ }
+    }
+    
+    let itemsHtml = typeof parsedItems === "string" ? parsedItems : "";
+    if (Array.isArray(parsedItems)) {
+      itemsHtml = parsedItems.length > 0 
+        ? "<ul>" + parsedItems.map(f => `<li>${f}</li>`).join("") + "</ul>"
+        : "";
+    }
+    
+    setEditingOffering({ ...dataToEdit, id: offering.id, items: itemsHtml });
+  };
+
+  const handleSaveOffering = async () => {
+    if (!editingOffering) return;
+    const payload = {
+      ...editingOffering,
+      rating: Math.min(5, Math.max(1, Number(editingOffering.rating) || 4.8)),
+      items: editingOffering.items || "",
+    };
+    if (payload.id) {
+      await updateOffering({ id: payload.id, data: payload }).unwrap();
+    } else {
+      await createOffering(payload).unwrap();
+    }
+    setEditingOffering(null);
+    refetchOfferings();
+  };
+
+  const handleDeleteOffering = async (id) => {
+    if (!(await confirmDelete("this offering"))) return;
+    await deleteOffering(id).unwrap();
+    refetchOfferings();
+  };
+
+  const handleUpdateRequestStatus = async (id, status) => {
+    await updateRequestStatus({ id, status }).unwrap();
+    refetchRequests();
+  };
+
+  if (loadingOfferings || loadingRequests) {
+    return (
+      <div className="flex items-center justify-center py-16 text-muted-foreground">
+        <Loader2 className="w-8 h-8 animate-spin mr-2" />
+        Loading...
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold">Career Offerings Management</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Manage career offerings and review user requests. Anyone can submit a request without signing in.
+        </p>
+      </div>
+
+      <Tabs defaultValue="offerings">
+        <TabsList>
+          <TabsTrigger value="offerings">Offerings</TabsTrigger>
+          <TabsTrigger value="requests">Requests</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="offerings">
+          <div className="flex justify-end mb-4">
+            {canEdit && (
+              <Button onClick={handleAddOffering}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Offering
+              </Button>
+            )}
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {offerings.map((offering) => (
+              <Card key={offering.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CardTitle>{offering.title}</CardTitle>
+                      {offering.metadata?.content_approval_status === "pending" && (
+                        <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                          Pending Approval
+                        </Badge>
+                      )}
+                    </div>
+                    {canEdit && (
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="secondary" onClick={() => handleEditOffering(offering)}>
+                          Edit
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeleteOffering(offering.id)}>
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {stripHtmlToPlain(offering.description) ? (
+                    <RichTextContent
+                      html={sanitizeCourseDescriptionHtml(offering.description)}
+                      showTitle={false}
+                      className="text-sm text-muted-foreground mb-4"
+                    />
+                  ) : (
+                    <p className="text-sm text-muted-foreground mb-4">No description provided.</p>
+                  )}
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-medium">Active:</span>
+                    <Switch checked={offering.is_active} disabled={!canEdit} />
+                  </div>
+                  {(() => {
+                    let parsedItems = offering.items;
+                    if (typeof parsedItems === "string") {
+                      try { parsedItems = JSON.parse(parsedItems); } catch (e) { /* ignore */ }
+                    }
+                    
+                    if (Array.isArray(parsedItems) && parsedItems.length > 0) {
+                      return (
+                        <ul className="space-y-1 mt-4">
+                          {parsedItems.map((item, i) => (
+                            <li key={i} className="text-sm flex items-center gap-2">
+                              <CheckCircle2 className="w-4 h-4 text-success" />
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      );
+                    } else if (typeof parsedItems === "string" && stripHtmlToPlain(parsedItems)) {
+                      return (
+                        <RichTextContent
+                          html={sanitizeCourseDescriptionHtml(parsedItems)}
+                          showTitle={false}
+                          className="text-sm text-muted-foreground mt-4"
+                        />
+                      );
+                    }
+                    return null;
+                  })()}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {editingOffering && (
+            <Dialog
+              open={!!editingOffering}
+              onOpenChange={(open) => {
+                if (!open) {
+                  setEditingOffering(null);
+                  setItemsText("");
+                }
+              }}
+            >
+              <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col gap-0 overflow-hidden p-0">
+                <DialogHeader className="shrink-0 px-6 pt-6 pb-2">
+                  <DialogTitle>Edit Career Offering</DialogTitle>
+                </DialogHeader>
+                <DialogBody className="space-y-4">
+                  <div>
+                    <Label>Title</Label>
+                    <Input
+                      value={editingOffering.title}
+                      onChange={(e) => setEditingOffering({ ...editingOffering, title: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label className="flex items-center gap-1.5">
+                      <Star className="w-4 h-4 text-amber-500" />
+                      Star rating
+                    </Label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Shown at the top of the offering card on the public Careers page (1.0 – 5.0).
+                    </p>
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="1"
+                      max="5"
+                      value={editingOffering.rating ?? 4.8}
+                      onChange={(e) =>
+                        setEditingOffering({ ...editingOffering, rating: e.target.value })
+                      }
+                      className="w-32"
+                    />
+                  </div>
+                  <div>
+                    <Label>Description</Label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Formatting is shown the same way on the public Careers page.
+                    </p>
+                    <QuillRichEditor
+                      editorKey={editingOffering.id || "new-career-offering"}
+                      value={editingOffering.description || ""}
+                      onChange={(html) =>
+                        setEditingOffering({ ...editingOffering, description: html })
+                      }
+                      placeholder="Describe this career offering…"
+                      minHeight={160}
+                      maxHeight={320}
+                    />
+                  </div>
+                  <div>
+                    <Label>Features</Label>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      Formatting is shown the same way on the public Careers page.
+                    </p>
+                    <QuillRichEditor
+                      editorKey={(editingOffering.id || "new-career-offering") + "-features"}
+                      value={editingOffering.items || ""}
+                      onChange={(html) =>
+                        setEditingOffering({ ...editingOffering, items: html })
+                      }
+                      placeholder="Describe the features…"
+                      minHeight={160}
+                      maxHeight={320}
+                    />
+                  </div>
+                </DialogBody>
+                <DialogFooter className="shrink-0 border-t bg-background px-6 py-4">
+                  <Button variant="outline" onClick={() => setEditingOffering(null)}>Cancel</Button>
+                  <Button onClick={handleSaveOffering}>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+        </TabsContent>
+
+        <TabsContent value="requests">
+          <Card>
+            <CardHeader>
+              <CardTitle>Career Requests</CardTitle>
+              <CardDescription>Review and manage user requests.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Offering</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(requestsData?.data?.data || []).map((request) => (
+                    <TableRow key={request.id}>
+                      <TableCell className="font-medium">
+                        {request.offering?.title || "—"}
+                      </TableCell>
+                      <TableCell>{request.name}</TableCell>
+                      <TableCell>{request.email}</TableCell>
+                      <TableCell>{request.contact_number || "—"}</TableCell>
+                      <TableCell className="capitalize">{request.request_type || "—"}</TableCell>
+                      <TableCell className="capitalize">{request.status}</TableCell>
+                      <TableCell>{new Date(request.created_at).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="secondary">
+                              <Eye className="w-4 h-4 mr-1" />
+                              View
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Request Details</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                              <div>
+                                <Label>Career Offering</Label>
+                                <div className="text-sm font-medium">
+                                  {request.offering?.title || "Not specified"}
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <Label>Name</Label>
+                                  <div className="text-sm">{request.name}</div>
+                                </div>
+                                <div>
+                                  <Label>Email</Label>
+                                  <div className="text-sm">{request.email}</div>
+                                </div>
+                                <div>
+                                  <Label>Contact Number</Label>
+                                  <div className="text-sm">{request.contact_number || "—"}</div>
+                                </div>
+                                <div>
+                                  <Label>Request Type</Label>
+                                  <div className="text-sm capitalize">{request.request_type || "—"}</div>
+                                </div>
+                                {request.request_type === "corporate" && (
+                                  <div className="col-span-2">
+                                    <Label>Organization</Label>
+                                    <div className="text-sm">{request.organization || "—"}</div>
+                                  </div>
+                                )}
+                                <div>
+                                  <Label>Status</Label>
+                                  <div className="capitalize">{request.status}</div>
+                                </div>
+                                <div>
+                                  <Label>Submitted</Label>
+                                  <div className="text-sm">
+                                    {new Date(request.created_at).toLocaleString()}
+                                  </div>
+                                </div>
+                              </div>
+                              {request.requirements && (
+                                <div>
+                                  <Label>Requirements</Label>
+                                  <p className="text-sm">{request.requirements}</p>
+                                </div>
+                              )}
+                            </div>
+                            <DialogFooter>
+                              {["pending", "in_progress"].includes(request.status) && (
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => handleUpdateRequestStatus(request.id, "rejected")}
+                                  >
+                                    Reject
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => handleUpdateRequestStatus(request.id, "in_progress")}
+                                  >
+                                    Mark as In Progress
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => handleUpdateRequestStatus(request.id, "completed")}
+                                  >
+                                    Mark as Completed
+                                  </Button>
+                                </div>
+                              )}
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}

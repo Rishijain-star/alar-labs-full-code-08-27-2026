@@ -1,0 +1,326 @@
+/* Rich text editor + rendered content (no @tailwindcss/typography dependency) */
+
+.rich-text-editor,
+.rich-text-content {
+  color: #1e293b;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  word-wrap: break-word;
+  display: flow-root;
+}
+
+.rich-text-content > p,
+.rich-text-content > ol,
+.rich-text-content > ul,
+.rich-text-content > pre,
+.rich-text-content > h1,
+.rich-text-content > h2,
+.rich-text-content > h3,
+.rich-text-content > .tiptap-alert-box,
+.rich-text-content > [data-alert-box],
+.rich-text-content > .tiptap-image-wrap {
+  clear: both;
+}
+
+.rich-text-editor {
+  min-height: 280px;
+  background: #ffffff;
+  outline: none;
+}
+
+.rich-text-editor:focus {
+  outline: none;
+}
+
+.rich-text-editor h1,
+.rich-text-content h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.3;
+}
+
+.rich-text-editor h2,
+.rich-text-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0.65rem 0 0.4rem;
+  line-height: 1.35;
+}
+
+.rich-text-editor h3,
+.rich-text-content h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.5rem 0 0.35rem;
+  line-height: 1.4;
+}
+
+.rich-text-editor h4,
+.rich-text-content h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.45rem 0 0.3rem;
+  line-height: 1.4;
+}
+
+.rich-text-editor h5,
+.rich-text-content h5 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.4rem 0 0.25rem;
+  line-height: 1.45;
+}
+
+.rich-text-editor h6,
+.rich-text-content h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0.35rem 0 0.2rem;
+  line-height: 1.45;
+}
+
+.rich-text-editor p,
+.rich-text-content p {
+  margin: 0.5rem 0;
+  color: #334155;
+}
+
+.rich-text-editor strong,
+.rich-text-editor b,
+.rich-text-content strong,
+.rich-text-content b {
+  font-weight: 700;
+}
+
+.rich-text-editor em,
+.rich-text-editor i,
+.rich-text-content em,
+.rich-text-content i {
+  font-style: italic;
+}
+
+.rich-text-editor u,
+.rich-text-content u {
+  text-decoration: underline;
+}
+
+.rich-text-editor ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.rich-text-editor ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.rich-text-editor li {
+  margin: 0.25rem 0;
+  color: #334155;
+}
+
+/* Quill HTML uses custom list counters — see quill-content.css */
+.rich-text-content ul,
+.rich-text-content
+  ol:not(.quill-nested-list):not(.ql-hierarchy-list):not(.outline-list):not(
+    [data-outline-list]
+  ) {
+  padding-left: 0;
+  margin: 0.5rem 0;
+  list-style: none;
+}
+
+.rich-text-content ol.outline-list,
+.rich-text-content ol[data-outline-list],
+.rich-text-content ol.ql-hierarchy-list,
+.rich-text-content ol.quill-nested-list {
+  padding-left: 1.5em;
+  list-style-position: outside;
+  margin: 0.5rem 0;
+}
+
+.rich-text-content li {
+  margin: 0.25rem 0;
+}
+
+.rich-text-content li:not([style*="color"]) {
+  color: #334155;
+}
+
+/* TipTap / standard HTML lists (non-Quill data-list markup) */
+.rich-text-content ul > li:not([data-list]),
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]) {
+  position: relative;
+  padding-left: 1.5em;
+  list-style: none;
+}
+
+.rich-text-content ul > li:not([data-list])::before,
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list])::before {
+  color: inherit;
+}
+
+.rich-text-content-on-dark ul > li:not([data-list])::before,
+.rich-text-content-on-dark ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list])::before,
+.rich-text-content-on-dark li[data-list] > .ql-ui:before,
+.rich-text-content-on-dark li[data-list=ordered] > .ql-ui:before {
+  color: #ffffff;
+}
+
+.rich-text-editor pre,
+.rich-text-content pre {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+  overflow-x: auto;
+  color: #0f172a;
+  margin: 0.5rem 0;
+}
+
+.rich-text-editor a,
+.rich-text-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.rich-text-editor img,
+.rich-text-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.rich-text-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Rich text on dark hero backgrounds (training program detail) */
+.rich-text-content-on-dark,
+.rich-text-content-on-dark p {
+  color: rgba(219, 234, 254, 0.95);
+}
+
+.rich-text-content-on-dark li:not([style*="color"]) {
+  color: rgba(219, 234, 254, 0.95);
+}
+
+.rich-text-content-on-dark h1,
+.rich-text-content-on-dark h2,
+.rich-text-content-on-dark h3,
+.rich-text-content-on-dark h4,
+.rich-text-content-on-dark h5,
+.rich-text-content-on-dark h6 {
+  color: #ffffff;
+}
+
+.rich-text-content-on-dark a {
+  color: #93c5fd;
+}
+
+.rich-text-content-on-dark pre {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+}
+
+/* Program / webinar detail pages — larger professional body text */
+.rich-text-content.rich-text-content-detail {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.rich-text-content.rich-text-content-detail h1 {
+  font-size: 1.75rem;
+  margin-top: 0.75rem;
+}
+
+.rich-text-content.rich-text-content-detail h2 {
+  font-size: 1.5rem;
+}
+
+.rich-text-content.rich-text-content-detail h3 {
+  font-size: 1.25rem;
+}
+
+.rich-text-content.rich-text-content-detail p,
+.rich-text-content.rich-text-content-detail li {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+.rich-text-content.rich-text-content-detail ul,
+.rich-text-content.rich-text-content-detail ol {
+  margin: 0.75rem 0;
+}
+
+/* TipTap native lists — use real markers (fixes missing bullets / gray numbers on dark) */
+.rich-text-content ul:has(> li:not([data-list])) {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+  margin: 0.5rem 0;
+}
+
+.rich-text-content ul:has(> li:not([data-list])) > li {
+  display: list-item !important;
+  position: static !important;
+  padding-left: 0 !important;
+  list-style: inherit !important;
+}
+
+.rich-text-content ul:has(> li:not([data-list])) > li::before {
+  content: none !important;
+  display: none !important;
+}
+
+.rich-text-content ol.outline-list,
+.rich-text-content ol[data-outline-list] {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 1.5em !important;
+  margin: 0.5rem 0;
+}
+
+.rich-text-content ol.outline-list > li,
+.rich-text-content ol[data-outline-list] > li,
+.rich-text-content ol.outline-list > li.outline-list-item,
+.rich-text-content ol[data-outline-list] > li[data-outline-item] {
+  display: list-item !important;
+  position: static !important;
+  padding-left: 0 !important;
+  list-style: inherit !important;
+}
+
+.rich-text-content ol.outline-list > li::before,
+.rich-text-content ol[data-outline-list] > li::before {
+  content: none !important;
+  display: none !important;
+}
+
+.rich-text-content-on-dark ul:has(> li:not([data-list])) > li:not([style*="color"])::marker,
+.rich-text-content-on-dark ol.outline-list > li:not([style*="color"])::marker,
+.rich-text-content-on-dark ol[data-outline-list] > li:not([style*="color"])::marker {
+  color: #ffffff;
+}
+
+.rich-text-content li[style*="color"]::marker,
+.rich-text-content ul:has(> li:not([data-list])) > li[style*="color"]::marker,
+.rich-text-content ol.outline-list > li[style*="color"]::marker,
+.rich-text-content ol[data-outline-list] > li[style*="color"]::marker {
+  color: currentColor;
+}

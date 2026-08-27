@@ -1,0 +1,242 @@
+/* Quill HTML on learner/detail views — list counters match the editor */
+.rich-text-content{box-sizing:border-box;counter-reset:list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;line-height:1.65;word-wrap:break-word}
+.rich-text-content p,.rich-text-content ol,.rich-text-content pre,.rich-text-content h1,.rich-text-content h2,.rich-text-content h3,.rich-text-content h4,.rich-text-content h5,.rich-text-content h6{margin:0;padding:0}
+@supports (counter-set:none){.rich-text-content p,.rich-text-content h1,.rich-text-content h2,.rich-text-content h3,.rich-text-content h4,.rich-text-content h5,.rich-text-content h6{counter-set:list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content p,.rich-text-content h1,.rich-text-content h2,.rich-text-content h3,.rich-text-content h4,.rich-text-content h5,.rich-text-content h6{counter-reset:list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+.rich-text-content table{border-collapse:collapse}
+.rich-text-content td{border:1px solid #000;padding:2px 5px}
+.rich-text-content ol{padding-left:1.5em}
+.rich-text-content li:not([data-outline-item]):not(.outline-list-item){list-style-type:none;padding-left:1.5em;position:relative}
+.rich-text-content li > .ql-ui:before{display:inline-block;margin-left:-1.5em;margin-right:.3em;text-align:right;white-space:nowrap;width:1.2em}
+.rich-text-content li[data-list=checked] > .ql-ui,.rich-text-content li[data-list=unchecked] > .ql-ui{color:#777}
+.rich-text-content li[data-list=bullet] > .ql-ui:before{content:'\2022'}
+.rich-text-content li[data-list=checked] > .ql-ui:before{content:'\2611'}
+.rich-text-content li[data-list=unchecked] > .ql-ui:before{content:'\2610'}
+@supports (counter-set:none){.rich-text-content li[data-list]{counter-set:list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list]{counter-reset:list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered]{counter-increment:list-0}
+.rich-text-content li[data-list=ordered] > .ql-ui:before{content:counter(list-0, decimal) '. '}
+.rich-text-content li[data-list=ordered].ql-indent-1{counter-increment:list-1}
+.rich-text-content li[data-list=ordered].ql-indent-1 > .ql-ui:before{content:counter(list-1, lower-alpha) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-1{counter-set:list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-1{counter-reset:list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-2{counter-increment:list-2}
+.rich-text-content li[data-list=ordered].ql-indent-2 > .ql-ui:before{content:counter(list-2, lower-roman) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-2{counter-set:list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-2{counter-reset:list-3 list-4 list-5 list-6 list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-3{counter-increment:list-3}
+.rich-text-content li[data-list=ordered].ql-indent-3 > .ql-ui:before{content:counter(list-3, decimal) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-3{counter-set:list-4 list-5 list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-3{counter-reset:list-4 list-5 list-6 list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-4{counter-increment:list-4}
+.rich-text-content li[data-list=ordered].ql-indent-4 > .ql-ui:before{content:counter(list-4, lower-alpha) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-4{counter-set:list-5 list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-4{counter-reset:list-5 list-6 list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-5{counter-increment:list-5}
+.rich-text-content li[data-list=ordered].ql-indent-5 > .ql-ui:before{content:counter(list-5, lower-roman) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-5{counter-set:list-6 list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-5{counter-reset:list-6 list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-6{counter-increment:list-6}
+.rich-text-content li[data-list=ordered].ql-indent-6 > .ql-ui:before{content:counter(list-6, decimal) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-6{counter-set:list-7 list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-6{counter-reset:list-7 list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-7{counter-increment:list-7}
+.rich-text-content li[data-list=ordered].ql-indent-7 > .ql-ui:before{content:counter(list-7, lower-alpha) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-7{counter-set:list-8 list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-7{counter-reset:list-8 list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-8{counter-increment:list-8}
+.rich-text-content li[data-list=ordered].ql-indent-8 > .ql-ui:before{content:counter(list-8, lower-roman) '. '}
+@supports (counter-set:none){.rich-text-content li[data-list].ql-indent-8{counter-set:list-9}
+}
+@supports not (counter-set:none){.rich-text-content li[data-list].ql-indent-8{counter-reset:list-9}
+}
+.rich-text-content li[data-list=ordered].ql-indent-9{counter-increment:list-9}
+.rich-text-content li[data-list=ordered].ql-indent-9 > .ql-ui:before{content:counter(list-9, decimal) '. '}
+.rich-text-content .ql-indent-1:not(.ql-direction-rtl){padding-left:3em}
+.rich-text-content li.ql-indent-1:not(.ql-direction-rtl){padding-left:4.5em}
+.rich-text-content .ql-indent-1.ql-direction-rtl.ql-align-right{padding-right:3em}
+.rich-text-content li.ql-indent-1.ql-direction-rtl.ql-align-right{padding-right:4.5em}
+.rich-text-content .ql-indent-2:not(.ql-direction-rtl){padding-left:6em}
+.rich-text-content li.ql-indent-2:not(.ql-direction-rtl){padding-left:7.5em}
+.rich-text-content .ql-indent-2.ql-direction-rtl.ql-align-right{padding-right:6em}
+.rich-text-content li.ql-indent-2.ql-direction-rtl.ql-align-right{padding-right:7.5em}
+.rich-text-content .ql-indent-3:not(.ql-direction-rtl){padding-left:9em}
+.rich-text-content li.ql-indent-3:not(.ql-direction-rtl){padding-left:10.5em}
+.rich-text-content .ql-indent-3.ql-direction-rtl.ql-align-right{padding-right:9em}
+.rich-text-content li.ql-indent-3.ql-direction-rtl.ql-align-right{padding-right:10.5em}
+.rich-text-content .ql-indent-4:not(.ql-direction-rtl){padding-left:12em}
+.rich-text-content li.ql-indent-4:not(.ql-direction-rtl){padding-left:13.5em}
+.rich-text-content .ql-indent-4.ql-direction-rtl.ql-align-right{padding-right:12em}
+.rich-text-content li.ql-indent-4.ql-direction-rtl.ql-align-right{padding-right:13.5em}
+.rich-text-content .ql-indent-5:not(.ql-direction-rtl){padding-left:15em}
+.rich-text-content li.ql-indent-5:not(.ql-direction-rtl){padding-left:16.5em}
+.rich-text-content .ql-indent-5.ql-direction-rtl.ql-align-right{padding-right:15em}
+.rich-text-content li.ql-indent-5.ql-direction-rtl.ql-align-right{padding-right:16.5em}
+.rich-text-content .ql-indent-6:not(.ql-direction-rtl){padding-left:18em}
+.rich-text-content li.ql-indent-6:not(.ql-direction-rtl){padding-left:19.5em}
+.rich-text-content .ql-indent-6.ql-direction-rtl.ql-align-right{padding-right:18em}
+.rich-text-content li.ql-indent-6.ql-direction-rtl.ql-align-right{padding-right:19.5em}
+.rich-text-content .ql-indent-7:not(.ql-direction-rtl){padding-left:21em}
+.rich-text-content li.ql-indent-7:not(.ql-direction-rtl){padding-left:22.5em}
+.rich-text-content .ql-indent-7.ql-direction-rtl.ql-align-right{padding-right:21em}
+.rich-text-content li.ql-indent-7.ql-direction-rtl.ql-align-right{padding-right:22.5em}
+.rich-text-content .ql-indent-8:not(.ql-direction-rtl){padding-left:24em}
+.rich-text-content li.ql-indent-8:not(.ql-direction-rtl){padding-left:25.5em}
+.rich-text-content .ql-indent-8.ql-direction-rtl.ql-align-right{padding-right:24em}
+.rich-text-content li.ql-indent-8.ql-direction-rtl.ql-align-right{padding-right:25.5em}
+.rich-text-content .ql-indent-9:not(.ql-direction-rtl){padding-left:27em}
+.rich-text-content li.ql-indent-9:not(.ql-direction-rtl){padding-left:28.5em}
+.rich-text-content .ql-indent-9.ql-direction-rtl.ql-align-right{padding-right:27em}
+.rich-text-content li.ql-indent-9.ql-direction-rtl.ql-align-right{padding-right:28.5em}
+.rich-text-content li.ql-direction-rtl{padding-right:1.5em}
+.rich-text-content li.ql-direction-rtl > .ql-ui:before{margin-left:.3em;margin-right:-1.5em;text-align:left}
+.rich-text-content table{table-layout:fixed;width:100%}
+.rich-text-content table td{outline:none}
+.rich-text-content .ql-code-block-container{font-family:monospace}
+.rich-text-content .ql-video{display:block;max-width:100%}
+.rich-text-content .ql-video.ql-align-center{margin:0 auto}
+.rich-text-content .ql-video.ql-align-right{margin:0 0 0 auto}
+.rich-text-content .ql-bg-black{background-color:#000}
+.rich-text-content .ql-bg-red{background-color:#e60000}
+.rich-text-content .ql-bg-orange{background-color:#f90}
+.rich-text-content .ql-bg-yellow{background-color:#ff0}
+.rich-text-content .ql-bg-green{background-color:#008a00}
+.rich-text-content .ql-bg-blue{background-color:#06c}
+.rich-text-content .ql-bg-purple{background-color:#93f}
+.rich-text-content .ql-color-white{color:#fff}
+.rich-text-content .ql-color-red{color:#e60000}
+.rich-text-content .ql-color-orange{color:#f90}
+.rich-text-content .ql-color-yellow{color:#ff0}
+.rich-text-content .ql-color-green{color:#008a00}
+.rich-text-content .ql-color-blue{color:#06c}
+.rich-text-content .ql-color-purple{color:#93f}
+.rich-text-content .ql-font-serif{font-family:Georgia,Times New Roman,serif}
+.rich-text-content .ql-font-monospace{font-family:Monaco,Courier New,monospace}
+.rich-text-content .ql-size-small{font-size:.75em}
+.rich-text-content .ql-size-large{font-size:1.5em}
+.rich-text-content .ql-size-huge{font-size:2.5em}
+.rich-text-content .ql-direction-rtl{direction:rtl;text-align:inherit}
+.rich-text-content .ql-align-center{text-align:center}
+.rich-text-content .ql-align-justify{text-align:justify}
+.rich-text-content .ql-align-right{text-align:right}
+.rich-text-content .ql-ui {
+  position: absolute;
+}
+
+/* Quill 1 legacy lists (no data-list attribute) — not TipTap outline lists */
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]) {
+  counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+  counter-increment: list-0;
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list])::before {
+  display: inline-block;
+  white-space: nowrap;
+  width: 1.2em;
+  margin-left: -1.5em;
+  margin-right: 0.3em;
+  text-align: right;
+  content: counter(list-0, decimal) ". ";
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]).ql-indent-1 {
+  counter-increment: list-1;
+  counter-reset: list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]).ql-indent-1::before {
+  content: counter(list-1, lower-alpha) ". ";
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]).ql-indent-2 {
+  counter-increment: list-2;
+  counter-reset: list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]).ql-indent-2::before {
+  content: counter(list-2, lower-roman) ". ";
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]).ql-indent-3 {
+  counter-increment: list-3;
+  counter-reset: list-4 list-5 list-6 list-7 list-8 list-9;
+}
+
+.rich-text-content ol:not(.outline-list):not([data-outline-list]):not(.ql-hierarchy-list):not(.quill-nested-list) > li:not([data-list]).ql-indent-3::before {
+  content: counter(list-3, decimal) ". ";
+}
+
+.rich-text-content ul > li:not([data-list])::before {
+  display: inline-block;
+  white-space: nowrap;
+  width: 1.2em;
+  margin-left: -1.5em;
+  margin-right: 0.3em;
+  text-align: right;
+  content: "\2022";
+}
+
+/* Nested lists — native per-parent numbering (1 → a → i) */
+.rich-text-content ol.ql-hierarchy-list,
+.rich-text-content ol.quill-nested-list,
+.rich-text-content ol.outline-list,
+.rich-text-content ol[data-outline-list] {
+  list-style-type: decimal;
+  list-style-position: outside;
+  padding-left: 1.5em;
+  margin: 0.35em 0;
+}
+
+.rich-text-content ol.ql-hierarchy-list ol.ql-hierarchy-list,
+.rich-text-content ol.quill-nested-list ol.quill-nested-list,
+.rich-text-content ol.outline-list ol,
+.rich-text-content ol[data-outline-list] ol {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  padding-left: 1.5em;
+  list-style-type: lower-alpha;
+}
+
+.rich-text-content ol.ql-hierarchy-list ol.ql-hierarchy-list ol,
+.rich-text-content ol.quill-nested-list ol.quill-nested-list ol,
+.rich-text-content ol.outline-list ol ol,
+.rich-text-content ol[data-outline-list] ol ol {
+  list-style-type: lower-roman;
+}
+
+.rich-text-content ol.ql-hierarchy-list li,
+.rich-text-content ol.quill-nested-list li,
+.rich-text-content ol.outline-list li,
+.rich-text-content ol[data-outline-list] li,
+.rich-text-content li.outline-list-item,
+.rich-text-content li[data-outline-item] {
+  list-style-type: inherit;
+  list-style-position: outside;
+  display: list-item;
+  margin: 0.2em 0;
+  padding-left: 0;
+  position: static;
+  color: #334155;
+}
+
+.rich-text-content ol.quill-nested-list .ql-ui {
+  display: none !important;
+}

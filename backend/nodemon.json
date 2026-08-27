@@ -1,0 +1,20 @@
+{
+  "watch": [
+    "app.js",
+    "src/**/*.js"
+  ],
+  "ignore": [
+    "node_modules/**",
+    "coverage/**",
+    "logs/**",
+    "src/logs/**",
+    "uploads/**",
+    "src/processed/**",
+    "processed/**",
+    "src/temp/**",
+    "temp/**",
+    "*.log"
+  ],
+  "ext": "js,json",
+  "delay": "200ms"
+}

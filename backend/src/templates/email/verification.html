@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{PURPOSE}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #050D1F;
+            padding: 48px 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .wrapper {
+            max-width: 540px;
+            margin: 0 auto;
+        }
+
+        /* ── Top badge ── */
+        .top-badge {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .top-badge span {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #7B8DB0;
+            font-size: 10.5px;
+            font-weight: 600;
+            letter-spacing: 2.2px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 100px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #FF6B1A;
+            box-shadow: 0 0 8px #FF6B1A, 0 0 16px rgba(255, 107, 26, 0.4);
+            display: inline-block;
+        }
+
+        /* ── Card ── */
+        .card {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow:
+                0 0 0 1px rgba(30, 100, 255, 0.08),
+                0 40px 100px rgba(0, 0, 0, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* ── Header ── */
+        .header {
+            position: relative;
+            overflow: hidden;
+            background: #071029;
+        }
+
+        .header .glow-blue {
+            position: absolute;
+            top: -80px;
+            left: -60px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(30, 100, 255, 0.25) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header .glow-orange {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, rgba(255, 107, 26, 0.2) 0%, transparent 65%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header .grid {
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+        }
+
+        .header-inner {
+            position: relative;
+            z-index: 1;
+            padding: 40px 40px 36px;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .logo-box {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #1E64FF 0%, #0040CC 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(30, 100, 255, 0.4);
+        }
+
+        .logo-box svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .logo-name {
+            font-size: 17px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.4px;
+        }
+
+        .header h1 {
+            font-size: 27px;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.7px;
+            line-height: 1.25;
+        }
+
+        .header h1 .accent {
+            color: #FF6B1A;
+        }
+
+        .header-sub {
+            margin-top: 8px;
+            font-size: 13.5px;
+            color: #4A5E85;
+            font-weight: 500;
+        }
+
+        /* Blue → Orange bar */
+        .header-bar {
+            height: 3px;
+            background: linear-gradient(90deg, #1E64FF 0%, #FF6B1A 50%, transparent 100%);
+        }
+
+        /* ── Body ── */
+        .body {
+            background: #071029;
+            padding: 34px 40px 30px;
+        }
+
+        .body>p {
+            font-size: 14px;
+            color: #6B7FA3;
+            line-height: 1.75;
+        }
+
+        .body>p strong {
+            color: #9DAFD0;
+            font-weight: 600;
+        }
+
+        /* ── OTP ── */
+        .otp-wrap {
+            margin: 26px 0;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(30, 100, 255, 0.2);
+        }
+
+        .otp-strip {
+            height: 3px;
+            background: linear-gradient(90deg, #1E64FF, #FF6B1A);
+        }
+
+        .otp-body {
+            background: #050D1F;
+            padding: 26px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .otp-left .otp-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #2E4270;
+            margin-bottom: 10px;
+        }
+
+        /* Use a vivid color — many clients strip .otp-body background, which made #FFFFFF OTP invisible on white */
+        .otp-code {
+            font-size: 46px;
+            font-weight: 800;
+            color: #FF6B1A;
+            letter-spacing: 12px;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .timer-ring {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 107, 26, 0.25);
+            background: rgba(255, 107, 26, 0.06);
+            box-shadow: 0 0 0 6px rgba(255, 107, 26, 0.04);
+        }
+
+        .timer-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #FF6B1A;
+            line-height: 1;
+        }
+
+        .timer-label {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #7A3A10;
+            margin-top: 3px;
+        }
+
+        /* ── Info row ── */
+        .instruction {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 12px 16px;
+            background: rgba(30, 100, 255, 0.05);
+            border: 1px solid rgba(30, 100, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .instruction-icon {
+            flex-shrink: 0;
+            color: #1E64FF;
+        }
+
+        .instruction p {
+            font-size: 12.5px;
+            color: #4A5E85;
+            line-height: 1.5;
+        }
+
+        .instruction p strong {
+            color: #1E64FF;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.05) 60%, transparent);
+            margin: 26px 0;
+        }
+
+        /* ── Warning ── */
+        .warning {
+            display: flex;
+            gap: 12px;
+            background: rgba(255, 107, 26, 0.04);
+            border: 1px solid rgba(255, 107, 26, 0.15);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .warn-icon {
+            flex-shrink: 0;
+            color: #FF6B1A;
+            margin-top: 1px;
+        }
+
+        .warning p {
+            font-size: 12.5px;
+            color: #5E6D8A;
+            line-height: 1.65;
+        }
+
+        .warning p strong {
+            color: #CC5510;
+            font-weight: 600;
+        }
+
+        /* ── Footer ── */
+        .footer {
+            background: #030A18;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-left p {
+            font-size: 11.5px;
+            color: #243050;
+            line-height: 1.7;
+        }
+
+        .footer-left p span {
+            color: #374870;
+        }
+
+        .footer-right {
+            font-size: 11px;
+            color: #1A2640;
+        }
+
+        .bottom-note {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .bottom-note p {
+            font-size: 11px;
+            color: #1A2640;
+            letter-spacing: 0.4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+
+        <div class="top-badge">
+            <span><span class="dot"></span> Secure One-Time Code</span>
+        </div>
+
+        <div class="card">
+
+            <!-- Header -->
+            <div class="header">
+                <div class="glow-blue"></div>
+                <div class="glow-orange"></div>
+                <div class="grid"></div>
+                <div class="header-inner">
+                    <div class="logo">
+                        <div class="logo-box">
+                            <svg viewBox="0 0 24 24" fill="none">
+                                <path d="M12 3L4 7V13C4 17.418 7.582 21 12 21C16.418 21 20 17.418 20 13V7L12 3Z"
+                                    fill="rgba(255,255,255,0.1)" stroke="#FFFFFF" stroke-width="1.5"
+                                    stroke-linejoin="round" />
+                                <path d="M9 12L11 14L15 10" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                        <span class="logo-name">{{APP_NAME}}</span>
+                    </div>
+                    <h1>Verify your <span class="accent">identity</span><br />with this code</h1>
+                    <p class="header-sub">Requested for: {{PURPOSE}}</p>
+                </div>
+            </div>
+
+            <div class="header-bar"></div>
+
+            <!-- Body -->
+            <div class="body">
+                <p>
+                    Hi there, use the one-time code below to complete your
+                    <strong>{{PURPOSE}}</strong>. This code is private — do not share it with anyone.
+                </p>
+
+                <!-- OTP: must use {{OTP}} — emailService passes OTP (not otp_token). Table + inline styles for Outlook/Gmail. -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                    style="margin:26px 0;border-collapse:collapse;border-radius:14px;overflow:hidden;border:1px solid rgba(30,100,255,0.25);">
+                    <tr>
+                        <td
+                            style="height:3px;background-color:#1E64FF;background-image:linear-gradient(90deg,#1E64FF,#FF6B1A);font-size:0;line-height:0;">
+                            &nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td style="background-color:#050D1F;padding:26px 28px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                                style="border-collapse:collapse;">
+                                <tr>
+                                    <td style="vertical-align:middle;padding:0;">
+                                        <div
+                                            style="font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#7B8DB0;margin-bottom:10px;">
+                                            Your one-time code</div>
+                                        <div class="otp-code"
+                                            style="font-size:46px;font-weight:800;color:#FF6B1A !important;letter-spacing:12px;line-height:1.1;font-family:Arial,Helvetica,sans-serif;mso-line-height-rule:exactly;">
+                                            {{OTP}}</div>
+                                    </td>
+                                    <td style="vertical-align:middle;width:88px;text-align:right;padding:0 0 0 12px;">
+                                        <div
+                                            style="display:inline-block;width:72px;height:72px;border-radius:50%;border:2px solid rgba(255,107,26,0.35);text-align:center;padding-top:12px;background-color:rgba(255,107,26,0.08);">
+                                            <span class="timer-value"
+                                                style="font-size:20px;font-weight:800;color:#FF6B1A;line-height:1;display:block;">{{EXPIRY_MINUTES}}m</span>
+                                            <span class="timer-label"
+                                                style="font-size:9px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:#FF9B5E;display:block;margin-top:4px;">expires</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Info -->
+                <div class="instruction">
+                    <svg class="instruction-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5" />
+                        <path d="M12 8V12M12 16H12.01" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" />
+                    </svg>
+                    <p>Enter this code within <strong>{{EXPIRY_MINUTES}} minutes</strong>. It can only be used once and
+                        becomes invalid after use.</p>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Warning -->
+                <div class="warning">
+                    <svg class="warn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M10.29 3.86L1.82 18C1.55 18.48 1.55 19.07 1.82 19.55C2.09 20.02 2.58 20.31 3.12 20.31H20.88C21.42 20.31 21.91 20.02 22.18 19.55C22.45 19.07 22.45 18.48 22.18 18L13.71 3.86C13.44 3.38 12.95 3.09 12.41 3.09C11.87 3.09 11.38 3.38 11.11 3.86H10.29Z"
+                            stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                        <path d="M12 9V13M12 17H12.01" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                    <p>
+                        <strong>Never share this code.</strong> {{APP_NAME}} will never ask for your OTP via phone or
+                        email.
+                        If you didn't request this, ignore this email or contact support immediately.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="footer-left">
+                    <p>Sent to <span>{{EMAIL}}</span></p>
+                    <p>© {{YEAR}} <span>{{APP_NAME}}</span>. All rights reserved.</p>
+                </div>
+                <div class="footer-right">Automated message</div>
+            </div>
+
+        </div>
+
+        <div class="bottom-note">
+            <p>Please do not reply to this email</p>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 7
+    },
+    "auditLog": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\.175a324abadc4ed37a98007c330648181a81d1fa-audit.json",
+    "files": [
+        {
+            "date": 1787665119609,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\http-2026-08-25.log",
+            "hash": "71f70dfa3289d799013ae1c1d8159b2795056ff551dcfcac11b857df95b56fbf"
+        },
+        {
+            "date": 1787725619562,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\http-2026-08-26.log",
+            "hash": "a0d0c647fe22b7fcc665552abf974fba12b373e337b6129a92ad49363ff2451e"
+        },
+        {
+            "date": 1787805563321,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\http-2026-08-27.log",
+            "hash": "9bb3d313c08571f362155553a592f5836b6c53537b8cabb633e33c2b3d097a87"
+        }
+    ],
+    "hashType": "sha256"
+}

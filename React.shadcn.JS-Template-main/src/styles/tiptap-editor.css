@@ -1,0 +1,453 @@
+/* TipTap rich editor shell */
+
+.tiptap-rich-editor {
+  display: flex;
+  flex-direction: column;
+  max-height: var(--editor-max-height, 400px);
+  position: relative;
+  overflow: hidden;
+}
+
+.tiptap-toolbar {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* Narrow sidebars (block settings panel) */
+.tiptap-rich-editor-compact .tiptap-toolbar {
+  gap: 2px;
+  padding: 6px;
+}
+
+.tiptap-rich-editor-compact .tiptap-toolbar select {
+  max-width: 5.5rem;
+  font-size: 11px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.tiptap-rich-editor-compact .tiptap-toolbar button {
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 2px;
+}
+
+.tiptap-rich-editor-compact .tiptap-toolbar .mx-1 {
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.tiptap-editor-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.tiptap-rich-editor .tiptap-editor-body {
+  min-height: var(--editor-min-height, 160px);
+  padding: 12px 16px;
+  color: #1e293b;
+  line-height: 1.65;
+  outline: none;
+}
+
+.rich-text-content span[style*="font-size"],
+.tiptap-rich-editor .tiptap-editor-body span[style*="font-size"] {
+  line-height: 1.4;
+}
+
+.tiptap-rich-editor .tiptap-editor-body p.is-editor-empty:first-child::before {
+  color: #94a3b8;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Headings — match learner view so editor WYSIWYG matches frontend */
+.tiptap-rich-editor .tiptap-editor-body h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.3;
+}
+
+.tiptap-rich-editor .tiptap-editor-body h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0.65rem 0 0.4rem;
+  line-height: 1.35;
+}
+
+.tiptap-rich-editor .tiptap-editor-body h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.5rem 0 0.35rem;
+  line-height: 1.4;
+}
+
+.tiptap-rich-editor .tiptap-editor-body h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.45rem 0 0.3rem;
+  line-height: 1.4;
+}
+
+.tiptap-rich-editor .tiptap-editor-body h5 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0.4rem 0 0.25rem;
+  line-height: 1.45;
+}
+
+.tiptap-rich-editor .tiptap-editor-body h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0.35rem 0 0.2rem;
+  line-height: 1.45;
+}
+
+.tiptap-rich-editor .tiptap-editor-body p {
+  margin: 0.5rem 0;
+  color: #334155;
+}
+
+/* Nested outline lists — local browser counters (1 → a → i) */
+.tiptap-rich-editor .tiptap-editor-body ol.outline-list,
+.tiptap-rich-editor .tiptap-editor-body ol[data-outline-list],
+.rich-text-content ol.outline-list,
+.rich-text-content ol[data-outline-list] {
+  list-style-type: decimal;
+  margin: 0.35em 0;
+  padding-left: 1.5em;
+}
+
+.tiptap-rich-editor .tiptap-editor-body ol.outline-list ol,
+.tiptap-rich-editor .tiptap-editor-body ol[data-outline-list] ol,
+.rich-text-content ol.outline-list ol,
+.rich-text-content ol[data-outline-list] ol {
+  list-style-type: lower-alpha;
+}
+
+.tiptap-rich-editor .tiptap-editor-body ol.outline-list ol ol,
+.tiptap-rich-editor .tiptap-editor-body ol[data-outline-list] ol ol,
+.rich-text-content ol.outline-list ol ol,
+.rich-text-content ol[data-outline-list] ol ol {
+  list-style-type: lower-roman;
+}
+
+.tiptap-rich-editor .tiptap-editor-body li.outline-list-item,
+.tiptap-rich-editor .tiptap-editor-body li[data-outline-item],
+.rich-text-content li.outline-list-item,
+.rich-text-content li[data-outline-item] {
+  display: list-item;
+  list-style-type: inherit;
+  list-style-position: outside;
+  margin: 0.2em 0;
+  padding-left: 0;
+  position: static;
+  color: #334155;
+}
+
+/* Kill Quill flat-list ::before markers inside outline lists */
+.rich-text-content ol.outline-list > li::before,
+.rich-text-content ol[data-outline-list] > li::before,
+.rich-text-content li.outline-list-item::before,
+.rich-text-content li[data-outline-item]::before {
+  content: none !important;
+  display: none !important;
+  width: 0 !important;
+  margin: 0 !important;
+}
+
+.tiptap-rich-editor .tiptap-editor-body ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+}
+
+.tiptap-rich-editor .tiptap-editor-body ul > li::marker,
+.tiptap-rich-editor .tiptap-editor-body ol > li::marker {
+  color: currentColor;
+}
+
+.tiptap-rich-editor .tiptap-editor-body blockquote,
+.rich-text-content blockquote {
+  border-left: 4px solid #3b82f6;
+  background-color: #f8fafc;
+  padding: 0.6rem 1rem;
+  margin: 0.75em 0;
+  border-top-right-radius: 0.375rem;
+  border-bottom-right-radius: 0.375rem;
+  color: #334155;
+  font-style: italic;
+}
+
+.tiptap-rich-editor .tiptap-editor-body blockquote p,
+.rich-text-content blockquote p {
+  margin: 0.25rem 0;
+  color: inherit;
+  font-style: italic;
+}
+
+.tiptap-rich-editor .tiptap-editor-body > p,
+.tiptap-rich-editor .tiptap-editor-body > ol,
+.tiptap-rich-editor .tiptap-editor-body > ul,
+.tiptap-rich-editor .tiptap-editor-body > blockquote,
+.tiptap-rich-editor .tiptap-editor-body > pre,
+.tiptap-rich-editor .tiptap-editor-body > .tiptap-alert-box,
+.tiptap-rich-editor .tiptap-editor-body > .tiptap-image-wrap {
+  clear: both;
+}
+
+/* Images — wrapped blocks so content below stays vertical */
+.tiptap-image-wrap,
+.rich-text-content .tiptap-image-wrap {
+  display: flow-root;
+  clear: both;
+  width: 100%;
+  margin: 0.75em 0;
+  box-sizing: border-box;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-image-wrap img,
+.rich-text-content .tiptap-image-wrap img {
+  max-width: 100%;
+  cursor: pointer;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-image-wrap img:not([height]):not([style*="height"]),
+.rich-text-content .tiptap-image-wrap img:not([height]):not([style*="height"]) {
+  height: auto;
+}
+
+.tiptap-rich-editor .tiptap-editor-body img.tiptap-image-selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 3px;
+  cursor: grab;
+}
+
+/* Legacy bare img (before re-save) */
+.tiptap-rich-editor .tiptap-editor-body > img,
+.rich-text-content > img {
+  display: block;
+  clear: both;
+  max-width: 100%;
+  margin: 0.75em auto;
+}
+
+.tiptap-image-overlay-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+  overflow: visible;
+}
+
+.tiptap-image-tools {
+  position: absolute;
+  z-index: 41;
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #0f172a;
+  box-shadow: 0 6px 20px rgb(15 23 42 / 35%);
+  max-width: calc(100% - 16px);
+}
+
+.tiptap-image-tools-label {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-right: 2px;
+}
+
+.tiptap-image-tools button {
+  min-width: 32px;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  background: #1e293b;
+  color: #e2e8f0;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tiptap-image-tools button:hover {
+  background: #334155;
+}
+
+.tiptap-image-tools button.is-active {
+  background: #3b82f6;
+  border-color: #2563eb;
+  color: #fff;
+}
+
+.tiptap-image-tools-sep {
+  width: 1px;
+  height: 20px;
+  background: #334155;
+  margin: 0 2px;
+}
+
+.tiptap-image-tools-hint {
+  color: #64748b;
+  font-size: 10px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
+.tiptap-image-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid #3b82f6;
+  border-radius: 2px;
+  pointer-events: auto;
+  z-index: 42;
+  box-shadow: 0 1px 4px rgb(15 23 42 / 25%);
+}
+
+.tiptap-image-handle-nw { cursor: nwse-resize; }
+.tiptap-image-handle-n { cursor: ns-resize; }
+.tiptap-image-handle-ne { cursor: nesw-resize; }
+.tiptap-image-handle-e { cursor: ew-resize; }
+.tiptap-image-handle-se { cursor: nwse-resize; }
+.tiptap-image-handle-s { cursor: ns-resize; }
+.tiptap-image-handle-sw { cursor: nesw-resize; }
+.tiptap-image-handle-w { cursor: ew-resize; }
+
+/* Code block — dark background like Quill */
+.tiptap-rich-editor .tiptap-editor-body pre,
+.rich-text-content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: Monaco, "Courier New", monospace;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  padding: 12px 16px;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.75em 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tiptap-rich-editor .tiptap-editor-body pre code,
+.rich-text-content pre code {
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+  border-radius: 0;
+}
+
+.tiptap-rich-editor .tiptap-editor-body code,
+.rich-text-content code {
+  background: #f1f5f9;
+  color: #be123c;
+  font-family: Monaco, "Courier New", monospace;
+  font-size: 0.875em;
+  padding: 0.15em 0.35em;
+  border-radius: 4px;
+}
+
+.tiptap-rich-editor .tiptap-editor-body pre code,
+.rich-text-content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+/* Alert / note boxes (inline in rich text — matches Alert Block styles) */
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box,
+.rich-text-content .tiptap-alert-box,
+.rich-text-content [data-alert-box] {
+  --alert-accent: #3b82f6;
+  position: relative;
+  clear: both;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0.75em 0;
+  padding: 0.85rem 1rem 0.85rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--alert-accent) 35%, #e2e8f0);
+  border-left-width: 4px;
+  border-left-color: var(--alert-accent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--alert-accent) 10%, #ffffff);
+  color: #1e293b;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box::before,
+.rich-text-content .tiptap-alert-box::before,
+.rich-text-content [data-alert-box]::before {
+  content: attr(data-alert-label);
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--alert-accent);
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box > p,
+.rich-text-content .tiptap-alert-box > p,
+.rich-text-content [data-alert-box] > p {
+  margin: 0.25rem 0;
+  color: inherit;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box > p:first-of-type,
+.rich-text-content .tiptap-alert-box > p:first-of-type,
+.rich-text-content [data-alert-box] > p:first-of-type {
+  margin-top: 0;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box--info,
+.rich-text-content .tiptap-alert-box--info {
+  --alert-accent: #3b82f6;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box--note,
+.rich-text-content .tiptap-alert-box--note {
+  --alert-accent: #6366f1;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box--warning,
+.rich-text-content .tiptap-alert-box--warning {
+  --alert-accent: #f59e0b;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box--success,
+.rich-text-content .tiptap-alert-box--success {
+  --alert-accent: #22c55e;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box--error,
+.rich-text-content .tiptap-alert-box--error {
+  --alert-accent: #ef4444;
+}
+
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box.ProseMirror-selectednode,
+.tiptap-rich-editor .tiptap-editor-body .tiptap-alert-box:focus-within {
+  outline: 2px solid color-mix(in srgb, var(--alert-accent) 45%, transparent);
+  outline-offset: 2px;
+}

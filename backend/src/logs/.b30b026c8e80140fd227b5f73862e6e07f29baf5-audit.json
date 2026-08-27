@@ -1,0 +1,60 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\.b30b026c8e80140fd227b5f73862e6e07f29baf5-audit.json",
+    "files": [
+        {
+            "date": 1786000439580,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-06.log",
+            "hash": "155a228fcd8414364291a8c55a687c634106e3236f640ab86cae05c7813c5841"
+        },
+        {
+            "date": 1786087168674,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-07.log",
+            "hash": "a6e22ca298d2ad98f995394bdeced0b53b6e856a41bf2ccdb85247a71c6141c7"
+        },
+        {
+            "date": 1786169424836,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-08.log",
+            "hash": "b468d5ef391a5722245cbfc8d47b9748d5311b737793d74fa3481a628297d0eb"
+        },
+        {
+            "date": 1786707217518,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-14.log",
+            "hash": "f0c6263c752f6017f270eb041cdcef4a609869d7f160022d38999cd04b9d2a6c"
+        },
+        {
+            "date": 1786767714128,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-15.log",
+            "hash": "0578d35c045f689ec20219305c2dc758d12e6154963a18ae687e84facc3df026"
+        },
+        {
+            "date": 1786978754949,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-17.log",
+            "hash": "52742f0c5f755794dda91969e3fcf146968355804f5eff4f84f89e8e8557b7a0"
+        },
+        {
+            "date": 1787060465927,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-18.log",
+            "hash": "30f3a02a7ecbf6bf78bdcde90259308820f01549b0de0d45e0991555eea09bac"
+        },
+        {
+            "date": 1787665119597,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-25.log",
+            "hash": "1349d4ae05e0b991306588b748c824561bda2c9b61c4c0f50df8a070bd8be8fa"
+        },
+        {
+            "date": 1787725619549,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-26.log",
+            "hash": "453df21ec172b029f40382d605a9b6cc9302c83a57c7da6f265c70d44878c1f9"
+        },
+        {
+            "date": 1787805563306,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\error-2026-08-27.log",
+            "hash": "2e0ec266540e553242b5dd00bf31995fb114f57a85d9020f7b387d67958ff4dd"
+        }
+    ],
+    "hashType": "sha256"
+}

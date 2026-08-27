@@ -1,0 +1,318 @@
+{
+    "success": true,
+    "status": 200,
+    "message": "Lab fetched for view",
+    "data": {
+        "lab": {
+            "id": "38c96788-6100-4d33-a91c-041f49ec0541",
+            "title": "Skill Builder Lab",
+            "slug": "skill-builder-lab",
+            "description": "Learn practical skills through short, focused video lessons designed to help you grow faster and build confidence step by step.",
+            "shortDescription": "Learn practical skills through short, focused video lessons designed to help you grow faster and build confidence step by step.",
+            "fullDescription": "Learn practical skills through short, focused video lessons designed to help you grow faster and build confidence step by step.",
+            "thumbnail": "/uploads/labs/thumbnails/lab_38c96788-6100-4d33-a91c-041f49ec0541.jfif",
+            "difficulty": "easy",
+            "duration": "N/A",
+            "durationMinutes": null,
+            "level": "Beginner",
+            "rating": 4.8,
+            "studentCount": 1200,
+            "isFree": true,
+            "price": "0.00",
+            "technologies": [
+                "AWS",
+                "Docker",
+                "Git & GitHub"
+            ],
+            "requirements": [
+                "Basic Computer Knowledge",
+                "Internet Connection",
+                "No Prior Cloud Experience Required"
+            ],
+            "learningOutcomes": [
+                "Understand AWS Fundamentals",
+                "Deploy Applications on Cloud",
+                "Work with Docker Containers"
+            ],
+            "objectives": [
+                "Introduce learners to modern cloud tool",
+                "Develop practical technical skills",
+                "Encourage problem-solving through labs"
+            ],
+            "modules": [
+                {
+                    "id": "id_3_1781261202859",
+                    "title": "Planning & Setup",
+                    "expanded": true,
+                    "lessons": [
+                        {
+                            "id": "id_4_1781261202859",
+                            "title": "Understanding HTML Basics",
+                            "blocks": [
+                                {
+                                    "id": "id_114_1781264694893",
+                                    "type": "richText",
+                                    "content": "<h1>What is HTML?</h1><br>In this lesson, you'll learn what HTML is and how it forms the foundation of every website."
+                                },
+                                {
+                                    "id": "id_131_1781264728035",
+                                    "type": "richText",
+                                    "content": "<h1>HTML stands for HyperText Markup Language. It uses tags to organize content such as headings, paragraphs, images, and links.</h1>"
+                                },
+                                {
+                                    "id": "id_142_1781264746492",
+                                    "type": "code",
+                                    "title": "Welcome to Skill Builder Lab",
+                                    "shortDescription": "HTML stands for HyperText Markup Language. It uses tags to organize content such as headings, paragraphs, images, and links.",
+                                    "difficulty": "beginner",
+                                    "xp": 10,
+                                    "instructions": "",
+                                    "files": [
+                                        {
+                                            "id": "id_143_1781264746492",
+                                            "name": "index.html",
+                                            "code": "Welcome to Skill Builder Lab",
+                                            "defaultOpen": true
+                                        },
+                                        {
+                                            "id": "id_144_1781264746492",
+                                            "name": "style.css",
+                                            "code": "",
+                                            "defaultOpen": false
+                                        },
+                                        {
+                                            "id": "id_145_1781264746492",
+                                            "name": "script.js",
+                                            "code": "",
+                                            "defaultOpen": false
+                                        }
+                                    ],
+                                    "previewType": "html",
+                                    "validationRules": [],
+                                    "expectedOutput": "",
+                                    "expectedScreenshot": "",
+                                    "hints": []
+                                },
+                                {
+                                    "id": "id_162_1781265582107",
+                                    "type": "quiz",
+                                    "question": "What does HTML stand for?",
+                                    "options": [
+                                        "HyperText Markup Language ",
+                                        "Hyper Transfer Machine Language Home Tool Markup Language",
+                                        "Home Tool Markup Language",
+                                        "HyperText Markdown Language"
+                                    ],
+                                    "explanation": "",
+                                    "points": 10
+                                }
+                            ]
+                        },
+                        {
+                            "id": "id_179_1781265608707",
+                            "title": "Adding Content to a Webpage",
+                            "blocks": [
+                                {
+                                    "id": "id_186_1781265617747",
+                                    "type": "video",
+                                    "title": "Learn how to display text content on a webpage.",
+                                    "videos": [
+                                        {
+                                            "id": "id_187_1781265617747",
+                                            "url": "/api/labs/instruction-media/893cb288-54eb-4408-b6fd-fa4bd03d078e/index.m3u8",
+                                            "title": ""
+                                        }
+                                    ],
+                                    "description": "Learn how to display text content on a webpage.",
+                                    "notes": "",
+                                    "resources": []
+                                },
+                                {
+                                    "id": "id_200_1781265656899",
+                                    "type": "code",
+                                    "title": "Build a Responsive Hero Section",
+                                    "shortDescription": "Create a simple hero section using HTML and CSS that includes a heading, description, and a call-to-action button.",
+                                    "difficulty": "beginner",
+                                    "xp": 10,
+                                    "instructions": "In this exercise, you will build a responsive hero section.\n\nRequirements:\n\n1. Add a main heading.\n2. Add a short description.\n3. Add a \"Get Started\" button.\n4. Center all content horizontally and vertically.\n5. Use CSS to improve the appearance.\n6. Ensure the layout looks good on smaller screens.",
+                                    "files": [
+                                        {
+                                            "id": "id_201_1781265656899",
+                                            "name": "index.html",
+                                            "code": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Hero Section</title>\n    <link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<div class=\"hero\">\n\n</div>\n\n</body>\n</html>",
+                                            "defaultOpen": true
+                                        },
+                                        {
+                                            "id": "id_202_1781265656899",
+                                            "name": "style.css",
+                                            "code": "<!DOCTYPE html>\n<html>\n<head>\n    <title>Hero Section</title>\n    <link rel=\"stylesheet\" href=\"style.css\">\n</head>\n<body>\n\n<div class=\"hero\">\n\n</div>\n\n</body>\n</html>",
+                                            "defaultOpen": false
+                                        },
+                                        {
+                                            "id": "id_203_1781265656899",
+                                            "name": "script.js",
+                                            "code": "// No JavaScript required",
+                                            "defaultOpen": false
+                                        }
+                                    ],
+                                    "previewType": "html",
+                                    "validationRules": [],
+                                    "expectedOutput": "",
+                                    "expectedScreenshot": "",
+                                    "hints": []
+                                },
+                                {
+                                    "id": "id_222_1781265804411",
+                                    "type": "fillBlank",
+                                    "sentence": "The <p> tag is used to create a __________.",
+                                    "hint": "",
+                                    "explanation": ""
+                                },
+                                {
+                                    "id": "id_233_1781265821003",
+                                    "type": "trueFalse",
+                                    "statement": "The <h1> tag creates the largest heading.",
+                                    "explanation": ""
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "id_39_1781261926595",
+                    "title": "Understanding Responsive Design",
+                    "expanded": true,
+                    "lessons": [
+                        {
+                            "id": "id_40_1781261926595",
+                            "title": "Create a Responsive Features Grid",
+                            "blocks": [
+                                {
+                                    "id": "id_254_1781265929403",
+                                    "type": "richText",
+                                    "content": "<h1>Introduction to Responsive Design</h1><br><br>Learn why responsive design is important and how websites adapt to different screen size"
+                                },
+                                {
+                                    "id": "id_273_1781265948435",
+                                    "type": "richText",
+                                    "content": "<h1>What is Responsive Design?</h1><br><div>Responsive design ensures that websites look good on desktops, tablets, and mobile devices.</div><div><br></div><div>Developers commonly use:</div><div>• Flexbox</div><div>• CSS Grid</div><div>• Media Queries</div><div><br></div><div>to create adaptive layouts.</div>"
+                                },
+                                {
+                                    "id": "id_310_1781265982371",
+                                    "type": "quiz",
+                                    "question": "Which CSS feature is commonly used to create layouts?",
+                                    "options": [
+                                        "Flexbox",
+                                        "Photoshop",
+                                        "Excel",
+                                        "Bootstrap Studio"
+                                    ],
+                                    "explanation": "",
+                                    "points": 10
+                                }
+                            ]
+                        },
+                        {
+                            "id": "id_325_1781266222899",
+                            "title": "Practice What You Learned",
+                            "blocks": [
+                                {
+                                    "id": "id_332_1781266231107",
+                                    "type": "code",
+                                    "title": "Build a Responsive Feature Card",
+                                    "shortDescription": "",
+                                    "difficulty": "beginner",
+                                    "xp": 10,
+                                    "instructions": "Create a feature card containing:\n\n• An icon\n• A title\n• A short description\n\nThe card should have:\n• Rounded corners\n• Padding\n• Box shadow",
+                                    "files": [
+                                        {
+                                            "id": "id_333_1781266231107",
+                                            "name": "index.html",
+                                            "code": "<div class=\"card\">\n\n</div>",
+                                            "defaultOpen": true
+                                        },
+                                        {
+                                            "id": "id_334_1781266231107",
+                                            "name": "style.css",
+                                            "code": ".card{\n\n}",
+                                            "defaultOpen": false
+                                        },
+                                        {
+                                            "id": "id_335_1781266231107",
+                                            "name": "script.js",
+                                            "code": "",
+                                            "defaultOpen": false
+                                        }
+                                    ],
+                                    "previewType": "html",
+                                    "validationRules": [],
+                                    "expectedOutput": "",
+                                    "expectedScreenshot": "",
+                                    "hints": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "id_348_1781266263636",
+                            "title": "Apply Your Knowledge",
+                            "blocks": [
+                                {
+                                    "id": "id_355_1781266273283",
+                                    "type": "project",
+                                    "title": "Design a \"Why Choose Us\" Section",
+                                    "requirements": "Create a section with:\n\n• 3 feature cards\n• Icons\n• Titles\n• Descriptions\n\nMake it responsive for mobile devices.",
+                                    "submissionInstructions": "",
+                                    "resources": []
+                                },
+                                {
+                                    "id": "id_366_1781266301132",
+                                    "type": "download",
+                                    "title": "feature-section-template.zip",
+                                    "shortDescription": "Download the starter template and complete the project",
+                                    "category": "starterFiles",
+                                    "resources": [
+                                        {
+                                            "id": "id_367_1781266301132",
+                                            "name": "material-icon-theme--google.png",
+                                            "type": "file",
+                                            "url": "/uploads/labs/instruction-media/0f188513-7e65-465f-8dea-ade15b41586c.png"
+                                        }
+                                    ],
+                                    "access": {
+                                        "free": true,
+                                        "premium": false,
+                                        "enabled": true,
+                                        "public": true
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "id_43_1781261926747",
+                    "title": "New Module",
+                    "expanded": true,
+                    "lessons": [
+                        {
+                            "id": "id_44_1781261926747",
+                            "title": "New Lesson",
+                            "blocks": []
+                        }
+                    ]
+                }
+            ],
+            "certificate": null,
+            "createdBy": "ALAR Labs",
+            "isPurchased": true,
+            "isEnrolled": false,
+            "contentLocked": false,
+            "heroHeader": null,
+            "header": null,
+            "introVideoUrl": "",
+            "labKind": "skill_builder",
+            "labType": "assessment",
+            "platform": "AWS"
+        }
+    }
+}

@@ -1,0 +1,311 @@
+{
+    "success": true,
+    "status": 200,
+    "message": "Lab fetched for view",
+    "data": {
+        "lab": {
+            "id": "da9dc722-18bf-47f4-b2e3-12904faa17cc",
+            "title": "Aws ",
+            "slug": "aws",
+            "description": "This lab demonstrates the setup and management of cloud infrastructure using Amazon Web Services (AWS). The objective is to deploy, configure, and monitor cloud resources while following best practices for security, scalability, and cost optimization.",
+            "shortDescription": "This lab demonstrates the setup and management of cloud infrastructure using Amazon Web Services (AWS). The objective is to deploy, configure, and monitor cloud resources while following best practices for security, scalability, and cost optimization.",
+            "fullDescription": "Amazon Web Services (AWS) is one of the world's leading cloud computing platforms, providing a wide range of services including computing power, storage, networking, databases, security, and analytics. This AWS Cloud Computing Lab was designed to provide hands-on experience with deploying, managing, and monitoring cloud infrastructure using AWS services.\n\nThe primary goal of this lab was to understand cloud computing concepts and gain practical knowledge of creating scalable, secure, and highly available cloud environments. Throughout the lab, various AWS services were configured and integrated to simulate a real-world cloud deployment scenario.",
+            "thumbnail": "/uploads/labs/thumbnails/lab_da9dc722-18bf-47f4-b2e3-12904faa17cc.png",
+            "difficulty": "easy",
+            "duration": "23 mins",
+            "durationMinutes": 23,
+            "level": "Beginner",
+            "rating": 4.8,
+            "studentCount": 1200,
+            "isFree": true,
+            "price": "0.00",
+            "technologies": [
+                "Amazon EC2",
+                "Amazon S3",
+                "AWS IAM",
+                "Amazon RDS",
+                "AWS VPC",
+                "CloudWatch"
+            ],
+            "requirements": [
+                "Amazon EC2",
+                "Amazon S3",
+                "Amazon VPC",
+                "Amazon CloudWatch"
+            ],
+            "learningOutcomes": [
+                "Basic understanding of cloud computing concepts",
+                "Familiarity with operating systems (Windows/Linux)",
+                "Basic networking concepts (IP addresses, subnets, routing)",
+                "Understanding of web applications and databases"
+            ],
+            "objectives": [
+                "To understand the fundamentals of cloud computing and AWS architecture.",
+                "To learn how to create and manage virtual servers using Amazon EC2.",
+                "To implement secure access control using AWS Identity and Access Management (IAM).",
+                "To configure cloud storage solutions using Amazon S3.",
+                "To monitor cloud resources using Amazon CloudWatch."
+            ],
+            "modules": [
+                {
+                    "id": "id_15_1780847753967",
+                    "title": "Module 1: Introduction to AWS Cloud Computing",
+                    "expanded": true,
+                    "lessons": [
+                        {
+                            "id": "id_16_1780847753967",
+                            "title": "Lesson 1: Getting Started with AWS",
+                            "blocks": [
+                                {
+                                    "id": "id_145_1780848096038",
+                                    "type": "richText",
+                                    "content": "<p data-start=\"186\" data-end=\"208\"><strong data-start=\"186\" data-end=\"208\">Rich Text Content:</strong></p>\n<h1 data-section-id=\"1mem5yw\" data-start=\"210\" data-end=\"231\">Introduction to AWS</h1>\n<p data-start=\"233\" data-end=\"406\">Amazon Web Services (AWS) is the world's leading cloud computing platform that provides on-demand computing resources, storage, databases, networking, and security services.</p>\n<h2 data-section-id=\"4zon9n\" data-start=\"408\" data-end=\"435\">What is Cloud Computing?</h2>\n<p data-start=\"437\" data-end=\"632\">Cloud computing is the delivery of computing services over the internet. Instead of owning physical servers and infrastructure, users can access resources as needed from cloud providers like AWS.</p>\n<h2 data-section-id=\"120tgbx\" data-start=\"634\" data-end=\"652\">Benefits of AWS</h2>\n<ul data-start=\"654\" data-end=\"791\">\n<li data-section-id=\"1khmjoh\" data-start=\"654\" data-end=\"683\">\nScalability and Flexibility\n</li>\n<li data-section-id=\"mg7e9j\" data-start=\"684\" data-end=\"703\">\nHigh Availability\n</li>\n<li data-section-id=\"1nc0ad8\" data-start=\"704\" data-end=\"727\">\nPay-as-you-go Pricing\n</li>\n<li data-section-id=\"q4a31g\" data-start=\"728\" data-end=\"751\">\nGlobal Infrastructure\n</li>\n<li data-section-id=\"mphm6o\" data-start=\"752\" data-end=\"771\">\nEnhanced Security\n</li>\n<li data-section-id=\"1wm0y14\" data-start=\"772\" data-end=\"791\">\nAutomatic Backups\n</li>\n</ul>\n<h2 data-section-id=\"sb7iad\" data-start=\"793\" data-end=\"813\">AWS Core Services</h2>\n<h3 data-section-id=\"14thr1g\" data-start=\"815\" data-end=\"829\">Amazon EC2</h3>\n<p data-start=\"830\" data-end=\"893\">Provides virtual servers in the cloud for running applications.</p>\n<h3 data-section-id=\"gay41c\" data-start=\"895\" data-end=\"908\">Amazon S3</h3>\n<p data-start=\"909\" data-end=\"979\">Object storage service for storing files, images, videos, and backups.</p>\n<h3 data-section-id=\"1u8lpeu\" data-start=\"981\" data-end=\"992\">AWS IAM</h3>\n<p data-start=\"993\" data-end=\"1076\">Identity and Access Management service for controlling user access and permissions.</p>\n<h3 data-section-id=\"14thb79\" data-start=\"1078\" data-end=\"1092\">Amazon RDS</h3>\n<p data-start=\"1093\" data-end=\"1129\">Managed relational database service.</p>\n<h3 data-section-id=\"14theut\" data-start=\"1131\" data-end=\"1145\">Amazon VPC</h3>\n<p data-start=\"1146\" data-end=\"1195\">Virtual networking environment for AWS resources.</p>\n<h3 data-section-id=\"19wzotk\" data-start=\"1197\" data-end=\"1218\">Amazon CloudWatch</h3>\n<p data-start=\"1219\" data-end=\"1268\">Monitoring and logging service for AWS resources.</p>\n<h2 data-section-id=\"10irhbc\" data-start=\"1270\" data-end=\"1290\">Learning Outcomes</h2>\n<p data-start=\"1292\" data-end=\"1342\">After completing this lesson, you will understand:</p>\n<ul data-start=\"1343\" data-end=\"1452\">\n<li data-section-id=\"11u2xkt\" data-start=\"1343\" data-end=\"1373\">\nCloud computing fundamentals\n</li>\n<li data-section-id=\"udx09t\" data-start=\"1374\" data-end=\"1401\">\nAWS global infrastructure\n</li>\n<li data-section-id=\"acbku0\" data-start=\"1402\" data-end=\"1421\">\nCore AWS services\n</li>\n<li data-section-id=\"l1b502\" data-start=\"1422\" data-end=\"1452\">\nBenefits of cloud technology</li></ul>"
+                                },
+                                {
+                                    "id": "id_154_1780848166694",
+                                    "type": "video",
+                                    "title": "\"AWS Cloud Computing Introduction\"",
+                                    "videos": [
+                                        {
+                                            "id": "id_155_1780848166694",
+                                            "url": "/api/labs/instruction-media/21f97b7a-04de-4c3c-8562-c16604a882fa/index.m3u8",
+                                            "title": "\"AWS Cloud Computing Introduction\""
+                                        }
+                                    ],
+                                    "description": "",
+                                    "notes": "",
+                                    "resources": []
+                                },
+                                {
+                                    "id": "id_168_1780848185229",
+                                    "type": "image",
+                                    "title": "Cloud Computing Architecture Diagram",
+                                    "images": [
+                                        {
+                                            "id": "id_169_1780848185229",
+                                            "url": "/uploads/labs/instruction-media/e0749f9e-073b-4647-b8cd-184f4e2d3dee.png",
+                                            "title": "",
+                                            "altText": ""
+                                        }
+                                    ],
+                                    "caption": "",
+                                    "description": "",
+                                    "layout": "fullWidth",
+                                    "annotations": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "id_182_1780848201102",
+                            "title": "Lesson 2: AWS Global Infrastructure",
+                            "blocks": [
+                                {
+                                    "id": "id_189_1780848211229",
+                                    "type": "richText",
+                                    "content": "<li data-section-id=\"k329yb\" data-start=\"583\" data-end=\"592\">Regions\n</li>\n<li data-section-id=\"18rcjn8\" data-start=\"593\" data-end=\"613\">\nAvailability Zones\n</li>\n<li data-section-id=\"1s3fs91\" data-start=\"614\" data-end=\"630\">\nEdge Locations\n</li>\n<li data-section-id=\"ufg988\" data-start=\"631\" data-end=\"651\">\nAWS Global Network</li>"
+                                },
+                                {
+                                    "id": "id_198_1780848223693",
+                                    "type": "image",
+                                    "title": "AWS Global Infrastructure Map",
+                                    "images": [
+                                        {
+                                            "id": "id_199_1780848223693",
+                                            "url": "/uploads/labs/instruction-media/698dd147-6090-40c9-a8c0-545c732e7e0a.png",
+                                            "title": "",
+                                            "altText": ""
+                                        }
+                                    ],
+                                    "caption": "",
+                                    "description": "",
+                                    "layout": "fullWidth",
+                                    "annotations": []
+                                },
+                                {
+                                    "id": "id_216_1780848238486",
+                                    "type": "video",
+                                    "title": "AWS Regions and Availability Zones Explained",
+                                    "videos": [
+                                        {
+                                            "id": "id_217_1780848238486",
+                                            "url": "/api/labs/instruction-media/dad33dba-9ec1-4dec-93bc-a15efb7ee6e2/index.m3u8",
+                                            "title": ""
+                                        }
+                                    ],
+                                    "description": "",
+                                    "notes": "",
+                                    "resources": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "id_117_1780848020367",
+                    "title": "New Module",
+                    "expanded": true,
+                    "lessons": [
+                        {
+                            "id": "id_118_1780848020367",
+                            "title": "Lesson 3: Amazon EC2 & S3",
+                            "blocks": [
+                                {
+                                    "id": "id_234_1780848272446",
+                                    "type": "richText",
+                                    "content": "<h3 data-section-id=\"14thr1g\" data-start=\"967\" data-end=\"981\">Amazon EC2</h3>\n<ul data-start=\"982\" data-end=\"1033\">\n<li data-section-id=\"64a9xr\" data-start=\"982\" data-end=\"1003\">\nLaunching Instances\n</li>\n<li data-section-id=\"poh9si\" data-start=\"1004\" data-end=\"1021\">\nSecurity Groups\n</li>\n<li data-section-id=\"1iv02bq\" data-start=\"1022\" data-end=\"1033\">\nKey Pairs\n</li>\n</ul>\n<h3 data-section-id=\"gay41c\" data-start=\"1035\" data-end=\"1048\">Amazon S3</h3>\n<ul data-start=\"1049\" data-end=\"1086\">\n<li data-section-id=\"17xv3at\" data-start=\"1049\" data-end=\"1058\">\nBuckets\n</li>\n<li data-section-id=\"1soxtu6\" data-start=\"1059\" data-end=\"1068\">\nObjects\n</li>\n<li data-section-id=\"5zkusp\" data-start=\"1069\" data-end=\"1086\">\nStorage Classes</li></ul>"
+                                },
+                                {
+                                    "id": "id_243_1780848279093",
+                                    "type": "image",
+                                    "title": "EC2 Instance Architecture",
+                                    "images": [
+                                        {
+                                            "id": "id_244_1780848279093",
+                                            "url": "/uploads/labs/instruction-media/ce790797-280b-4109-b749-0579971095d8.png",
+                                            "title": "",
+                                            "altText": ""
+                                        }
+                                    ],
+                                    "caption": "",
+                                    "description": "",
+                                    "layout": "fullWidth",
+                                    "annotations": []
+                                },
+                                {
+                                    "id": "id_255_1780848291558",
+                                    "type": "video",
+                                    "title": "Create EC2 Instance Step-by-Step",
+                                    "videos": [
+                                        {
+                                            "id": "id_256_1780848291558",
+                                            "url": "https://aws.amazon.com/ec2/",
+                                            "title": ""
+                                        }
+                                    ],
+                                    "description": "fasd",
+                                    "notes": "",
+                                    "resources": []
+                                }
+                            ]
+                        },
+                        {
+                            "id": "id_277_1780848323814",
+                            "title": "Lesson 4: IAM, VPC and CloudWatch",
+                            "blocks": [
+                                {
+                                    "id": "id_286_1780848332390",
+                                    "type": "richText",
+                                    "content": "<h3 data-section-id=\"1xxfk6b\" data-start=\"1321\" data-end=\"1328\">IAM</h3>\n<ul data-start=\"1329\" data-end=\"1353\">\n<li data-section-id=\"17cjci2\" data-start=\"1329\" data-end=\"1336\">\nUsers\n</li>\n<li data-section-id=\"1xuuolg\" data-start=\"1337\" data-end=\"1345\">\nGroups\n</li>\n<li data-section-id=\"1796o1b\" data-start=\"1346\" data-end=\"1353\">\nRoles\n</li>\n</ul>\n<h3 data-section-id=\"1xxfhdv\" data-start=\"1355\" data-end=\"1362\">VPC</h3>\n<ul data-start=\"1363\" data-end=\"1406\">\n<li data-section-id=\"1l2c08w\" data-start=\"1363\" data-end=\"1372\">\nSubnets\n</li>\n<li data-section-id=\"w0bt7g\" data-start=\"1373\" data-end=\"1387\">\nRoute Tables\n</li>\n<li data-section-id=\"1y2aya3\" data-start=\"1388\" data-end=\"1406\">\nInternet Gateway\n</li>\n</ul>\n<h3 data-section-id=\"137iye6\" data-start=\"1408\" data-end=\"1422\">CloudWatch</h3>\n<ul data-start=\"1423\" data-end=\"1454\">\n<li data-section-id=\"jqae90\" data-start=\"1423\" data-end=\"1435\">\nMonitoring\n</li>\n<li data-section-id=\"us86nz\" data-start=\"1436\" data-end=\"1445\">\nMetrics\n</li>\n<li data-section-id=\"1w7ovl4\" data-start=\"1446\" data-end=\"1454\">\nAlarms</li></ul>"
+                                },
+                                {
+                                    "id": "id_297_1780848339046",
+                                    "type": "image",
+                                    "title": "VPC Network Diagram",
+                                    "images": [
+                                        {
+                                            "id": "id_298_1780848339046",
+                                            "url": "/uploads/labs/instruction-media/ae8bbd70-a327-47c8-bb69-15450291feb8.png",
+                                            "title": "",
+                                            "altText": ""
+                                        }
+                                    ],
+                                    "caption": "",
+                                    "description": "",
+                                    "layout": "fullWidth",
+                                    "annotations": []
+                                },
+                                {
+                                    "id": "id_309_1780848351278",
+                                    "type": "video",
+                                    "title": "AWS IAM and VPC Tutorial",
+                                    "videos": [
+                                        {
+                                            "id": "id_310_1780848351278",
+                                            "url": "/api/labs/instruction-media/4093e49e-ec52-4af5-9548-d8fa81b9723b/index.m3u8",
+                                            "title": ""
+                                        }
+                                    ],
+                                    "description": "",
+                                    "notes": "",
+                                    "resources": []
+                                },
+                                {
+                                    "id": "id_321_1780848362398",
+                                    "type": "pdf",
+                                    "title": "PDF / Document Block",
+                                    "description": "AWS Beginner Guide PDF",
+                                    "files": [
+                                        {
+                                            "id": "id_322_1780848362398",
+                                            "name": "",
+                                            "url": "http://localhost:5173/app/labs/new"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "id_339_1780848398918",
+                                    "type": "download",
+                                    "title": "AWS Lab Manual.pdf",
+                                    "shortDescription": "",
+                                    "category": "resources",
+                                    "resources": [
+                                        {
+                                            "id": "id_340_1780848398918",
+                                            "name": "localhost_3000_contractor_respond.png",
+                                            "type": "file",
+                                            "url": "/uploads/labs/instruction-media/d176bd66-754c-4d0d-962b-f1498a2997b6.png"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "id": "id_363_1780848411494",
+                                    "type": "divider",
+                                    "title": "fasdf",
+                                    "style": "line"
+                                },
+                                {
+                                    "id": "id_380_1780848416509",
+                                    "type": "alert",
+                                    "title": "sadf",
+                                    "message": "fsdfsd",
+                                    "alertType": "info"
+                                },
+                                {
+                                    "id": "id_407_1780848424110",
+                                    "type": "codeSnippet",
+                                    "title": "sdfasdf",
+                                    "shortDescription": "asdfsdf",
+                                    "language": "javascript",
+                                    "code": "asdf\nsadf\nasdf\nsad\nfasd\nfsad\nfad\n",
+                                    "explanation": "sadf\nas\nda\ndsa\nf",
+                                    "showLineNumbers": true,
+                                    "showCopyButton": true
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "certificate": {
+                "enabled": true,
+                "title": "dfadsf",
+                "type": "completion",
+                "minProgress": 80,
+                "thumbnail": "",
+                "description": "asdf",
+                "verificationText": "dfdasf",
+                "requireQuiz": true,
+                "requireTasks": true
+            },
+            "createdBy": "ALAR Labs",
+            "isPurchased": true,
+            "contentLocked": false,
+            "heroHeader": null,
+            "header": null,
+            "introVideoUrl": "",
+            "labKind": "hands_on",
+            "labType": "hands_on",
+            "platform": "AWS"
+        }
+    }
+}

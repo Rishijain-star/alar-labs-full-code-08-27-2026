@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "e:\\practice-mastery-platform-main\\backend\\src\\logs\\.8997622656b0a61496e7df65882ab1fb66db92f7-audit.json",
+    "files": [
+        {
+            "date": 1787815186916,
+            "name": "e:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-27.log",
+            "hash": "bee69212ba46960e6395c06a57e7df730c69a26664b585af791f3570061bc6ef"
+        }
+    ],
+    "hashType": "sha256"
+}

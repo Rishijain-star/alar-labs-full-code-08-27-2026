@@ -1,0 +1,322 @@
+Backend API Structure for Dynamic Permissions System
+📋 Required API Endpoints
+1. Routes API
+GET /api/routes
+
+Returns all routes with their permissions, labels, and hierarchy.
+
+json
+[
+  {
+    "id": "dashboard",
+    "path": "/admin/dashboard",
+    "label": "Dashboard",
+    "icon": "LayoutDashboard",
+    "permissions": [],
+    "isSystemRoute": true,
+    "isVisible": true,
+    "order": 1
+  },
+  {
+    "id": "users",
+    "path": "/admin/users",
+    "label": "Users",
+    "icon": "Users",
+    "permissions": ["view_users"],
+    "isSystemRoute": true,
+    "isVisible": true,
+    "order": 2,
+    "children": [
+      {
+        "id": "users-list",
+        "path": "/admin/users",
+        "label": "All Users",
+        "icon": "Users",
+        "permissions": ["view_users"]
+      },
+      {
+        "id": "users-create",
+        "path": "/admin/users/new",
+        "label": "Add User",
+        "icon": "Plus",
+        "permissions": ["create_users"]
+      }
+    ]
+  },
+  {
+    "id": "courses",
+    "path": "/admin/courses",
+    "label": "Courses",
+    "icon": "BookOpen",
+    "permissions": ["view_courses"],
+    "isSystemRoute": true,
+    "order": 3,
+    "children": [
+      {
+        "id": "courses-list",
+        "path": "/admin/courses",
+        "label": "All Courses",
+        "permissions": ["view_courses"]
+      },
+      {
+        "id": "courses-create",
+        "path": "/admin/courses/new",
+        "label": "Add Course",
+        "permissions": ["create_courses"]
+      }
+    ]
+  },
+  {
+    "id": "settings",
+    "path": "/admin/settings",
+    "label": "Settings",
+    "icon": "Settings",
+    "permissions": ["view_settings"],
+    "isSystemRoute": true,
+    "order": 99
+  }
+]
+2. Permission Groups API
+GET /api/permission-groups
+
+Returns permission groups with all permissions inside each group.
+
+json
+[
+  {
+    "id": "users",
+    "label": "User Management",
+    "description": "Manage platform users and their data",
+    "icon": "Users",
+    "order": 1,
+    "permissions": [
+      {
+        "id": "view_users",
+        "label": "View Users",
+        "description": "View user list and details"
+      },
+      {
+        "id": "create_users",
+        "label": "Create Users",
+        "description": "Add new users to the platform"
+      },
+      {
+        "id": "edit_users",
+        "label": "Edit Users",
+        "description": "Modify user information"
+      },
+      {
+        "id": "delete_users",
+        "label": "Delete Users",
+        "description": "Remove users from the platform"
+      }
+    ]
+  },
+  {
+    "id": "courses",
+    "label": "Course Management",
+    "description": "Manage courses and learning content",
+    "icon": "BookOpen",
+    "order": 2,
+    "permissions": [
+      {
+        "id": "view_courses",
+        "label": "View Courses",
+        "description": "View course list and details"
+      },
+      {
+        "id": "create_courses",
+        "label": "Create Courses",
+        "description": "Create new courses"
+      },
+      {
+        "id": "edit_courses",
+        "label": "Edit Courses",
+        "description": "Modify course content"
+      },
+      {
+        "id": "delete_courses",
+        "label": "Delete Courses",
+        "description": "Remove courses"
+      }
+    ]
+  }
+]
+3. Roles API
+GET /api/roles
+
+Returns all roles with their assigned permissions.
+
+json
+[
+  {
+    "id": "super_admin",
+    "name": "Super Admin",
+    "description": "Full system access - all permissions",
+    "isSystemRole": true,
+    "permissions": ["*"],
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": "content_manager",
+    "name": "Content Manager",
+    "description": "Manages courses and content",
+    "isSystemRole": false,
+    "permissions": [
+      "view_courses",
+      "create_courses",
+      "edit_courses",
+      "view_labs",
+      "create_labs",
+      "edit_labs"
+    ],
+    "createdAt": "2024-01-15T00:00:00Z"
+  }
+]
+POST /api/roles - Create new role
+
+PUT /api/roles/:id - Update role
+
+DELETE /api/roles/:id - Delete role
+
+4. User Authentication API
+GET /api/auth/me
+
+Returns current user with their role and permissions.
+
+json
+{
+  "id": "user123",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "role": "content_manager",
+  "isSuperAdmin": false,
+  "permissions": [
+    "view_courses",
+    "create_courses",
+    "edit_courses",
+    "view_labs",
+    "create_labs",
+    "edit_labs"
+  ]
+}
+Super Admin Response:
+
+json
+{
+  "id": "admin1",
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "role": "super_admin",
+  "isSuperAdmin": true,
+  "permissions": ["*"]
+}
+🗄️ Database Schema Suggestions
+routes table
+sql
+CREATE TABLE routes (
+  id VARCHAR(100) PRIMARY KEY,
+  path VARCHAR(255) NOT NULL,
+  label VARCHAR(100) NOT NULL,
+  icon VARCHAR(50),
+  parent_id VARCHAR(100),
+  is_system_route BOOLEAN DEFAULT false,
+  is_visible BOOLEAN DEFAULT true,
+  order_index INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (parent_id) REFERENCES routes(id)
+);
+route_permissions table
+sql
+CREATE TABLE route_permissions (
+  route_id VARCHAR(100),
+  permission_id VARCHAR(100),
+  PRIMARY KEY (route_id, permission_id),
+  FOREIGN KEY (route_id) REFERENCES routes(id),
+  FOREIGN KEY (permission_id) REFERENCES permissions(id)
+);
+permissions table
+sql
+CREATE TABLE permissions (
+  id VARCHAR(100) PRIMARY KEY,
+  label VARCHAR(100) NOT NULL,
+  description TEXT,
+  group_id VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (group_id) REFERENCES permission_groups(id)
+);
+permission_groups table
+sql
+CREATE TABLE permission_groups (
+  id VARCHAR(100) PRIMARY KEY,
+  label VARCHAR(100) NOT NULL,
+  description TEXT,
+  icon VARCHAR(50),
+  order_index INT DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+roles table
+sql
+CREATE TABLE roles (
+  id VARCHAR(100) PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  is_system_role BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+role_permissions table
+sql
+CREATE TABLE role_permissions (
+  role_id VARCHAR(100),
+  permission_id VARCHAR(100),
+  PRIMARY KEY (role_id, permission_id),
+  FOREIGN KEY (role_id) REFERENCES roles(id),
+  FOREIGN KEY (permission_id) REFERENCES permissions(id)
+);
+users table
+sql
+CREATE TABLE users (
+  id VARCHAR(100) PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  role_id VARCHAR(100),
+  is_super_admin BOOLEAN DEFAULT false,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (role_id) REFERENCES roles(id)
+);
+🔄 How It Works
+1. Frontend Initialization
+When app loads, permissions.js fetches all routes, permissions, and groups from backend
+Data is cached in permissionStore singleton
+Sidebar component uses this data to build menu dynamically
+2. User Login
+Backend returns user object with role, isSuperAdmin, and permissions array
+Frontend stores this in localStorage
+auth.js uses this to check access
+3. Permission Checks
+Sidebar filters routes based on hasAnyPermission(route.permissions)
+If user has isSuperAdmin: true or permissions: ["*"], all checks pass
+Otherwise, user must have at least ONE permission from route's permission array
+4. Role Management
+Admin page fetches roles and permission groups
+When creating/editing role, select permissions from groups
+Backend saves role with selected permissions
+When user is assigned this role, they inherit all role permissions
+✅ Key Benefits
+100% Dynamic - Everything comes from backend database
+No Frontend Changes - Add routes/permissions via backend API only
+Flexible Permissions - Use OR logic (any permission grants access)
+Hierarchical Routes - Support for parent/child route structure
+Clean Separation - Frontend only handles display logic
+Super Admin Support - Special handling for full-access users
+Performance - Data cached on frontend, minimal API calls
+🚀 Implementation Checklist
+ Create database tables
+ Implement backend API endpoints
+ Seed initial routes, permissions, and roles
+ Update user login to return permissions array
+ Replace frontend files with provided code
+ Test permission filtering
+ Test role creation/editing
+ Test route visibility
+ Deploy and verify

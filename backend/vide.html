@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Upload & Player</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    :root {
+      --bg: #0c0c0c;
+      --card: #141414;
+      --border: #222;
+      --accent: #e8ff47;
+      --text: #f0f0f0;
+      --muted: #555;
+      --ok: #4dffb0;
+      --err: #ff5050;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2.5rem 1.5rem
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: start
+    }
+
+    @media(max-width:680px) {
+      .page {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .page-header {
+      grid-column: 1/-1;
+      margin-bottom: .5rem
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -.04em
+    }
+
+    .page-header h1 span {
+      color: var(--accent)
+    }
+
+    .page-header p {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: .3rem
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem
+    }
+
+    .card-title {
+      font-size: .72rem;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem
+    }
+
+    .card-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .field {
+      margin-bottom: .9rem
+    }
+
+    .field label {
+      display: block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .67rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: .3rem
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .55rem .8rem;
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .82rem;
+      outline: none;
+      transition: border-color .15s;
+      resize: vertical
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: var(--accent)
+    }
+
+    .field select option {
+      background: #1a1a1a
+    }
+
+    .drop {
+      position: relative;
+      border: 1.5px dashed var(--border);
+      border-radius: 8px;
+      padding: 1.4rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+      margin-bottom: 1rem
+    }
+
+    .drop:hover,
+    .drop.over {
+      border-color: var(--accent);
+      background: rgba(232, 255, 71, .03)
+    }
+
+    .drop input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%
+    }
+
+    .drop-icon {
+      font-size: 1.6rem;
+      margin-bottom: .3rem
+    }
+
+    .drop-hint {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted)
+    }
+
+    .drop-hint b {
+      color: var(--accent);
+      font-weight: 500
+    }
+
+    .chosen {
+      margin-top: .5rem;
+      font-size: .72rem;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--ok)
+    }
+
+    .prog-wrap {
+      margin-bottom: .8rem;
+      display: none
+    }
+
+    .prog-wrap.show {
+      display: block
+    }
+
+    .prog-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .68rem;
+      color: var(--muted);
+      margin-bottom: .35rem
+    }
+
+    .prog-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .prog-bar {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      border-radius: 99px;
+      transition: width .2s
+    }
+
+    .btn {
+      width: 100%;
+      padding: .72rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s
+    }
+
+    .btn:hover:not(:disabled) {
+      opacity: .85;
+      transform: translateY(-1px)
+    }
+
+    .btn:disabled {
+      opacity: .25;
+      cursor: not-allowed;
+      transform: none
+    }
+
+    .status {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .73rem;
+      color: var(--muted);
+      min-height: 1rem;
+      margin-top: .7rem
+    }
+
+    .status.ok {
+      color: var(--ok)
+    }
+
+    .status.err {
+      color: var(--err)
+    }
+
+    .proc {
+      display: none;
+      align-items: center;
+      gap: .7rem;
+      margin-top: .8rem;
+      padding: .7rem .9rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px
+    }
+
+    .proc.show {
+      display: flex
+    }
+
+    .spin {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: spin .7s linear infinite
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .proc-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted)
+    }
+
+    .player-wrap {
+      position: relative;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      margin-bottom: .9rem
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      display: block
+    }
+
+    .player-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted)
+    }
+
+    .player-placeholder .big {
+      font-size: 2rem
+    }
+
+    .qualities {
+      display: flex;
+      gap: .4rem;
+      margin-bottom: .8rem;
+      flex-wrap: wrap
+    }
+
+    .q-btn {
+      padding: .3rem .8rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--muted);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .72rem;
+      cursor: pointer;
+      transition: border-color .15s, color .15s
+    }
+
+    .q-btn:hover {
+      border-color: var(--accent);
+      color: var(--text)
+    }
+
+    .q-btn.active {
+      border-color: var(--accent);
+      color: var(--accent)
+    }
+
+    .watch-row {
+      display: flex;
+      gap: .5rem;
+      margin-bottom: .9rem
+    }
+
+    .watch-row input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .55rem .8rem;
+      color: var(--text);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .8rem;
+      outline: none;
+      transition: border-color .15s
+    }
+
+    .watch-row input:focus {
+      border-color: var(--accent)
+    }
+
+    .watch-row button {
+      padding: 0 1rem;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Syne', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity .15s
+    }
+
+    .watch-row button:hover {
+      opacity: .85
+    }
+
+    /* ── Courses grid ───────────────────────────────────────── */
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem
+    }
+
+    .course-card {
+      display: block;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color .15s, transform .1s
+    }
+
+    .course-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px)
+    }
+
+    .course-thumb {
+      aspect-ratio: 16/9;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted)
+    }
+
+    .course-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .thumb-ph {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border)
+    }
+
+    .course-meta {
+      padding: .8rem
+    }
+
+    .course-title {
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: .4rem
+    }
+
+    .course-tags {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap
+    }
+
+    .tag {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: .68rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: .1rem .5rem;
+      border-radius: 999px
+    }
+
+    .tag.ok {
+      color: var(--ok);
+      border-color: var(--ok)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <div class="page-header">
+      <h1>Course <span>Studio</span></h1>
+      <p>upload → process → stream</p>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="card">
+      <div class="card-title">Upload Course</div>
+      <div class="field"><label>Course Title</label><input type="text" id="title" placeholder="e.g. Learn Node.js" />
+      </div>
+      <div class="field"><label>Slug</label><input type="text" id="slug" placeholder="learn-nodejs" /></div>
+      <div class="field"><label>Description</label><textarea id="description" rows="2"
+          placeholder="Short description"></textarea></div>
+      <div class="field">
+        <label>Status</label>
+        <select id="status">
+          <option value="draft">Draft</option>
+          <option value="published" selected>Published</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Level</label>
+        <select id="level">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="field"><label>Duration (minutes)</label><input type="number" id="duration" min="0" value="0" /></div>
+      <div class="field"><label>Price</label><input type="number" id="price" min="0" step="0.01" value="0" /></div>
+      <div class="field"><label><input type="checkbox" id="isFree" checked /> Is Free</label></div>
+      <div class="field"><label>Certification ID (optional)</label><input type="text" id="certificationId"
+          placeholder="uuid" /></div>
+
+      <div class="card-title">Header (optional)</div>
+      <div class="field"><label><input type="checkbox" id="headerEnabled" /> Enabled</label></div>
+      <div class="field"><label>Headline</label><input type="text" id="headerHeadline" /></div>
+      <div class="field"><label>Sub-headline</label><input type="text" id="headerSubHeadline" /></div>
+      <div class="field"><label>Header BG Color</label><input type="text" id="headerBg" placeholder="#000000" /></div>
+      <div class="field"><label>Header Text Color</label><input type="text" id="headerText" placeholder="#ffffff" />
+      </div>
+
+      <div class="card-title">Footer (optional)</div>
+      <div class="field"><label><input type="checkbox" id="footerEnabled" /> Enabled</label></div>
+      <div class="field"><label>Footer Content</label><textarea id="footerContent" rows="2"
+          placeholder="Footer content"></textarea></div>
+      <div class="field"><label>Footer BG Color</label><input type="text" id="footerBg" placeholder="#141414" /></div>
+      <div class="field"><label>Footer Text Color</label><input type="text" id="footerText" placeholder="#f0f0f0" />
+      </div>
+
+      <div class="field"><label>Tags (comma-separated)</label><input type="text" id="tags"
+          placeholder="devops, aws, kubernetes" /></div>
+      <div class="field"><label>Metadata (JSON)</label><textarea id="metadata" rows="2"
+          placeholder='{"lang":"en"}'></textarea></div>
+      <div class="field">
+        <label>Course Thumbnail</label>
+        <input type="file" id="thumbnailFile" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>Video Thumbnail (Optional)</label>
+        <input type="file" id="videoThumbnailFile" accept="image/*" />
+      </div>
+      <div class="field">
+        <label>Video Files (you can select multiple)</label>
+        <input type="file" id="videoFiles" accept="video/*" multiple />
+        <div class="chosen" id="chosenName"></div>
+      </div>
+      <div class="prog-wrap" id="progWrap">
+        <div class="prog-meta"><span id="progLabel">Uploading…</span><span id="progPct">0%</span></div>
+        <div class="prog-track">
+          <div class="prog-bar" id="progBar"></div>
+        </div>
+      </div>
+      <button class="btn" id="uploadBtn" onclick="submitCourse()" disabled>Create Course &amp; Upload Video(s)</button>
+      <div class="status" id="uploadStatus"></div>
+      <div class="proc" id="procBox">
+        <div class="spin"></div>
+        <div class="proc-text" id="procText">Processing video with FFmpeg…</div>
+      </div>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="card">
+      <div class="card-title">Watch Video</div>
+      <div class="field"><label>Course ID</label><input type="text" id="watchCourseId" placeholder="course_123" /></div>
+      <div class="watch-row">
+        <input type="text" id="watchLessonId" placeholder="lesson_456" />
+        <button onclick="loadPlayer()">▶ Play</button>
+      </div>
+      <div class="qualities" id="qualities" style="display:none">
+        <button class="q-btn active" onclick="switchQ('master',this)">Auto</button>
+        <button class="q-btn" onclick="switchQ('720p',this)">720p</button>
+      </div>
+      <div class="player-wrap">
+        <video id="player" controls></video>
+        <div class="player-placeholder" id="placeholder">
+          <span class="big">📺</span>
+          <span>Enter IDs above to watch</span>
+        </div>
+      </div>
+      <div class="status" id="playerStatus"></div>
+    </div>
+
+    <!-- COURSES LIST -->
+    <div class="card">
+      <div class="card-title">All Courses</div>
+      <div id="coursesGrid" class="courses-grid"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = "http://localhost:3000"; // ← your backend
+    const videoFilesEl = document.getElementById("videoFiles");
+    videoFilesEl.addEventListener("change", () => {
+      const files = Array.from(videoFilesEl.files || []);
+      const label = files.length
+        ? "✓ " + files.map(f => f.name).join(", ")
+        : "";
+      document.getElementById("chosenName").textContent = label;
+      document.getElementById("uploadBtn").disabled = files.length === 0;
+    });
+
+    function safeJSON(str, fallback) {
+      try { return str ? JSON.parse(str) : fallback; } catch { return fallback; }
+    }
+
+    function toMediaMetaFromFiles(files) {
+      return files.map((f, i) => ({
+        title: f.name.replace(/\.[^/.]+$/, ""),
+        type: "video",
+        order: i,
+        is_preview: false
+      }));
+    }
+
+    async function submitCourse() {
+      const title = document.getElementById("title").value.trim();
+      const slug = document.getElementById("slug").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const status = document.getElementById("status").value;
+      const level = document.getElementById("level").value;
+      const duration = parseInt(document.getElementById("duration").value || "0", 10);
+      const price = parseFloat(document.getElementById("price").value || "0");
+      const isFree = document.getElementById("isFree").checked;
+      const certificationId = document.getElementById("certificationId").value.trim() || null;
+      const thumbFile = document.getElementById("thumbnailFile").files[0];
+      const videoThumbFile = document.getElementById("videoThumbnailFile").files[0];
+      const files = Array.from((document.getElementById("videoFiles").files || []));
+
+      if (!title || !slug) { setUpSt("Fill in title and slug", "err"); return; }
+      if (!files.length) { setUpSt("Select at least one video", "err"); return; }
+
+      document.getElementById("uploadBtn").disabled = true;
+      document.getElementById("progWrap").classList.add("show");
+      setUpSt("");
+
+      const form = new FormData();
+      form.append("title", title);
+      form.append("slug", slug);
+      form.append("description", description);
+      form.append("status", status);
+      form.append("level", level);
+      form.append("duration", String(duration));
+      form.append("price", String(price));
+      form.append("isFree", isFree ? "true" : "false");
+      if (certificationId) form.append("certificationId", certificationId);
+      if (thumbFile) form.append("thumbnail", thumbFile);
+      if (videoThumbFile) form.append("videoThumbnail", videoThumbFile);
+
+      const header = {
+        enabled: document.getElementById("headerEnabled").checked,
+        headline: document.getElementById("headerHeadline").value,
+        subHeadline: document.getElementById("headerSubHeadline").value,
+        bgColor: document.getElementById("headerBg").value || null,
+        textColor: document.getElementById("headerText").value || null
+      };
+      const footer = {
+        enabled: document.getElementById("footerEnabled").checked,
+        content: document.getElementById("footerContent").value,
+        bgColor: document.getElementById("footerBg").value || null,
+        textColor: document.getElementById("footerText").value || null
+      };
+      const tags = (document.getElementById("tags").value || "")
+        .split(",").map(s => s.trim()).filter(Boolean);
+      const metadata = safeJSON(document.getElementById("metadata").value, {});
+
+      form.append("header", JSON.stringify(header));
+      form.append("footer", JSON.stringify(footer));
+      form.append("tags", JSON.stringify(tags));
+      form.append("metadata", JSON.stringify(metadata));
+
+      const mediaMeta = toMediaMetaFromFiles(files);
+      form.append("media", JSON.stringify(mediaMeta));
+      files.forEach(f => form.append("mediaFiles", f, f.name));
+
+      try {
+        const res = await fetch(API + "/api/owner/courses/create-full", {
+          method: "POST",
+          // "Authorization": "Bearer " + token,
+          body: form,
+        });
+        if (!res.ok) {
+          const err = await res.json();
+          setUpSt("Error: " + (err.message || res.statusText), "err");
+          document.getElementById("uploadBtn").disabled = false;
+          return;
+        }
+        const data = await res.json();
+        setUpSt("✓ Upload complete! Video(s) processing…", "ok");
+        document.getElementById("procBox").classList.add("show");
+        document.getElementById("watchCourseId").value = data.courseId;
+        document.getElementById("watchLessonId").value = data.lessonId || "";
+        pollUntilReady(data.courseId, document.getElementById("watchLessonId").value || mediaMeta[0]?.lessonId || "");
+      } catch (e) {
+        setUpSt("Network error: " + e.message, "err");
+        document.getElementById("uploadBtn").disabled = false;
+        return;
+      }
+    }
+
+    function pollUntilReady(courseId, lessonId) {
+      const poll = setInterval(async () => {
+        try {
+          const res = await fetch(API + "/api/courses/" + courseId + "/video-status/" + lessonId);
+          const data = await res.json();
+          if (data.ready) {
+            clearInterval(poll);
+            document.getElementById("procBox").classList.remove("show");
+            setUpSt("🎉 Video ready to stream!", "ok");
+            loadPlayer();
+          } else {
+            document.getElementById("procText").textContent = "FFmpeg processing… checking every 5s";
+          }
+        } catch (e) { }
+      }, 5000);
+    }
+
+    function setUpSt(msg, type = "") {
+      const el = document.getElementById("uploadStatus");
+      el.textContent = msg; el.className = "status " + type;
+    }
+
+    // ── PLAYER ─────────────────────────────────────────────────
+    let hls = null, activeCourse = null, activeLesson = null;
+
+    async function loadPlayer() {
+      const courseId = document.getElementById("watchCourseId").value.trim();
+      const lessonId = document.getElementById("watchLessonId").value.trim();
+      if (!courseId || !lessonId) { setPlSt("Enter Course ID and Lesson ID", "err"); return; }
+
+      setPlSt("Checking…");
+      let info = null;
+      try {
+        const check = await fetch(API + "/api/courses/" + courseId + "/video-status/" + lessonId, {
+          headers: { "Cache-Control": "no-store" }
+        });
+        info = await check.json();
+      } catch (e) {
+        setPlSt("Status check failed: " + e.message, "err");
+        return;
+      }
+
+      if (!info.ready) { setPlSt("Video still processing — try again shortly", "err"); return; }
+
+      activeCourse = courseId;
+      activeLesson = lessonId;
+      // Set poster thumbnail from processed folder
+      const video = document.getElementById("player");
+      video.setAttribute("poster", API + "/api/courses/stream/" + courseId + "/" + lessonId + "/thumbnails/thumb.jpg");
+      const playPath = API + "/api/courses/stream/" + courseId + "/" + lessonId + "/master.m3u8";
+      playHLS(playPath);
+      document.getElementById("qualities").style.display = "flex";
+      document.getElementById("placeholder").style.display = "none";
+      setPlSt("▶ Streaming", "ok");
+    }
+
+    function playHLS(url) {
+      const video = document.getElementById("player");
+      if (hls) { hls.destroy(); hls = null; }
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          setPlSt("Manifest loaded", "ok");
+          video.play().catch(() => setPlSt("Autoplay blocked: click play", ""));
+        });
+        hls.on(Hls.Events.ERROR, (_, d) => {
+          setPlSt("Player error: " + d.details, d.fatal ? "err" : "");
+        });
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = url; video.play();
+      } else {
+        setPlSt("HLS not supported in this browser", "err");
+      }
+    }
+
+    function switchQ(quality, btn) {
+      if (!activeCourse) return;
+      document.querySelectorAll(".q-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const url = quality === "master"
+        ? API + "/api/courses/stream/" + activeCourse + "/" + activeLesson + "/master.m3u8"
+        : API + "/api/courses/stream/" + activeCourse + "/" + activeLesson + "/" + quality + "/index.m3u8";
+      playHLS(url);
+    }
+
+    function setPlSt(msg, type = "") {
+      const el = document.getElementById("playerStatus");
+      el.textContent = msg; el.className = "status " + type;
+    }
+
+    async function loadCourses() {
+      const grid = document.getElementById("coursesGrid");
+      grid.innerHTML = '<p class="status">Loading courses…</p>';
+      try {
+        const res = await fetch(API + "/api/courses");
+        if (!res.ok) {
+          grid.innerHTML = '<p class="status err">Failed to load courses.</p>';
+          return;
+        }
+        const data = await res.json();
+        const courses = data.data.rows;
+
+        if (!courses || courses.length === 0) {
+          grid.innerHTML = '<p class="status">No courses found.</p>';
+          return;
+        }
+
+        grid.innerHTML = "";
+        courses.forEach(course => {
+          const card = document.createElement("a");
+          card.href = `./course-detail.html?slug=${course.slug}`;
+          card.target = "_blank";
+          card.className = "course-card";
+          const thumb = course.thumbnail ? `${API}${course.thumbnail}` : "";
+          card.innerHTML = `
+            <div class="course-thumb">${thumb ? `<img src="${thumb}" alt="${course.title}">` : '<div class="thumb-ph">No Image</div>'}</div>
+            <div class="course-meta">
+              <div class="course-title">${course.title}</div>
+              <div class="course-tags">
+                <span class="tag">${course.level}</span>
+                <span class="tag ${course.status === 'published' ? 'ok' : ''}">${course.status}</span>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+      } catch (e) {
+        grid.innerHTML = `<p class="status err">Error: ${e.message}</p>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCourses);
+  </script>
+</body>
+
+</html>

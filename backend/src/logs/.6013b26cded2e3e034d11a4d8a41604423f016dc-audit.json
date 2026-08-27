@@ -1,0 +1,45 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\.6013b26cded2e3e034d11a4d8a41604423f016dc-audit.json",
+    "files": [
+        {
+            "date": 1786707217533,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-14.log",
+            "hash": "e9b9957d09acc0b88864384a71107738c0387bbb757f03385534d290df6e3332"
+        },
+        {
+            "date": 1786767714138,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-15.log",
+            "hash": "b199a60ffc6bc4f8ea1127f8276df60db2e83c0f19281d70741294fc1fe6e915"
+        },
+        {
+            "date": 1786978754960,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-17.log",
+            "hash": "72720e3ae576f060b55d8c3d02dda09624e6de88dfa142c415e0ab2cba0d6cb4"
+        },
+        {
+            "date": 1787060465937,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-18.log",
+            "hash": "e7784e36054bff8665b82d7335a7d7038cdf447ac8a8c36f91222c96d91a7891"
+        },
+        {
+            "date": 1787665119604,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-25.log",
+            "hash": "8887b30b3a3bcc12190b5a665f9cbae99057faefc63e54a26aa7d419c4374d02"
+        },
+        {
+            "date": 1787725619559,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-26.log",
+            "hash": "7158a0c5083cd8d5a64ae2ca011d65e336d46833a1d378d7743f6533bf78214d"
+        },
+        {
+            "date": 1787805563317,
+            "name": "E:\\practice-mastery-platform-main\\backend\\src\\logs\\combined-2026-08-27.log",
+            "hash": "16f604ad3a0e6cf1cde260f96d21cc97f9b2ae339ab609713e603e3f6905112a"
+        }
+    ],
+    "hashType": "sha256"
+}
