@@ -284,7 +284,8 @@ const MENU_CONFIG = [
     path: "/app/digital-programs/cloud-services",
     label: "Digital Programs",
     icon: "FolderOpen",
-    permissions: ["create_programs", "create_cloud_services", "manage_cloud_services", "view_programs"],
+    roles: ["admin", "administrator", "super_admin", "student", "approver", "content_approver", "reviewer"],
+    permissions: DIGITAL_PROGRAMS_ADMIN_PERMISSIONS,
     order: 5.2,
   },
   {
@@ -301,7 +302,7 @@ const MENU_CONFIG = [
     path: "/app/course-approval",
     label: "Content approval",
     icon: "CheckSquare",
-    roles: ["admin", "administrator", "super_admin", "reviewer"],
+    roles: ["admin", "administrator", "super_admin", "reviewer", "approver", "content_approver"],
     permissions: [
       "approve_courses",
       "approve_own_courses",
@@ -309,6 +310,8 @@ const MENU_CONFIG = [
       "approve_own_labs",
       "approve_exam_topics",
       "approve_own_exam_topics",
+      "approve_cloud_services",
+      "approve_career_offerings",
     ],
     order: 6,
   },

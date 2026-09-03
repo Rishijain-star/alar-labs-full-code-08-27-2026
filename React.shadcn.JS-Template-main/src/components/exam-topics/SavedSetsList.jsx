@@ -47,15 +47,15 @@ export default function SavedSetsList({
             const qCount = item.questions?.length || 0;
             const statusLabel = getExamTopicSetStatusLabel(item);
             const statusVariant = getExamTopicSetStatusVariant(item);
+            const meta = typeof item.metadata === "object" ? (item.metadata || {}) : (function() { try { return JSON.parse(item.metadata || "{}"); } catch(_) { return {}; } })();
             const isPublishing = publishingId === item.id;
-            const canSubmitPublish =
-              canPublish &&
-              (item.status !== "published" || item.content_approval_status === "rejected");
-            const isPending =
-              item.status === "published" && item.content_approval_status === "pending";
+            const rejectionReason = item.rejection_reason || item.rejectionReason || meta.rejection_reason;
+            const isRejected = item.content_approval_status === "rejected" || meta.content_approval_status === "rejected" || Boolean(rejectionReason);
+            const canSubmitPublish = canPublish && (item.status !== "published" || isRejected);
+            const isPending = item.status === "published" && (item.content_approval_status === "pending" || meta.content_approval_status === "pending");
 
             return (
-              <Card key={item.id} className="border shadow-sm">
+              <Card key={item.id} className={isRejected ? "border-destructive/40 shadow-sm" : "border shadow-sm"}>
                 <CardContent className="p-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
                   <div className="flex items-start gap-3 min-w-0">
                     <div className="p-2 rounded-lg bg-blue-50 shrink-0">
@@ -69,9 +69,15 @@ export default function SavedSetsList({
                         </p>
                       ) : null}
                       <div className="flex flex-wrap items-center gap-2 mt-1">
-                        <Badge variant={statusVariant} className="text-xs">
-                          {statusLabel}
-                        </Badge>
+                        {isRejected ? (
+                          <Badge variant="destructive" className="text-xs bg-red-600 text-white">
+                            Changes Rejected
+                          </Badge>
+                        ) : (
+                          <Badge variant={statusVariant} className="text-xs">
+                            {statusLabel}
+                          </Badge>
+                        )}
                         <Badge variant="secondary" className="text-xs">
                           {qCount} question{qCount === 1 ? "" : "s"}
                         </Badge>
@@ -88,6 +94,12 @@ export default function SavedSetsList({
                           className="mt-1.5"
                         />
                       )}
+                      {isRejected && (
+                        <div className="mt-2 text-xs p-2.5 rounded-md bg-destructive/10 text-destructive border border-destructive/20 space-y-1">
+                          <span className="font-bold block">Rejection Feedback:</span>
+                          <span className="text-foreground font-medium">{rejectionReason || "No specific reason provided."}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -95,12 +107,12 @@ export default function SavedSetsList({
                       <Button
                         type="button"
                         size="sm"
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className={isRejected ? "bg-red-600 hover:bg-red-700 text-white" : "bg-blue-600 hover:bg-blue-700"}
                         disabled={isPublishing}
                         onClick={() => onPublish?.(item.id)}
                       >
                         <Upload className="w-3.5 h-3.5 mr-1" />
-                        {isPublishing ? "Submitting…" : "Publish"}
+                        {isPublishing ? "Submitting…" : isRejected ? "Resubmit for Approval" : "Publish"}
                       </Button>
                     )}
                     {isPending && (

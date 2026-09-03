@@ -116,13 +116,70 @@ const SETUP_TABS = [
   { id: "finish", label: "3. Publish" },
 ];
 
+import { isStudent, isAdmin, isSuperAdmin } from "@/lib/auth";
+
+export function StudentTRAView() {
+  return (
+    <div className="space-y-6 max-w-4xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Technology Readiness Assessment</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Evaluate your skill level, identify learning gaps, and receive personalized course recommendations.
+          </p>
+        </div>
+        <Button asChild size="sm" className="gap-2">
+          <Link to="/assessment">
+            <Sparkles className="h-4 w-4 text-amber-400" />
+            Take Readiness Quiz
+          </Link>
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="py-12 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+            <Sparkles className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">Personalized Career & Skill Readiness</h3>
+          <p className="text-sm text-muted-foreground max-w-md mt-1 mb-6">
+            Complete the 3-step interactive assessment to generate a customized tech readiness report and recommended learning tracks.
+          </p>
+          <Button asChild size="lg">
+            <Link to="/assessment">Start Assessment Now</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function TechnologyReadinessAssessmentAdmin() {
   const canEdit =
     permissionStore.hasPermission("manage_programs") ||
     permissionStore.hasPermission("edit_programs") ||
     permissionStore.hasPermission("create_programs");
 
-  const { data, isLoading, isError, refetch } = useGetAdminAssessmentConfigQuery();
+  const isStudentUser = isStudent() && !isAdmin() && !isSuperAdmin();
+
+  if (isStudentUser || !canEdit) {
+    return <StudentTRAView />;
+  }
+
+  return <AdminTRAContent />;
+}
+
+function AdminTRAContent() {
+  const canEdit =
+    permissionStore.hasPermission("manage_programs") ||
+    permissionStore.hasPermission("edit_programs") ||
+    permissionStore.hasPermission("create_programs");
+
+  const isStudentUser = isStudent() && !isAdmin() && !isSuperAdmin();
+
+  const { data, isLoading, isError, refetch } = useGetAdminAssessmentConfigQuery(undefined, {
+    skip: isStudentUser || !canEdit,
+  });
   const [upsert, { isLoading: saving }] = useUpsertAssessmentConfigMutation();
 
   const [config, setConfig] = useState({

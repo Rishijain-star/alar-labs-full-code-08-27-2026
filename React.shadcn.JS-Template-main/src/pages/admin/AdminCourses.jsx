@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation, Navigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, FileSpreadsheet } from "lucide-react";
 import GlobalPagination from "../../components/common/Pagination";
 import GlobalListManager from "../../components/common/Globallistmanager";
 import { useGetCoursesQuery } from "@/store/api/courseApi";
@@ -11,6 +11,8 @@ import { hasPermission } from "@/utils/permissions";
 import { isApprover } from "@/lib/auth";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { resolveItemCurrency } from "@/lib/localeFormat";
+import { Button } from "@/components/ui/button";
+import BulkCourseUploadModal from "@/components/admin/BulkCourseUploadModal";
 
 const DEFAULT_PER_PAGE = 12;
 const PER_PAGE_OPTIONS = [4, 8, 12, 16, 24];
@@ -41,6 +43,8 @@ export default function AdminCourses() {
   const [levelFilter, setLevelFilter] = useState("all");
   const [pricingFilter, setPricingFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
   useEffect(() => {
     setPage(1);
@@ -262,6 +266,12 @@ export default function AdminCourses() {
           )}
         </>
       )}
+
+      <BulkCourseUploadModal
+        open={isBulkModalOpen}
+        onOpenChange={setIsBulkModalOpen}
+        onSuccess={() => handleRefresh()}
+      />
     </GlobalListManager>
   );
 }

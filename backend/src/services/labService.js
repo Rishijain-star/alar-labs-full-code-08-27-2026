@@ -323,20 +323,51 @@ class LabService extends BaseService {
         }
     }
 
-    async setContentApprovalStatus(id, status, user_id) {
+    async setContentApprovalStatus(id, status, user_id, rejection_reason = null) {
         if (!["approved", "rejected"].includes(status)) {
             throw new AppError("status must be approved or rejected", 400);
         }
         const lab = await this.getByIdFull(id);
-        const meta = parseLabMetadata(lab.metadata);
-        meta.content_approval_status = status;
+        const exMeta = parseLabMetadata(lab.metadata);
+        let updatePayload = { updated_by: user_id };
         const now = new Date().toISOString();
+
         if (status === "approved") {
-            meta.content_approved_at = now;
-        } else {
-            meta.content_rejected_at = now;
+            if (lab.draft_data) {
+                updatePayload = { ...lab.draft_data, draft_data: null, updated_by: user_id };
+            }
+            updatePayload.metadata = {
+                ...(updatePayload.metadata || exMeta || {}),
+                content_approval_status: "approved",
+                content_approved_at: now,
+                rejection_reason: null,
+                rejected_at: null
+            };
+        } else if (status === "rejected") {
+            const reason = rejection_reason || "No reason provided";
+            if (lab.draft_data && exMeta.content_approval_status === "approved") {
+                updatePayload.metadata = {
+                    ...exMeta,
+                    content_approval_status: "approved",
+                    content_rejected_at: now,
+                    rejection_reason: reason,
+                    rejected_at: now
+                };
+                updatePayload.draft_data = null;
+            } else {
+                updatePayload.metadata = {
+                    ...exMeta,
+                    content_approval_status: "rejected",
+                    content_rejected_at: now,
+                    rejection_reason: reason,
+                    rejected_at: now
+                };
+                if (lab.draft_data) {
+                    updatePayload.draft_data = null;
+                }
+            }
         }
-        return this.update(id, { metadata: meta, updated_by: user_id });
+        return this.update(id, updatePayload);
     }
 
     // ── Assign certification to lab ───────────────────────────────────────────

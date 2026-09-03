@@ -67,6 +67,7 @@ router.patch(
     c.setContentApproval
 );
 router.post("/", checkPermission("create_labs"), createRateLimiter("create"), c.create);
+router.post("/bulk", checkPermission("create_labs"), createRateLimiter("create"), c.bulkCreate);
 
 /**
  * POST /api/labs/create-full

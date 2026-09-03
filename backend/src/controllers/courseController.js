@@ -561,6 +561,55 @@ create = async (req, res) => {
     } catch (err) { return fail(res, err); }
 };
 
+bulkCreate = async (req, res) => {
+    try {
+        const userId = req.user?.user_id;
+        if (!userId) return response.fail(res, "Authentication required", 401);
+
+        const items = Array.isArray(req.body) ? req.body : (req.body?.items || req.body?.courses || []);
+        if (!items.length) {
+            return response.fail(res, "No course data provided in bulk payload", 400);
+        }
+
+        const created = [];
+        const errors = [];
+
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            try {
+                if (!item.title) {
+                    errors.push(`Row ${i + 1}: Missing course title`);
+                    continue;
+                }
+                const generatedSlug = item.slug || item.title.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-") + "-" + Date.now().toString(36).slice(-4);
+                const course = await courseService.create({
+                    title: item.title,
+                    slug: generatedSlug,
+                    description: item.description || "",
+                    level: item.level || "beginner",
+                    price: Number(item.price) || 0,
+                    is_free: Boolean(item.is_free || item.isFree),
+                    status: item.status || "published",
+                    metadata: buildCourseMetadataFromBody(item),
+                    created_by: userId,
+                });
+                created.push(course);
+            } catch (err) {
+                errors.push(`Row ${i + 1} (${item.title || "Untitled"}): ${err.message}`);
+            }
+        }
+
+        return response.success(res, `Bulk created ${created.length} courses`, 201, {
+            createdCount: created.length,
+            total: items.length,
+            courses: created,
+            errors,
+        });
+    } catch (err) {
+        return fail(res, err);
+    }
+};
+
 createFull = async (req, res) => {
     try {
         const userId = req.user?.user_id;
@@ -1057,6 +1106,17 @@ archive = async (req, res) => {
         if (!userId) return response.fail(res, "Authentication required", 401);
         const course = await courseService.archive(req.params.id, userId);
         return response.success(res, "Course archived", 200, { course });
+    } catch (err) { return fail(res, err); }
+};
+
+setContentApproval = async (req, res) => {
+    try {
+        const userId = req.user?.user_id;
+        if (!userId) return response.fail(res, "Authentication required", 401);
+        const { status, rejection_reason, rejectionReason } = req.body;
+        const reason = rejection_reason || rejectionReason || null;
+        const course = await courseService.setContentApprovalStatus(req.params.id, status, userId, reason);
+        return response.success(res, `Course ${status}`, 200, { course });
     } catch (err) { return fail(res, err); }
 };
 

@@ -142,6 +142,28 @@ export const isAdmin = () => {
  */
 export const isStudent = () => {
     if (isSuperAdmin() || isAdmin() || isApprover() || isInstructor()) return false;
+    
+    // If user has any approval or content management permissions, they are not a pure student
+    if (
+        hasAnyPermission([
+            'approve_courses',
+            'approve_labs',
+            'approve_exam_topics',
+            'approve_cloud_services',
+            'approve_career_offerings',
+            'create_courses',
+            'create_labs',
+            'create_exam_topics',
+            'create_cloud_services',
+            'manage_cloud_services',
+            'manage_career_offerings',
+            'manage_access_control',
+            'manage_users'
+        ])
+    ) {
+        return false;
+    }
+
     return hasRole('student');
 };
 
@@ -172,7 +194,9 @@ export const isApprover = () => {
         hasPermission('approve_exam_topics') ||
         hasPermission('approve_own_courses') ||
         hasPermission('approve_own_labs') ||
-        hasPermission('approve_own_exam_topics')
+        hasPermission('approve_own_exam_topics') ||
+        hasPermission('approve_cloud_services') ||
+        hasPermission('approve_career_offerings')
     );
 };
 

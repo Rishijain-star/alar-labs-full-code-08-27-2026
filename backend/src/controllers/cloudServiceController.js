@@ -3,6 +3,16 @@ const response = require("../utils/response");
 const { validate, fail } = require("../helper/helper");
 const { CloudServiceRequest } = require("../models");
 
+function parseMeta(meta) {
+    if (!meta) return {};
+    if (typeof meta === "object") return meta;
+    try {
+        return JSON.parse(meta) || {};
+    } catch (_) {
+        return {};
+    }
+}
+
 class CloudServiceController {
     /** GET /api/cloud-services — public */
     listPublic = async (req, res) => {
@@ -52,13 +62,9 @@ class CloudServiceController {
             if (result && Array.isArray(result.rows)) {
                 result.rows = result.rows.map(row => {
                     const data = row.toJSON ? row.toJSON() : row;
+                    data.metadata = parseMeta(data.metadata);
                     if (data.draft_data) {
-                        return { 
-                            ...data, 
-                            ...data.draft_data, 
-                            metadata: { ...(data.metadata || {}), content_approval_status: "pending" },
-                            draft_data: data.draft_data 
-                        };
+                        data.metadata.content_approval_status = "pending";
                     }
                     return data;
                 });
@@ -74,9 +80,10 @@ class CloudServiceController {
         try {
             const record = await cloudServiceService.getByIdFull(req.params.id);
             const data = record.toJSON ? record.toJSON() : record;
+            data.metadata = parseMeta(data.metadata);
             if (data.draft_data) {
                 Object.assign(data, data.draft_data, { 
-                    metadata: { ...(data.metadata || {}), content_approval_status: "pending" },
+                    metadata: { ...data.metadata, content_approval_status: "pending" },
                     draft_data: data.draft_data 
                 });
             }
@@ -122,7 +129,7 @@ class CloudServiceController {
             });
 
             const existing = await cloudServiceService.getByIdFull(req.params.id);
-            const exMeta = existing.metadata || {};
+            const exMeta = parseMeta(existing.metadata);
             const isActive = req.body.is_active === true || req.body.is_active === "true";
             
             let updatePayload = {
@@ -137,8 +144,14 @@ class CloudServiceController {
                     draft_data: req.body,
                     updated_by: req.user.user_id,
                 };
-            } else if (isActive && exMeta.content_approval_status !== "approved") {
-                updatePayload.metadata = { ...exMeta, content_approval_status: "pending" };
+            } else if (isActive) {
+                updatePayload.metadata = { 
+                    ...exMeta, 
+                    content_approval_status: "pending",
+                    rejection_reason: null,
+                    rejected_at: null
+                };
+                updatePayload.draft_data = null;
             }
 
             const record = await cloudServiceService.update(req.params.id, updatePayload);
@@ -176,24 +189,29 @@ class CloudServiceController {
             const existing = await cloudServiceService.getByIdFull(req.params.id);
             if (!existing) return response.fail(res, "Cloud service not found", 404);
 
-            const exMeta = existing.metadata || {};
+            const exMeta = parseMeta(existing.metadata);
             let updatePayload = {};
 
             if (req.body.status === "approved") {
                 if (existing.draft_data) {
                     updatePayload = { ...existing.draft_data, draft_data: null };
                 }
-                updatePayload.metadata = { ...(updatePayload.metadata || exMeta || {}), content_approval_status: "approved" };
+                updatePayload.metadata = { 
+                    ...(updatePayload.metadata || exMeta), 
+                    content_approval_status: "approved",
+                    rejection_reason: null,
+                    rejected_at: null 
+                };
             } else if (req.body.status === "rejected") {
-                if (existing.draft_data && exMeta.content_approval_status === "approved") {
-                    updatePayload.metadata = { ...exMeta, content_approval_status: "approved" };
-                    updatePayload.draft_data = null;
-                } else {
-                    updatePayload.metadata = { ...exMeta, content_approval_status: "rejected" };
-                    if (existing.draft_data) {
-                        updatePayload.draft_data = null;
-                    }
-                }
+                const reason = req.body.rejection_reason || req.body.rejectionReason || "No reason provided";
+                const now = new Date().toISOString();
+                updatePayload.metadata = { 
+                    ...exMeta, 
+                    content_approval_status: "rejected",
+                    rejection_reason: reason,
+                    rejected_at: now
+                };
+                updatePayload.draft_data = null;
             }
 
             const updated = await cloudServiceService.update(req.params.id, updatePayload);
@@ -257,12 +275,34 @@ class CloudServiceController {
         }
     };
 
-    /** Admin route: get all requests */
+    /** Admin / Learner route: get requests */
     getAllRequests = async (req, res) => {
         try {
             const { page = 1, limit = 20, status } = req.query;
             const where = {};
             if (status) where.status = status;
+
+            // Non-admin filter (student / learner view)
+            const rbacService = require("../services/rbac/roleService");
+            const userId = req.user?.user_id || req.user?.id;
+            let canManage = false;
+            if (userId) {
+                try {
+                    canManage = await rbacService.checkUserHasPermission(userId, ["manage_cloud_services", "create_cloud_services"], "OR");
+                } catch (e) {
+                    canManage = false;
+                }
+            }
+            
+            if (!canManage) {
+                const { Op } = require("sequelize");
+                const filters = [];
+                if (userId) filters.push({ user_id: userId });
+                if (req.user?.email) filters.push({ email: req.user.email });
+                if (filters.length > 0) {
+                    where[Op.or] = filters;
+                }
+            }
 
             const result = await CloudServiceRequest.findAndCountAll({
                 where,

@@ -515,7 +515,7 @@ class PaymentController {
 
       history.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-      return response.success(res, "Payment history retrieved", 200, { history, isAdmin });
+      return response.success(res, "Payment history retrieved", 200, { history, isAdmin: isAdminView });
     } catch (err) {
       return fail(res, err);
     }

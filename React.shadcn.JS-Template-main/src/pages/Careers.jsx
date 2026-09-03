@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,13 +28,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 
 export default function CareersPage() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [formSelectedOffering, setFormSelectedOffering] = useState(null);
   const [requestType, setRequestType] = useState("self");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [detailModalOffering, setDetailModalOffering] = useState(null);
   const { data: offeringsData, isLoading, error } = useGetPublicCareerOfferingsQuery();
   const [submitRequest, { isLoading: submitting }] = useSubmitCareerRequestMutation();
 
@@ -154,50 +158,68 @@ export default function CareersPage() {
               <h2 className="mb-6 text-2xl font-bold">Our Offerings</h2>
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {offerings.map((offering) => (
-                  <Card key={offering.id} className="card-hover flex flex-col">
-                    <CardHeader className="space-y-3">
-                      {renderStarRating(offering.rating)}
-                      <CardTitle className="text-lg leading-snug">{offering.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="flex flex-1 flex-col">
-                      {stripHtmlToPlain(offering.description) ? (
-                        <RichTextContent
-                          html={sanitizeCourseDescriptionHtml(offering.description)}
-                          showTitle={false}
-                          className="mb-4 text-sm text-muted-foreground"
-                        />
-                      ) : null}
-                      
-                      {(() => {
-                        let parsedItems = offering.items;
-                        if (typeof parsedItems === "string") {
-                          try { parsedItems = JSON.parse(parsedItems); } catch (e) { /* ignore */ }
-                        }
-                        
-                        if (Array.isArray(parsedItems) && parsedItems.length > 0) {
-                          return (
-                            <ul className="space-y-2">
-                              {parsedItems.map((item, i) => (
-                                <li key={i} className="flex items-center gap-2 text-sm">
-                                  <CheckCircle2 className="h-4 w-4 text-success" />
-                                  <span>{item}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          );
-                        } else if (typeof parsedItems === "string" && stripHtmlToPlain(parsedItems)) {
-                          return (
-                            <RichTextContent
-                              html={sanitizeCourseDescriptionHtml(parsedItems)}
-                              showTitle={false}
-                              className="text-sm text-muted-foreground mt-4"
-                            />
-                          );
-                        }
-                        return null;
-                      })()}
-                      
-                      <Button className="mt-5 w-full" onClick={() => requestAccess(offering)}>
+                  <Card key={offering.id} className="card-hover flex flex-col justify-between h-full shadow-sm border">
+                    <div>
+                      <CardHeader className="space-y-2.5 pb-3">
+                        {renderStarRating(offering.rating)}
+                        <CardTitle className="text-lg font-bold leading-snug line-clamp-2">
+                          {offering.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3 pb-2">
+                        {stripHtmlToPlain(offering.description) ? (
+                          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                            {stripHtmlToPlain(offering.description)}
+                          </p>
+                        ) : null}
+
+                        {(() => {
+                          let parsedItems = offering.items;
+                          if (typeof parsedItems === "string") {
+                            try {
+                              parsedItems = JSON.parse(parsedItems);
+                            } catch (e) {
+                              /* ignore */
+                            }
+                          }
+
+                          if (Array.isArray(parsedItems) && parsedItems.length > 0) {
+                            const visibleItems = parsedItems.slice(0, 3);
+                            const extraCount = parsedItems.length - 3;
+                            return (
+                              <div className="space-y-1.5 pt-1">
+                                <ul className="space-y-1.5">
+                                  {visibleItems.map((item, i) => (
+                                    <li key={i} className="flex items-center gap-2 text-sm text-foreground/90">
+                                      <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                                      <span className="line-clamp-1">{item}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                                {extraCount > 0 && (
+                                  <p className="text-xs font-semibold text-secondary/90 pt-1">
+                                    + {extraCount} more deliverable{extraCount > 1 ? "s" : ""} included
+                                  </p>
+                                )}
+                              </div>
+                            );
+                          } else if (typeof parsedItems === "string" && stripHtmlToPlain(parsedItems)) {
+                            return (
+                              <p className="text-sm text-muted-foreground line-clamp-2">
+                                {stripHtmlToPlain(parsedItems)}
+                              </p>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </CardContent>
+                    </div>
+
+                    <CardContent className="pt-4 mt-auto border-t bg-slate-50/50 dark:bg-slate-900/30">
+                      <Button
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                        onClick={() => navigate(`/careers/${offering.id}`)}
+                      >
                         Add More Detail
                       </Button>
                     </CardContent>
@@ -336,6 +358,109 @@ export default function CareersPage() {
                     Submit your Request <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
+              </DialogContent>
+            </Dialog>
+            {/* Career Detail Popup Modal */}
+            <Dialog open={!!detailModalOffering} onOpenChange={(open) => !open && setDetailModalOffering(null)}>
+              <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto p-6">
+                {detailModalOffering && (
+                  <>
+                    <DialogHeader className="space-y-3 pb-3 border-b">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <Badge className="bg-secondary/10 text-secondary border-secondary/20">
+                          Bridge to Hire
+                        </Badge>
+                        {renderStarRating(detailModalOffering.rating)}
+                      </div>
+                      <DialogTitle className="text-2xl font-bold text-foreground">
+                        {detailModalOffering.title}
+                      </DialogTitle>
+                    </DialogHeader>
+
+                    <div className="space-y-6 py-4">
+                      {/* Pathway Description */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
+                          <Briefcase className="w-4 h-4 text-secondary" /> Pathway Details & Scope
+                        </h4>
+                        {stripHtmlToPlain(detailModalOffering.description) ? (
+                          <RichTextContent
+                            html={sanitizeCourseDescriptionHtml(detailModalOffering.description)}
+                            showTitle={false}
+                            className="text-sm text-foreground leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border"
+                          />
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic">No description available.</p>
+                        )}
+                      </div>
+
+                      {/* Deliverables & Support Included */}
+                      <div>
+                        <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Deliverables & Support Included
+                        </h4>
+                        {(() => {
+                          let parsedItems = detailModalOffering.items;
+                          if (typeof parsedItems === "string") {
+                            try { parsedItems = JSON.parse(parsedItems); } catch (e) { /* ignore */ }
+                          }
+
+                          if (Array.isArray(parsedItems) && parsedItems.length > 0) {
+                            return (
+                              <div className="grid sm:grid-cols-2 gap-2.5">
+                                {parsedItems.map((item, idx) => (
+                                  <div key={idx} className="flex items-start gap-2.5 p-3 rounded-md border bg-card text-sm">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                                    <span>{item}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            );
+                          } else if (typeof parsedItems === "string" && stripHtmlToPlain(parsedItems)) {
+                            return (
+                              <RichTextContent
+                                html={sanitizeCourseDescriptionHtml(parsedItems)}
+                                showTitle={false}
+                                className="text-sm bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border"
+                              />
+                            );
+                          }
+                          return <p className="text-sm text-muted-foreground italic">Placement support included.</p>;
+                        })()}
+                      </div>
+                    </div>
+
+                    <DialogFooter className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                        onClick={() => {
+                          const oId = detailModalOffering.id;
+                          setDetailModalOffering(null);
+                          navigate(`/careers/${oId}`);
+                        }}
+                      >
+                        Open in Dedicated Page →
+                      </Button>
+                      <div className="flex gap-2 w-full sm:w-auto">
+                        <Button variant="outline" onClick={() => setDetailModalOffering(null)}>
+                          Close
+                        </Button>
+                        <Button
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6"
+                          onClick={() => {
+                            const o = detailModalOffering;
+                            setDetailModalOffering(null);
+                            requestAccess(o);
+                          }}
+                        >
+                          Request Pathway <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </div>
+                    </DialogFooter>
+                  </>
+                )}
               </DialogContent>
             </Dialog>
           </div>

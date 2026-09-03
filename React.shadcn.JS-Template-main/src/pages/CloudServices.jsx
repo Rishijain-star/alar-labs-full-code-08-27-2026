@@ -34,6 +34,7 @@ export default function CloudServicesPage() {
   const [formSelectedService, setFormSelectedService] = useState(null);
   const [requestType, setRequestType] = useState("self");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [detailModalService, setDetailModalService] = useState(null);
   const { data: servicesData, isLoading, error } = useGetPublicCloudServicesQuery();
   const [submitRequest, { isLoading: submitting }] = useSubmitCloudServiceRequestMutation();
 
@@ -170,52 +171,72 @@ export default function CloudServicesPage() {
             {/* Services Grid */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
               {services.map((service) => (
-                  <Card key={service.id} className="card-hover flex flex-col">
-                    <CardHeader className="space-y-3">
+                <Card key={service.id} className="card-hover flex flex-col justify-between h-full shadow-sm border">
+                  <div>
+                    <CardHeader className="space-y-2.5 pb-3">
                       {renderStarRating(service.rating)}
-                      <CardTitle className="text-lg leading-snug">{service.title}</CardTitle>
+                      <CardTitle className="text-lg font-bold leading-snug line-clamp-2">
+                        {service.title}
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="space-y-3 pb-2">
                       {stripHtmlToPlain(service.description) ? (
-                        <RichTextContent
-                          html={sanitizeCourseDescriptionHtml(service.description)}
-                          showTitle={false}
-                          className="text-sm text-muted-foreground mb-4"
-                        />
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                          {stripHtmlToPlain(service.description)}
+                        </p>
                       ) : null}
+
                       {(() => {
                         let parsedFeatures = service.features;
                         if (typeof parsedFeatures === "string") {
-                          try { parsedFeatures = JSON.parse(parsedFeatures); } catch (e) { /* ignore */ }
+                          try {
+                            parsedFeatures = JSON.parse(parsedFeatures);
+                          } catch (e) {
+                            /* ignore */
+                          }
                         }
-                        
+
                         if (Array.isArray(parsedFeatures) && parsedFeatures.length > 0) {
+                          const visibleFeatures = parsedFeatures.slice(0, 3);
+                          const extraCount = parsedFeatures.length - 3;
                           return (
-                            <ul className="space-y-2">
-                              {parsedFeatures.map((feature) => (
-                                <li key={feature} className="flex items-center gap-2 text-sm">
-                                  <CheckCircle2 className="w-4 h-4 text-success" />
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            <div className="space-y-1.5 pt-1">
+                              <ul className="space-y-1.5">
+                                {visibleFeatures.map((feature, idx) => (
+                                  <li key={idx} className="flex items-center gap-2 text-sm text-foreground/90">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                                    <span className="line-clamp-1">{feature}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              {extraCount > 0 && (
+                                <p className="text-xs font-semibold text-primary/90 pt-1">
+                                  + {extraCount} more feature{extraCount > 1 ? "s" : ""} included
+                                </p>
+                              )}
+                            </div>
                           );
                         } else if (typeof parsedFeatures === "string" && stripHtmlToPlain(parsedFeatures)) {
                           return (
-                            <RichTextContent
-                              html={sanitizeCourseDescriptionHtml(parsedFeatures)}
-                              showTitle={false}
-                              className="text-sm text-muted-foreground"
-                            />
+                            <p className="text-sm text-muted-foreground line-clamp-2">
+                              {stripHtmlToPlain(parsedFeatures)}
+                            </p>
                           );
                         }
                         return null;
                       })()}
-                      <Button className="w-full mt-5" onClick={() => requestAccess(service)}>
-                        {!isAuthenticated ? "Sign in to continue" : "Add More Detail"}
-                      </Button>
                     </CardContent>
-                  </Card>
+                  </div>
+
+                  <CardContent className="pt-4 mt-auto border-t bg-slate-50/50 dark:bg-slate-900/30">
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                      onClick={() => navigate(`/cloud-services/${service.id}`)}
+                    >
+                      Add More Detail
+                    </Button>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
@@ -352,6 +373,110 @@ export default function CloudServicesPage() {
               Submit your Request <ArrowRight className="w-4 h-4 ml-2" />
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Service Detail Popup Modal */}
+      <Dialog open={!!detailModalService} onOpenChange={(open) => !open && setDetailModalService(null)}>
+        <DialogContent className="sm:max-w-[700px] max-h-[85vh] overflow-y-auto p-6">
+          {detailModalService && (
+            <>
+              <DialogHeader className="space-y-3 pb-3 border-b">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Badge className="bg-primary/10 text-primary border-primary/20">
+                    Cloud Access Service
+                  </Badge>
+                  {renderStarRating(detailModalService.rating)}
+                </div>
+                <DialogTitle className="text-2xl font-bold text-foreground">
+                  {detailModalService.title}
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-6 py-4">
+                {/* Service Description */}
+                <div>
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <Cloud className="w-4 h-4 text-primary" /> Service Overview
+                  </h4>
+                  {stripHtmlToPlain(detailModalService.description) ? (
+                    <RichTextContent
+                      html={sanitizeCourseDescriptionHtml(detailModalService.description)}
+                      showTitle={false}
+                      className="text-sm text-foreground leading-relaxed bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border"
+                    />
+                  ) : (
+                    <p className="text-sm text-muted-foreground italic">No description available.</p>
+                  )}
+                </div>
+
+                {/* Key Features & Capabilities */}
+                <div>
+                  <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Key Features & Capabilities
+                  </h4>
+                  {(() => {
+                    let parsedFeatures = detailModalService.features;
+                    if (typeof parsedFeatures === "string") {
+                      try { parsedFeatures = JSON.parse(parsedFeatures); } catch (e) { /* ignore */ }
+                    }
+
+                    if (Array.isArray(parsedFeatures) && parsedFeatures.length > 0) {
+                      return (
+                        <div className="grid sm:grid-cols-2 gap-2.5">
+                          {parsedFeatures.map((feat, idx) => (
+                            <div key={idx} className="flex items-start gap-2.5 p-3 rounded-md border bg-card text-sm">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                              <span>{feat}</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    } else if (typeof parsedFeatures === "string" && stripHtmlToPlain(parsedFeatures)) {
+                      return (
+                        <RichTextContent
+                          html={sanitizeCourseDescriptionHtml(parsedFeatures)}
+                          showTitle={false}
+                          className="text-sm bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border"
+                        />
+                      );
+                    }
+                    return <p className="text-sm text-muted-foreground italic">Standard features included.</p>;
+                  })()}
+                </div>
+              </div>
+
+              <DialogFooter className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    const sId = detailModalService.id;
+                    setDetailModalService(null);
+                    navigate(`/cloud-services/${sId}`);
+                  }}
+                >
+                  Open in Dedicated Page →
+                </Button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button variant="outline" onClick={() => setDetailModalService(null)}>
+                    Close
+                  </Button>
+                  <Button
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-6"
+                    onClick={() => {
+                      const s = detailModalService;
+                      setDetailModalService(null);
+                      requestAccess(s);
+                    }}
+                  >
+                    Request Service <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 

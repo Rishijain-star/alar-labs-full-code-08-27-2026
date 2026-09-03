@@ -91,10 +91,10 @@ export const careerOfferingApi = createApi({
       ],
     }),
     setCareerOfferingApproval: builder.mutation({
-      query: ({ id, status }) => ({
+      query: ({ id, status, rejection_reason }) => ({
         url: `/owner/careers/${id}/approval`,
         method: "PATCH",
-        data: { status },
+        data: { status, rejection_reason },
         meta: {
           withCredentials: true,
           showSuccessToast: true,

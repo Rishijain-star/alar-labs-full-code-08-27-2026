@@ -677,7 +677,8 @@ class LabController {
             const updated = await labService.setContentApprovalStatus(
                 req.params.id,
                 req.body.status,
-                userId
+                userId,
+                req.body.rejection_reason || req.body.rejectionReason || null
             );
             if (req.body.status === "approved" && updated?.created_by) {
                 try {
@@ -729,6 +730,56 @@ class LabController {
 
             return response.success(res, "Lab created", 201, { lab });
         } catch (err) { return fail(res, err); }
+    };
+
+    bulkCreate = async (req, res) => {
+        try {
+            const userId = req.user?.user_id;
+            if (!userId) return response.fail(res, "Authentication required", 401);
+
+            const items = Array.isArray(req.body) ? req.body : (req.body?.items || req.body?.labs || []);
+            if (!items.length) {
+                return response.fail(res, "No lab data provided in bulk payload", 400);
+            }
+
+            const created = [];
+            const errors = [];
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                try {
+                    if (!item.title) {
+                        errors.push(`Row ${i + 1}: Missing lab title`);
+                        continue;
+                    }
+                    const generatedSlug = item.slug || item.title.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-") + "-" + Date.now().toString(36).slice(-4);
+                    const lab = await labService.create({
+                        title: item.title,
+                        slug: generatedSlug,
+                        description: item.description || "",
+                        type: item.type || "hands_on",
+                        difficulty: item.difficulty || item.level || "easy",
+                        price: Number(item.price) || 0,
+                        is_free: Boolean(item.is_free || item.isFree),
+                        status: item.status || "published",
+                        time_limit_minutes: Number(item.time_limit_minutes || item.duration) || 60,
+                        created_by: userId,
+                    });
+                    created.push(lab);
+                } catch (err) {
+                    errors.push(`Row ${i + 1} (${item.title || "Untitled"}): ${err.message}`);
+                }
+            }
+
+            return response.success(res, `Bulk created ${created.length} labs`, 201, {
+                createdCount: created.length,
+                total: items.length,
+                labs: created,
+                errors,
+            });
+        } catch (err) {
+            return fail(res, err);
+        }
     };
 
     // ── createFull — multipart/form-data ─────────────────────────────────────

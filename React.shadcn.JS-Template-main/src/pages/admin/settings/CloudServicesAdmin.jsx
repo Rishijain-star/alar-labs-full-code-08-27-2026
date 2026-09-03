@@ -6,7 +6,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, Plus, Trash2, Save, Eye, CheckCircle2, Star } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, Eye, CheckCircle2, Star, AlertCircle } from "lucide-react";
+
+function getMeta(item) {
+  if (!item?.metadata) return {};
+  if (typeof item.metadata === "object") return item.metadata;
+  try {
+    return JSON.parse(item.metadata) || {};
+  } catch (_) {
+    return {};
+  }
+}
 import {
   useGetAdminCloudServicesQuery,
   useCreateCloudServiceMutation,
@@ -35,9 +45,15 @@ import { permissionStore } from "@/utils/permissions";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
 export default function CloudServicesAdmin() {
-  const canView = permissionStore.hasPermission("manage_cloud_services");
-  const canEdit = permissionStore.hasPermission("manage_cloud_services");
-  const { data: servicesData, isLoading: loadingServices, refetch: refetchServices } = useGetAdminCloudServicesQuery();
+  const canView =
+    permissionStore.hasPermission("manage_cloud_services") ||
+    permissionStore.hasPermission("approve_cloud_services") ||
+    permissionStore.hasPermission("approve_courses");
+  const canEdit =
+    permissionStore.hasPermission("manage_cloud_services") ||
+    permissionStore.hasPermission("approve_cloud_services") ||
+    permissionStore.hasPermission("approve_courses");
+  const { data: servicesData, isLoading: loadingServices, refetch: refetchServices } = useGetAdminCloudServicesQuery(undefined, { skip: !canView });
   const [createService] = useCreateCloudServiceMutation();
   const [updateService] = useUpdateCloudServiceMutation();
   const [deleteService] = useDeleteCloudServiceMutation();
@@ -46,6 +62,7 @@ export default function CloudServicesAdmin() {
   const [updateRequestStatus] = useUpdateCloudServiceRequestStatusMutation();
 
   const [editingService, setEditingService] = useState(null);
+  const [rejectionModalItem, setRejectionModalItem] = useState(null);
   const [services, setServices] = useState([]);
 
   useEffect(() => {
@@ -151,75 +168,117 @@ export default function CloudServicesAdmin() {
           </div>
           
           <div className="grid md:grid-cols-2 gap-6">
-            {services.map((service) => (
-              <Card key={service.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CardTitle>{service.title}</CardTitle>
-                      {service.metadata?.content_approval_status === "pending" && (
-                        <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
-                          Pending Approval
-                        </Badge>
+            {services.map((service) => {
+              const meta = getMeta(service);
+              const isRejected = meta.content_approval_status === "rejected" || Boolean(meta.rejection_reason);
+              const isPending = meta.content_approval_status === "pending";
+
+              return (
+                <Card key={service.id} className="flex flex-col justify-between hover:shadow-md transition-all duration-200 border-slate-200">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="space-y-1.5 min-w-0 flex-1">
+                        <CardTitle className="text-base font-bold tracking-tight text-foreground line-clamp-1">
+                          {service.title}
+                        </CardTitle>
+
+                        {isPending && (
+                          <div className="pt-0.5">
+                            <Badge variant="outline" className="bg-amber-50 text-amber-800 border-amber-200 text-[11px] font-medium px-2 py-0.5 inline-flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                              Pending Approval
+                            </Badge>
+                          </div>
+                        )}
+                        
+                        {isRejected && (
+                          <div className="flex items-center gap-2 flex-wrap pt-0.5">
+                            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 text-[11px] font-medium px-2 py-0.5 inline-flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0 animate-pulse" />
+                              Changes Rejected
+                            </Badge>
+                            <button
+                              type="button"
+                              onClick={() => setRejectionModalItem(service)}
+                              className="text-xs text-red-600 hover:text-red-800 font-medium inline-flex items-center gap-1 hover:underline cursor-pointer transition-colors"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              View Reason
+                            </button>
+                          </div>
+                        )}
+                      </div>
+
+                      {canEdit && (
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <Button size="sm" variant="outline" className="h-8 px-3 text-xs font-medium" onClick={() => handleEditService(service)}>
+                            Edit
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => handleDeleteService(service.id)}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
                       )}
                     </div>
-                    {canEdit && (
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="secondary" onClick={() => handleEditService(service)}>
-                          Edit
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteService(service.id)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {stripHtmlToPlain(service.description) ? (
-                    <RichTextContent
-                      html={sanitizeCourseDescriptionHtml(service.description)}
-                      showTitle={false}
-                      className="text-sm text-muted-foreground mb-4"
-                    />
-                  ) : (
-                    <p className="text-sm text-muted-foreground mb-4">No description provided.</p>
-                  )}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium">Active:</span>
-                    <Switch checked={service.is_active} disabled={!canEdit} />
-                  </div>
-                  {(() => {
-                    let parsedFeatures = service.features;
-                    if (typeof parsedFeatures === "string") {
-                      try { parsedFeatures = JSON.parse(parsedFeatures); } catch (e) { /* ignore */ }
-                    }
-                    
-                    if (Array.isArray(parsedFeatures) && parsedFeatures.length > 0) {
-                      return (
-                        <ul className="space-y-1 mt-4">
-                          {parsedFeatures.map((feat, i) => (
-                            <li key={i} className="text-sm flex items-center gap-2">
-                              <CheckCircle2 className="w-4 h-4 text-success" />
-                              {feat}
-                            </li>
-                          ))}
-                        </ul>
-                      );
-                    } else if (typeof parsedFeatures === "string" && stripHtmlToPlain(parsedFeatures)) {
-                      return (
+                  </CardHeader>
+
+                  <CardContent className="pt-0 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="text-sm text-muted-foreground">
+                      {stripHtmlToPlain(service.description) ? (
                         <RichTextContent
-                          html={sanitizeCourseDescriptionHtml(parsedFeatures)}
+                          html={sanitizeCourseDescriptionHtml(service.description)}
                           showTitle={false}
-                          className="text-sm text-muted-foreground mt-4"
+                          className="text-sm text-muted-foreground line-clamp-2"
                         />
-                      );
-                    }
-                    return null;
-                  })()}
-                </CardContent>
-              </Card>
-            ))}
+                      ) : (
+                        <p className="text-sm text-muted-foreground italic">No description provided.</p>
+                      )}
+
+                      {(() => {
+                        let parsedFeatures = service.features;
+                        if (typeof parsedFeatures === "string") {
+                          try { parsedFeatures = JSON.parse(parsedFeatures); } catch (e) { /* ignore */ }
+                        }
+                        
+                        if (Array.isArray(parsedFeatures) && parsedFeatures.length > 0) {
+                          return (
+                            <ul className="space-y-1 mt-3 pt-2 border-t border-slate-100 text-xs">
+                              {parsedFeatures.slice(0, 3).map((feat, i) => (
+                                <li key={i} className="flex items-center gap-2 text-muted-foreground">
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                                  <span className="truncate">{feat}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+                        } else if (typeof parsedFeatures === "string" && stripHtmlToPlain(parsedFeatures)) {
+                          return (
+                            <div className="mt-3 pt-2 border-t border-slate-100 text-xs">
+                              <RichTextContent
+                                html={sanitizeCourseDescriptionHtml(parsedFeatures)}
+                                showTitle={false}
+                                className="text-xs text-muted-foreground line-clamp-2"
+                              />
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">Status:</span>
+                        <Switch checked={service.is_active} disabled={!canEdit} />
+                        <span className="text-[11px] text-muted-foreground font-medium">
+                          {service.is_active ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
 
           {/* Edit Dialog */}
@@ -299,6 +358,48 @@ export default function CloudServicesAdmin() {
                   <Button onClick={handleSaveService}>
                     <Save className="w-4 h-4 mr-2" />
                     Save
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Rejection Reason Modal */}
+          {rejectionModalItem && (
+            <Dialog open={!!rejectionModalItem} onOpenChange={(open) => { if (!open) setRejectionModalItem(null); }}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2 text-destructive">
+                    <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
+                    Changes Rejected
+                  </DialogTitle>
+                  <DialogDescription>
+                    Approver feedback for <strong>"{rejectionModalItem.title}"</strong>
+                  </DialogDescription>
+                </DialogHeader>
+
+                <div className="py-2 space-y-3">
+                  <div className="p-3.5 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium leading-relaxed">
+                    {getMeta(rejectionModalItem).rejection_reason || "No specific reason was provided by the approver."}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Note: Your existing base content remains active. Only your recently requested changes were rejected. Click <strong>Resubmit Changes</strong> to update details and submit again.
+                  </p>
+                </div>
+
+                <DialogFooter className="gap-2 sm:gap-0">
+                  <Button variant="outline" onClick={() => setRejectionModalItem(null)}>
+                    Close
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const itemToEdit = rejectionModalItem;
+                      setRejectionModalItem(null);
+                      handleEditService(itemToEdit);
+                    }}
+                    className="gap-2"
+                  >
+                    Resubmit Changes
                   </Button>
                 </DialogFooter>
               </DialogContent>

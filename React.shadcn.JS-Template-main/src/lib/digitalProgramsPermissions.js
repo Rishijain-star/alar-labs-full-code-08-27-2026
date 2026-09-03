@@ -11,6 +11,15 @@ export const DIGITAL_PROGRAMS_ADMIN_PERMISSIONS = [
   "create_webinars",
   "create_cloud_services",
   "create_expert_led_training",
+  "approve_cloud_services",
+  "approve_career_offerings",
+  "manage_cloud_services",
+  "manage_career_offerings",
+  "view_cloud_services",
+  "view_career_offerings",
+  "approve_courses",
+  "approve_labs",
+  "approve_exam_topics",
 ];
 
 export function canAccessDigitalProgramsAdmin() {

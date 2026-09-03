@@ -7,6 +7,8 @@ export const EXAM_TOPICS_ADMIN_PERMISSIONS = [
   "edit_exam_topics",
   "delete_exam_topics",
   "publish_exam_topics",
+  "approve_exam_topics",
+  "approve_own_exam_topics",
 ];
 
 export const EXAM_TOPICS_APPROVE_PERMISSIONS = [

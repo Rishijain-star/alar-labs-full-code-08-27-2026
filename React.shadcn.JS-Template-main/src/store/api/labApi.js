@@ -28,10 +28,10 @@ export const labApi = createApi({
     }),
 
     setLabContentApproval: builder.mutation({
-      query: ({ id, status }) => ({
+      query: ({ id, status, rejection_reason }) => ({
         url: `/owner/labs/${id}/content-approval`,
         method: "PATCH",
-        data: { status },
+        data: { status, rejection_reason },
         meta: {
           withCredentials: true,
           showSuccessToast: true,
@@ -136,6 +136,20 @@ export const labApi = createApi({
       invalidatesTags: ["Lab"],
     }),
 
+    bulkCreateLabs: builder.mutation({
+      query: (data) => ({
+        url: "/owner/labs/bulk",
+        method: "POST",
+        data,
+        meta: {
+          withCredentials: true,
+          showSuccessToast: true,
+          successMessage: "Labs bulk created!",
+        },
+      }),
+      invalidatesTags: ["Lab"],
+    }),
+
     // ── Update / save draft ──────────────────────────────────────────────────
     updateLab: builder.mutation({
       query: ({ id, ...data }) => ({
@@ -226,6 +240,7 @@ export const {
   useGetLabByIdQuery,
   useGetOwnerLabByIdQuery,
   useCreateLabMutation,
+  useBulkCreateLabsMutation,
   useUpdateLabMutation,
   usePublishLabMutation,
   useUnpublishLabMutation,

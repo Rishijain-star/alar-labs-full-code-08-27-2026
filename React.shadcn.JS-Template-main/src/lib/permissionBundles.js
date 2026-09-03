@@ -36,6 +36,9 @@ const PERMISSION_IMPLIES = {
   approve_exam_topics: ["approve_exam_topics", "view_exam_topics"],
   approve_own_exam_topics: ["approve_own_exam_topics", "view_exam_topics"],
 
+  approve_cloud_services: ["approve_cloud_services", "view_cloud_services", "manage_cloud_services", "view_programs"],
+  approve_career_offerings: ["approve_career_offerings", "view_career_offerings", "manage_career_offerings", "view_programs"],
+
   view_programs: [
     "view_programs",
     "view_webinars",
@@ -197,6 +200,8 @@ export const PERMISSION_BUNDLE_GROUPS = [
     id: "approve_permissions",
     label: "Approve Permissions (Approval & Review)",
     bundles: [
+      { id: "approve_cloud_services", label: "Approve Cloud Services", description: "Approve cloud services for publication" },
+      { id: "approve_career_offerings", label: "Approve Tech Career Pathways", description: "Approve tech career pathways for publication" },
       { id: "approve_courses", label: "Approve All Courses", description: "Approve any course for publication" },
       { id: "approve_own_courses", label: "Approve Own Courses", description: "Approve only courses you created" },
       { id: "approve_labs", label: "Approve All Labs", description: "Approve any lab for publication" },

@@ -175,7 +175,8 @@ class ExamTopicsConfigController {
         type,
         req.params.setId,
         req.body.status,
-        userId
+        userId,
+        req.body.rejection_reason || req.body.rejectionReason || null
       );
 
       if (req.body.status === "approved" && updated?.set?.created_by) {
@@ -250,6 +251,93 @@ class ExamTopicsConfigController {
         answerText,
       });
       return response.success(res, "OK", 200, result);
+    } catch (err) {
+      return fail(res, err);
+    }
+  };
+
+  bulkUploadQuestions = async (req, res) => {
+    try {
+      const { csvContent, rows } = req.body || {};
+      const result = examTopicsConfigService.bulkUploadQuestions(csvContent || rows || req.body);
+      return response.success(res, "Bulk question validation complete", 200, result);
+    } catch (err) {
+      return fail(res, err);
+    }
+  };
+
+  saveAttempt = async (req, res) => {
+    try {
+      const userId = req.user?.user_id || "guest";
+      const { setId, examTitle, score, total, percentage, passed, timeTakenSeconds } = req.body || {};
+      if (!setId) {
+        return response.fail(res, "setId is required", 400);
+      }
+      const attemptRecord = {
+        attemptId: `att_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        userId,
+        setId,
+        examTitle: examTitle || "Exam Assessment",
+        score: Number(score) || 0,
+        total: Number(total) || 0,
+        percentage: Number(percentage) || 0,
+        passed: Boolean(passed),
+        timeTakenSeconds: Number(timeTakenSeconds) || 0,
+        completedAt: new Date().toISOString(),
+      };
+
+      const key = `exam_attempts:${userId}:${setId}`;
+      const globalKey = `exam_attempts:${userId}:all`;
+      const redisManager = require("../lib/redisManager");
+      const redis = await redisManager.getClientSafe();
+
+      if (redis) {
+        await redis.lPush(key, JSON.stringify(attemptRecord));
+        await redis.lTrim(key, 0, 49);
+        await redis.lPush(globalKey, JSON.stringify(attemptRecord));
+        await redis.lTrim(globalKey, 0, 99);
+      }
+
+      if (!global.memoryAttemptStore) global.memoryAttemptStore = new Map();
+      if (!global.memoryAttemptStore.has(key)) global.memoryAttemptStore.set(key, []);
+      global.memoryAttemptStore.get(key).unshift(attemptRecord);
+      if (global.memoryAttemptStore.get(key).length > 50) global.memoryAttemptStore.get(key).pop();
+
+      return response.success(res, "Attempt history saved", 200, { attempt: attemptRecord });
+    } catch (err) {
+      return fail(res, err);
+    }
+  };
+
+  getAttempts = async (req, res) => {
+    try {
+      const userId = req.user?.user_id || "guest";
+      const setId = req.params.setId || req.query.setId;
+      const key = setId ? `exam_attempts:${userId}:${setId}` : `exam_attempts:${userId}:all`;
+
+      let attempts = [];
+      const redisManager = require("../lib/redisManager");
+      const redis = await redisManager.getClientSafe();
+      if (redis) {
+        const raw = await redis.lRange(key, 0, 50);
+        if (Array.isArray(raw) && raw.length > 0) {
+          attempts = raw
+            .map((item) => {
+              try {
+                return JSON.parse(item);
+              } catch {
+                return null;
+              }
+            })
+            .filter(Boolean);
+        }
+      }
+
+      if (!attempts.length && global.memoryAttemptStore && global.memoryAttemptStore.has(key)) {
+        attempts = global.memoryAttemptStore.get(key) || [];
+      }
+
+      return response.success(res, "Attempts retrieved", 200, { attempts });
     } catch (err) {
       return fail(res, err);
     }

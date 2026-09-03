@@ -10,6 +10,8 @@ const EXAM_TOPICS_VIEW_PERMISSIONS = [
   "edit_exam_topics",
   "delete_exam_topics",
   "publish_exam_topics",
+  "approve_exam_topics",
+  "approve_own_exam_topics",
 ];
 
 const EXAM_TOPICS_APPROVE_PERMISSIONS = [
@@ -63,6 +65,13 @@ router.get(
   checkPermission(EXAM_TOPICS_APPROVE_PERMISSIONS),
   createRateLimiter("default"),
   c.getSetForReview
+);
+
+router.post(
+  "/exam-topics/bulk-upload-questions",
+  checkPermission(["create_exam_topics", "edit_exam_topics"], "OR"),
+  createRateLimiter("update"),
+  c.bulkUploadQuestions
 );
 
 module.exports = router;

@@ -7,10 +7,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { formatCountdown } from "@/lib/examTopicsConfig";
-import { Loader2, CheckCircle2, XCircle, Clock, ChevronRight, Lightbulb, Trophy, AlertTriangle, AlertCircle, HelpCircle, RefreshCw, Eye, Award, ChevronDown, ChevronUp } from "lucide-react";
-import { useVerifyExamTopicsAnswerMutation } from "@/store/api/examTopicsApi";
+import { Loader2, CheckCircle2, XCircle, Clock, ChevronRight, Lightbulb, Trophy, AlertTriangle, AlertCircle, HelpCircle, RefreshCw, Eye, Award, ChevronDown, ChevronUp, History } from "lucide-react";
+import { useVerifyExamTopicsAnswerMutation, useSaveExamAttemptMutation, useGetExamAttemptsQuery } from "@/store/api/examTopicsApi";
 import { useAssessmentAutoSave, clearAssessmentAutoSave } from "@/hooks/useAssessmentAutoSave";
 import { useSelector } from "react-redux";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 /**
  * @param {"learning"|"exam"} mode
@@ -78,6 +85,10 @@ export default function ExamTopicsQuizPlayer({ mode = "learning", sectionConfig,
   }, [isInitializing, initialData, timeLimitMinutes, questions.length]); // Intentionally omitting onFinish to prevent infinite hydration loops
 
   const [verifyAnswer] = useVerifyExamTopicsAnswerMutation();
+  const [saveExamAttempt] = useSaveExamAttemptMutation();
+  const { data: attemptsData } = useGetExamAttemptsQuery(setId, { skip: !setId });
+  const attemptsList = attemptsData?.data?.attempts || attemptsData?.attempts || [];
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
 
   const handleRetake = () => {
     // Explicitly wipe the previous attempt from backend/local before restarting
@@ -140,10 +151,25 @@ export default function ExamTopicsQuizPlayer({ mode = "learning", sectionConfig,
       }
     }
     const score = results.filter((r) => r.correct).length;
+    const requiredPct = sectionConfig?.passingPercentage ?? 70;
+    const pct = Math.round((score / questions.length) * 100) || 0;
+    const passed = pct >= requiredPct;
+    const timeTaken = (timeLimitMinutes * 60) - secondsLeft;
+
+    saveExamAttempt({
+      setId,
+      examTitle: sectionConfig?.title || "Exam Assessment",
+      score,
+      total: questions.length,
+      percentage: pct,
+      passed,
+      timeTakenSeconds: timeTaken > 0 ? timeTaken : 0,
+    });
+
     setExamResults({ score, total: questions.length, results });
     setFinished(true);
     onFinish?.({ score, total: questions.length });
-  }, [answers, onFinish, questions, setId, verifyAnswer]);
+  }, [answers, onFinish, questions, saveExamAttempt, secondsLeft, sectionConfig, setId, timeLimitMinutes, verifyAnswer]);
 
   useEffect(() => {
     if (isLearning || finished || !questions.length) return undefined;
@@ -606,14 +632,24 @@ export default function ExamTopicsQuizPlayer({ mode = "learning", sectionConfig,
           </div>
         </div>
 
-        {/* Retry Button */}
-        <div className="flex justify-center pt-2">
+        {/* Retry & History Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-3 pt-2">
           <Button 
             onClick={handleRetake}
-            className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2 px-6 py-5 rounded-xl font-bold"
+            className="bg-blue-600 hover:bg-blue-700 flex items-center justify-center gap-2 px-6 py-5 rounded-xl font-bold"
           >
             <RefreshCw className="w-4.5 h-4.5" />
             <span>Retake Exam</span>
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsHistoryDialogOpen(true)}
+            className="flex items-center justify-center gap-2 px-6 py-5 rounded-xl font-bold border-slate-300 dark:border-slate-700"
+          >
+            <History className="w-4.5 h-4.5 text-blue-600" />
+            <span>Attempt History ({attemptsList.length})</span>
           </Button>
         </div>
       </div>
@@ -889,6 +925,66 @@ export default function ExamTopicsQuizPlayer({ mode = "learning", sectionConfig,
           </Card>
         </div>
       )}
+
+      {/* Historical Attempt Tracking Dialog */}
+      <Dialog open={isHistoryDialogOpen} onOpenChange={setIsHistoryDialogOpen}>
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="w-5 h-5 text-blue-600" />
+              Exam Attempt History
+            </DialogTitle>
+            <DialogDescription>
+              Track your past attempt scores, timestamps, and performance over time.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-2">
+            {!attemptsList.length ? (
+              <p className="text-sm text-center py-8 text-muted-foreground">
+                No attempt history recorded yet. Complete an exam attempt to start tracking history!
+              </p>
+            ) : (
+              attemptsList.map((att, idx) => (
+                <div
+                  key={att.attemptId || idx}
+                  className="flex items-center justify-between p-3.5 rounded-lg border bg-slate-50/70 dark:bg-slate-900/50"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm">Attempt #{attemptsList.length - idx}</span>
+                      <span
+                        className={cn(
+                          "text-xs px-2 py-0.5 rounded-full font-semibold",
+                          att.passed
+                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-400"
+                            : "bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-400"
+                        )}
+                      >
+                        {att.passed ? "PASSED" : "FAILED"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {att.completedAt ? new Date(att.completedAt).toLocaleString() : "Date N/A"}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-base font-extrabold block">
+                      {att.score} / {att.total} ({att.percentage}%)
+                    </span>
+                    {att.timeTakenSeconds > 0 && (
+                      <span className="text-[11px] text-muted-foreground block">
+                        Time: {Math.floor(att.timeTakenSeconds / 60)}m {att.timeTakenSeconds % 60}s
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

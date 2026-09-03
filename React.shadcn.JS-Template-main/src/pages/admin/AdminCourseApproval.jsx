@@ -122,7 +122,16 @@ export default function ContentApproval() {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
+  const [fullReviewOpen, setFullReviewOpen] = useState(false);
+  const [fullReviewItem, setFullReviewItem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const openFullReview = (item, itemKind) => {
+    const fullItem = { ...item, itemKind };
+    setSelectedItem(fullItem);
+    setFullReviewItem(fullItem);
+    setFullReviewOpen(true);
+  };
 
   const { data: pendingCQ, isLoading: coursesQueryLoading, isFetching: coursesQueryFetching, refetch: refetchPendingCourses } = useGetCoursesQuery(
     { approval: "pending", status: "published", limit: 100 },
@@ -154,6 +163,7 @@ export default function ContentApproval() {
       const approval = c.content_approval_status || "pending";
       const created = c.created_at || c.createdAt;
       return {
+        ...c,
         id: c.id,
         slug: c.slug,
         title: c.title,
@@ -166,6 +176,7 @@ export default function ContentApproval() {
         learning_objectives: [],
         prerequisites: "",
         duration: c.duration || "—",
+        draft_data: c.draft_data || c.metadata?.draft_data || null,
       };
     });
   }, [pendingCQ]);
@@ -174,33 +185,32 @@ export default function ContentApproval() {
 
   const apiPendingLabs = useMemo(() => {
     const rows = pendingLQ?.data?.rows || pendingLQ?.rows || [];
-    return rows
-      .map((lab) => {
-        const approval = lab.content_approval_status || "pending";
-        const created = lab.created_at || lab.createdAt;
-        const level = LAB_DIFFICULTY_LABEL[lab.difficulty] || lab.difficulty || "—";
-        const kind = lab.lab_kind || lab.metadata?.lab_kind || null;
-        return {
-          id: lab.id,
-          slug: lab.slug,
-          lab_kind: kind,
-          title: lab.title,
-          author: lab.author_name || "—",
-          platform:
-            kind === "skill_builder"
-              ? "Skill Builder"
-              : String(lab.type || "hands_on").replace(/_/g, " "),
-          level,
-          status:
-            approval === "approved" ? "approved" : approval === "rejected" ? "rejected" : "pending",
-          submitted_at: created ? String(created).slice(0, 10) : "",
-          description: lab.description || "",
-          duration:
-            lab.time_limit_minutes != null ? `${lab.time_limit_minutes} min` : "—",
-          is_free: lab.is_free,
-          price: lab.price,
-        };
-      });
+    return rows.map((lab) => {
+      const approval = lab.content_approval_status || "pending";
+      const created = lab.created_at || lab.createdAt;
+      const level = LAB_DIFFICULTY_LABEL[lab.difficulty] || lab.difficulty || "—";
+      const kind = lab.lab_kind || lab.metadata?.lab_kind || null;
+      return {
+        ...lab,
+        id: lab.id,
+        slug: lab.slug,
+        lab_kind: kind,
+        title: lab.title,
+        author: lab.author_name || "—",
+        platform:
+          kind === "skill_builder"
+            ? "Skill Builder"
+            : String(lab.type || "hands_on").replace(/_/g, " "),
+        level,
+        status: approval === "approved" ? "approved" : approval === "rejected" ? "rejected" : "pending",
+        submitted_at: created ? String(created).slice(0, 10) : "",
+        description: lab.description || "",
+        duration: lab.time_limit_minutes != null ? `${lab.time_limit_minutes} min` : "—",
+        is_free: lab.is_free,
+        price: lab.price,
+        draft_data: lab.draft_data || lab.metadata?.draft_data || null,
+      };
+    });
   }, [pendingLQ]);
 
   const labsSource = apiPendingLabs;
@@ -210,17 +220,19 @@ export default function ContentApproval() {
     return rows.map((item) => {
       const approval = item.content_approval_status || "pending";
       return {
+        ...item,
         id: item.setId,
         setId: item.setId,
         contentType: item.type,
         title: item.title || "Untitled",
         author: item.author_name || "—",
-        questionCount: item.questionCount || 0,
+        questionCount: item.questionCount || (item.questions || []).length,
         timeLimitMinutes: item.timeLimitMinutes,
-        status:
-          approval === "approved" ? "approved" : approval === "rejected" ? "rejected" : "pending",
+        status: approval === "approved" ? "approved" : approval === "rejected" ? "rejected" : "pending",
         submitted_at: item.updatedAt ? String(item.updatedAt).slice(0, 10) : "",
         description: item.description || "",
+        draft_data: item.draft_data || null,
+        questions: item.questions || [],
       };
     });
   }, [pendingETQ]);
@@ -230,15 +242,17 @@ export default function ContentApproval() {
   const apiPendingCloudServices = useMemo(() => {
     const rows = pendingCSQ?.data?.rows || pendingCSQ?.rows || pendingCSQ?.data || [];
     return Array.isArray(rows) ? rows.map((c) => {
-      const approval = c.metadata?.content_approval_status || "pending";
+      const approval = c.metadata?.content_approval_status || c.content_approval_status || "pending";
       const created = c.created_at || c.createdAt;
       return {
+        ...c,
         id: c.id,
         title: c.title,
         author: c.author_name || "—",
         status: approval === "approved" ? "approved" : approval === "rejected" ? "rejected" : "pending",
         submitted_at: created ? String(created).slice(0, 10) : "",
         description: c.description || "",
+        draft_data: c.draft_data || c.metadata?.draft_data || null,
       };
     }) : [];
   }, [pendingCSQ]);
@@ -248,15 +262,17 @@ export default function ContentApproval() {
   const apiPendingCareerOfferings = useMemo(() => {
     const rows = pendingCOQ?.data?.rows || pendingCOQ?.rows || pendingCOQ?.data || [];
     return Array.isArray(rows) ? rows.map((c) => {
-      const approval = c.metadata?.content_approval_status || "pending";
+      const approval = c.metadata?.content_approval_status || c.content_approval_status || "pending";
       const created = c.created_at || c.createdAt;
       return {
+        ...c,
         id: c.id,
         title: c.title,
         author: c.author_name || "—",
         status: approval === "approved" ? "approved" : approval === "rejected" ? "rejected" : "pending",
         submitted_at: created ? String(created).slice(0, 10) : "",
         description: c.description || "",
+        draft_data: c.draft_data || c.metadata?.draft_data || null,
       };
     }) : [];
   }, [pendingCOQ]);
@@ -442,9 +458,10 @@ export default function ContentApproval() {
 
   const handleQuickReject = async () => {
     if (!selectedItem) return;
+    const reason = rejectionReason || "No reason provided";
     if (selectedItem.itemKind === "career_offering") {
       try {
-        await setCareerOfferingApproval({ id: selectedItem.id, status: "rejected" }).unwrap();
+        await setCareerOfferingApproval({ id: selectedItem.id, status: "rejected", rejection_reason: reason }).unwrap();
         toast.success("Career offering rejected");
         refetchPendingCareerOfferings();
       } catch (e) {
@@ -457,7 +474,7 @@ export default function ContentApproval() {
     }
     if (selectedItem.itemKind === "cloud_service") {
       try {
-        await setCloudServiceApproval({ id: selectedItem.id, status: "rejected" }).unwrap();
+        await setCloudServiceApproval({ id: selectedItem.id, status: "rejected", rejection_reason: reason }).unwrap();
         toast.success("Cloud service rejected");
         refetchPendingCloudServices();
       } catch (e) {
@@ -470,7 +487,7 @@ export default function ContentApproval() {
     }
     if (selectedItem.itemKind === "course") {
       try {
-        await setCourseApproval({ id: selectedItem.id, status: "rejected" }).unwrap();
+        await setCourseApproval({ id: selectedItem.id, status: "rejected", rejection_reason: reason }).unwrap();
         toast.success("Course rejected");
         refetchPendingCourses();
       } catch (e) {
@@ -483,7 +500,7 @@ export default function ContentApproval() {
     }
     if (selectedItem.itemKind === "lab") {
       try {
-        await setLabApproval({ id: selectedItem.id, status: "rejected" }).unwrap();
+        await setLabApproval({ id: selectedItem.id, status: "rejected", rejection_reason: reason }).unwrap();
         toast.success("Lab rejected");
         refetchPendingLabs();
       } catch (e) {
@@ -500,6 +517,7 @@ export default function ContentApproval() {
           type: selectedItem.contentType,
           setId: selectedItem.setId,
           status: "rejected",
+          rejection_reason: reason,
         }).unwrap();
         toast.success("Exam topic rejected");
         refetchPendingExamTopics();
@@ -776,23 +794,21 @@ export default function ContentApproval() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handlePreview(course, "course")}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Preview Content
-                                </DropdownMenuItem>
+                                {course.status !== "pending" && (
+                                  <DropdownMenuItem onClick={() => handlePreview(course, "course")}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Preview Content
+                                  </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem
-                                  onClick={() =>
-                                    course.slug &&
-                                    navigate(`/app/courses/${course.slug}/review`)
-                                  }
-                                  disabled={!course.slug || !canApproveCourses}
+                                  onClick={() => openFullReview(course, "course")}
                                 >
                                   <FileText className="mr-2 h-4 w-4" />
                                   Full Review
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 {canApproveCourses && course.status === "pending" && (
                                   <>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                       className="text-green-600"
                                       onClick={() => handleQuickApprove(course.id, "course")}
@@ -1008,22 +1024,21 @@ export default function ContentApproval() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handlePreview(lab, "lab")}>
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Preview Content
-                                </DropdownMenuItem>
+                                {lab.status !== "pending" && (
+                                  <DropdownMenuItem onClick={() => handlePreview(lab, "lab")}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Preview Content
+                                  </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem
-                                  onClick={() =>
-                                    lab.slug && navigate(`/app/labs/${lab.slug}/review`)
-                                  }
-                                  disabled={!lab.id || !canApproveLabs}
+                                  onClick={() => openFullReview(lab, "lab")}
                                 >
                                   <FileText className="mr-2 h-4 w-4" />
                                   Full Review
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 {canApproveLabs && lab.status === "pending" && (
                                   <>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem
                                       className="text-green-600"
                                       onClick={() => handleQuickApprove(lab.id, "lab")}
@@ -1214,11 +1229,19 @@ export default function ContentApproval() {
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
+                                {item.status !== "pending" && (
+                                  <DropdownMenuItem
+                                    onClick={() => handlePreview(item, "exam_topic")}
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Preview Content
+                                  </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem
-                                  onClick={() => handlePreview(item, "exam_topic")}
+                                  onClick={() => openFullReview(item, "exam_topic")}
                                 >
-                                  <Eye className="mr-2 h-4 w-4" />
-                                  Preview Content
+                                  <FileText className="mr-2 h-4 w-4" />
+                                  Full Review
                                 </DropdownMenuItem>
                                 {canApproveExamTopics && item.status === "pending" && (
                                   <>
@@ -1358,12 +1381,17 @@ export default function ContentApproval() {
                                 <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handlePreview(service, "cloud_service")}>
-                                  <Eye className="mr-2 h-4 w-4" /> Preview Content
+                                {service.status !== "pending" && (
+                                  <DropdownMenuItem onClick={() => handlePreview(service, "cloud_service")}>
+                                    <Eye className="mr-2 h-4 w-4" /> Preview Content
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem onClick={() => openFullReview(service, "cloud_service")}>
+                                  <FileText className="mr-2 h-4 w-4" /> Full Review
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 {canApproveCloudServices && service.status === "pending" && (
                                   <>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem className="text-green-600" onClick={() => handleQuickApprove(service.id, "cloud_service")}>
                                       <Check className="mr-2 h-4 w-4" /> Quick Approve
                                     </DropdownMenuItem>
@@ -1486,12 +1514,17 @@ export default function ContentApproval() {
                                 <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => handlePreview(service, "career_offering")}>
-                                  <Eye className="mr-2 h-4 w-4" /> Preview Content
+                                {service.status !== "pending" && (
+                                  <DropdownMenuItem onClick={() => handlePreview(service, "career_offering")}>
+                                    <Eye className="mr-2 h-4 w-4" /> Preview Content
+                                  </DropdownMenuItem>
+                                )}
+                                <DropdownMenuItem onClick={() => openFullReview(service, "career_offering")}>
+                                  <FileText className="mr-2 h-4 w-4" /> Full Review
                                 </DropdownMenuItem>
-                                <DropdownMenuSeparator />
                                 {canApproveCareerOfferings && service.status === "pending" && (
                                   <>
+                                    <DropdownMenuSeparator />
                                     <DropdownMenuItem className="text-green-600" onClick={() => handleQuickApprove(service.id, "career_offering")}>
                                       <Check className="mr-2 h-4 w-4" /> Quick Approve
                                     </DropdownMenuItem>
@@ -1702,8 +1735,10 @@ export default function ContentApproval() {
                       <p className="text-sm">
                         {selectedItem.is_free ? (
                           <Badge variant="secondary">Free</Badge>
-                        ) : (
+                        ) : selectedItem.price != null ? (
                           `$${selectedItem.price}`
+                        ) : (
+                          "Free"
                         )}
                       </p>
                     </div>
@@ -1711,7 +1746,7 @@ export default function ContentApproval() {
                 )}
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Level</p>
-                  <p className="text-sm capitalize">{selectedItem.level}</p>
+                  <p className="text-sm capitalize">{selectedItem.level || "Standard"}</p>
                 </div>
               </div>
 
@@ -1720,10 +1755,8 @@ export default function ContentApproval() {
                 <p className="text-sm font-medium text-muted-foreground mb-2">Description</p>
                 <Card>
                   <CardContent className="pt-4">
-                    <p className="text-sm">
-                      {selectedItem.itemKind === "exam_topic"
-                        ? stripHtmlToPlain(selectedItem.description) || "—"
-                        : selectedItem.description}
+                    <p className="text-sm whitespace-pre-wrap">
+                      {stripHtmlToPlain(selectedItem.description) || "—"}
                     </p>
                   </CardContent>
                 </Card>
@@ -1805,50 +1838,338 @@ export default function ContentApproval() {
             <Button variant="outline" onClick={() => setPreviewDialogOpen(false)}>
               Close
             </Button>
-            {selectedItem?.itemKind !== "exam_topic" && (
-              <Button
-                onClick={() => {
-                  setPreviewDialogOpen(false);
-                  if (selectedItem?.itemKind === "course" && selectedItem?.slug) {
-                    navigate(`/app/courses/${selectedItem.slug}/review`);
-                  } else if (selectedItem?.itemKind === "lab" && selectedItem?.id) {
-                    navigate(`/app/labs/${selectedItem.slug}/review`);
-                  }
-                }}
-                disabled={
-                  selectedItem?.itemKind === "course"
-                    ? !selectedItem?.slug || !canApproveCourses
-                    : !selectedItem?.id || !canApproveLabs
-                }
-              >
-                Full Review
-              </Button>
-            )}
-            {selectedItem?.itemKind === "exam_topic" &&
-              canApproveExamTopics &&
-              selectedItem?.status === "pending" && (
-                <>
-                  <Button
-                    className="bg-green-600 hover:bg-green-700"
-                    onClick={async () => {
-                      setPreviewDialogOpen(false);
-                      await handleQuickApprove(selectedItem, "exam_topic");
-                    }}
-                  >
-                    Approve
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    onClick={() => {
-                      setPreviewDialogOpen(false);
-                      setSelectedItem({ ...selectedItem, itemKind: "exam_topic" });
-                      setRejectDialogOpen(true);
-                    }}
-                  >
-                    Reject
-                  </Button>
-                </>
+            <Button
+              className="bg-primary text-primary-foreground font-medium"
+              onClick={() => {
+                setPreviewDialogOpen(false);
+                openFullReview(selectedItem, selectedItem?.itemKind);
+              }}
+            >
+              Full Review
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* FULL CONTENT REVIEW DIALOG WITH DIFF HIGHLIGHTING */}
+      <Dialog open={fullReviewOpen} onOpenChange={setFullReviewOpen}>
+        <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <div className="flex items-center justify-between pr-6">
+              <div>
+                <DialogTitle className="text-xl flex items-center gap-2">
+                  <ContentTypeBadge kind={fullReviewItem?.itemKind} />
+                  <span>{fullReviewItem?.title || "Untitled"}</span>
+                </DialogTitle>
+                <DialogDescription className="mt-1">
+                  Submitted by <span className="font-semibold text-foreground">{fullReviewItem?.author}</span> on {fullReviewItem?.submitted_at ? new Date(fullReviewItem.submitted_at).toLocaleDateString() : "recent"}
+                </DialogDescription>
+              </div>
+              {getStatusBadge(fullReviewItem?.status)}
+            </div>
+          </DialogHeader>
+
+          {fullReviewItem && (
+            <div className="space-y-6 py-2">
+              {/* Overview Bar */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-xl bg-slate-50 dark:bg-slate-900 border text-xs">
+                <div>
+                  <span className="text-muted-foreground block font-medium">Type / Category</span>
+                  <span className="font-semibold text-foreground capitalize">
+                    {fullReviewItem.contentType || fullReviewItem.platform || fullReviewItem.category || fullReviewItem.itemKind?.replace("_", " ")}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block font-medium">Duration / Time Limit</span>
+                  <span className="font-semibold text-foreground">
+                    {fullReviewItem.duration || (fullReviewItem.timeLimitMinutes ? `${fullReviewItem.timeLimitMinutes} min` : "—")}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block font-medium">Price</span>
+                  <span className="font-semibold text-foreground">
+                    {fullReviewItem.is_free ? <Badge variant="secondary" className="text-[10px]">Free</Badge> : (fullReviewItem.price != null ? `$${fullReviewItem.price}` : "Free")}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground block font-medium font-semibold">Level / Items</span>
+                  <span className="font-semibold text-foreground capitalize">
+                    {fullReviewItem.level || (fullReviewItem.questionCount != null ? `${fullReviewItem.questionCount} Questions` : "Standard")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Clean Main Description */}
+              <div>
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
+                  Published / Main Description
+                </h4>
+                <Card className="bg-background">
+                  <CardContent className="p-4 text-sm leading-relaxed whitespace-pre-wrap">
+                    {stripHtmlToPlain(fullReviewItem.description) || "No description provided."}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* PENDING EDITS & DIFF HIGHLIGHTING SECTION */}
+              {fullReviewItem.draft_data ? (
+                <div className="p-4 rounded-xl bg-amber-50/90 border-2 border-amber-400 dark:bg-amber-950/30 dark:border-amber-700 space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-amber-300 dark:border-amber-800 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-amber-500 text-white font-bold text-sm shadow-xs">
+                        ⚡
+                      </span>
+                      <div>
+                        <h4 className="font-bold text-sm text-amber-950 dark:text-amber-100">
+                          Submitted Edits & Changes To Review
+                        </h4>
+                        <p className="text-xs text-amber-800 dark:text-amber-300">
+                          Comparing published original version against author's new submitted changes.
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className="bg-amber-600 hover:bg-amber-600 text-white text-xs px-2.5 py-1 font-semibold">
+                      Draft Pending Approval
+                    </Badge>
+                  </div>
+
+                  {/* Title Diff */}
+                  <div className="space-y-1 text-xs">
+                    <span className="font-semibold text-amber-900 dark:text-amber-200">Title Comparison:</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="p-2.5 rounded-lg border bg-red-50 text-red-900 dark:bg-red-950/40 dark:text-red-200 border-red-200">
+                        <span className="text-[10px] font-bold block uppercase text-red-600">Original Published Title</span>
+                        {fullReviewItem.title || "—"}
+                      </div>
+                      <div className="p-2.5 rounded-lg border bg-emerald-100 text-emerald-950 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-400 font-bold shadow-xs">
+                        <span className="text-[10px] font-bold block uppercase text-emerald-700 dark:text-emerald-400">New Submitted Title (Highlighted)</span>
+                        {fullReviewItem.draft_data.title || fullReviewItem.title || "—"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description Diff */}
+                  <div className="space-y-1 text-xs">
+                    <span className="font-semibold text-amber-900 dark:text-amber-200">Description Comparison:</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div className="p-2.5 rounded-lg border bg-red-50 text-red-900 dark:bg-red-950/40 dark:text-red-200 border-red-200 text-xs">
+                        <span className="text-[10px] font-bold block uppercase text-red-600">Original Description</span>
+                        {stripHtmlToPlain(fullReviewItem.description) || "—"}
+                      </div>
+                      <div className="p-2.5 rounded-lg border bg-emerald-100 text-emerald-950 dark:bg-emerald-950/60 dark:text-emerald-200 border-emerald-400 text-xs font-semibold shadow-xs">
+                        <span className="text-[10px] font-bold block uppercase text-emerald-700 dark:text-emerald-400">New Submitted Description (Cleaned Text)</span>
+                        {stripHtmlToPlain(fullReviewItem.draft_data.description || fullReviewItem.description)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Time Limit / Passing Percentage Diff */}
+                  {(fullReviewItem.draft_data.timeLimitMinutes !== undefined && fullReviewItem.draft_data.timeLimitMinutes !== fullReviewItem.timeLimitMinutes) ||
+                   (fullReviewItem.draft_data.passingPercentage !== undefined && fullReviewItem.draft_data.passingPercentage !== fullReviewItem.passingPercentage) ? (
+                    <div className="flex flex-wrap gap-3 text-xs pt-1">
+                      {fullReviewItem.draft_data.timeLimitMinutes !== undefined && (
+                        <div className="p-2 px-3 bg-emerald-100 border border-emerald-300 rounded-md text-emerald-950 font-medium">
+                          <span className="font-bold">Time Limit:</span> {fullReviewItem.timeLimitMinutes || "None"} min ➔ <span className="font-extrabold text-emerald-700">{fullReviewItem.draft_data.timeLimitMinutes} min</span>
+                        </div>
+                      )}
+                      {fullReviewItem.draft_data.passingPercentage !== undefined && (
+                        <div className="p-2 px-3 bg-emerald-100 border border-emerald-300 rounded-md text-emerald-950 font-medium">
+                          <span className="font-bold">Passing %:</span> {fullReviewItem.passingPercentage || "None"}% ➔ <span className="font-extrabold text-emerald-700">{fullReviewItem.draft_data.passingPercentage}%</span>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+
+                  {/* Questions Diff for Exam Topics / Learning Sets */}
+                  {Array.isArray(fullReviewItem.draft_data.questions) && (
+                    <div className="space-y-2 pt-2 border-t border-amber-300 dark:border-amber-800">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-xs text-amber-900 dark:text-amber-200">
+                          Submitted Questions ({fullReviewItem.draft_data.questions.length} questions in draft)
+                        </span>
+                        <Badge variant="outline" className="text-[10px] bg-emerald-100 text-emerald-900 border-emerald-300 font-bold">
+                          Draft Set Questions
+                        </Badge>
+                      </div>
+
+                      <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                        {fullReviewItem.draft_data.questions.map((q, qIdx) => {
+                          const origQ = (fullReviewItem.questions || [])[qIdx];
+                          const isNew = !origQ;
+                          const isChanged = origQ && (origQ.question !== q.question || JSON.stringify(origQ.options) !== JSON.stringify(q.options));
+
+                          return (
+                            <div
+                              key={qIdx}
+                              className={`p-3 rounded-lg border text-xs space-y-1.5 ${
+                                isNew
+                                  ? "bg-emerald-100/90 border-emerald-400 dark:bg-emerald-950/50 dark:border-emerald-800"
+                                  : isChanged
+                                  ? "bg-amber-100/80 border-amber-400 dark:bg-amber-950/50 dark:border-amber-800"
+                                  : "bg-background border-slate-200"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-foreground">
+                                  Q{qIdx + 1}. {q.question}
+                                </span>
+                                {isNew && (
+                                  <Badge className="bg-emerald-600 text-white text-[9px] font-bold">
+                                    + NEW QUESTION
+                                  </Badge>
+                                )}
+                                {!isNew && isChanged && (
+                                  <Badge variant="outline" className="bg-amber-200 text-amber-950 border-amber-400 text-[9px] font-bold">
+                                    EDITED
+                                  </Badge>
+                                )}
+                              </div>
+
+                              {/* Options */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 pt-1">
+                                {q.options?.map((opt, optIdx) => {
+                                  const isCorrect = Array.isArray(q.correctOptionIds)
+                                    ? q.correctOptionIds.includes(opt.id)
+                                    : q.correctOptionId === opt.id;
+                                  return (
+                                    <div
+                                      key={optIdx}
+                                      className={`p-1.5 px-2.5 rounded text-[11px] flex items-center justify-between border ${
+                                        isCorrect
+                                          ? "bg-emerald-200 border-emerald-500 font-bold text-emerald-950"
+                                          : "bg-muted/40 border-transparent text-muted-foreground"
+                                      }`}
+                                    >
+                                      <span>{opt.text}</span>
+                                      {isCorrect && (
+                                        <Badge className="text-[8px] bg-emerald-700 text-white h-3.5 px-1.5 font-bold">
+                                          Correct
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : fullReviewItem.status === "pending" ? (
+                /* NEW CONTENT SUBMISSION HIGHLIGHTING */
+                <div className="p-4 rounded-xl bg-emerald-50/90 border-2 border-emerald-400 dark:bg-emerald-950/30 dark:border-emerald-700 space-y-4 shadow-sm">
+                  <div className="flex items-center justify-between border-b border-emerald-200 dark:border-emerald-800 pb-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-600 text-white font-bold text-sm shadow-xs">
+                        ✨
+                      </span>
+                      <div>
+                        <h4 className="font-bold text-sm text-emerald-950 dark:text-emerald-100">
+                          New Content Submission Pending Approval
+                        </h4>
+                        <p className="text-xs text-emerald-800 dark:text-emerald-300">
+                          All submitted details are highlighted in green for approver verification.
+                        </p>
+                      </div>
+                    </div>
+                    <Badge className="bg-emerald-600 text-white text-xs px-2.5 py-1 font-semibold">
+                      New Submission
+                    </Badge>
+                  </div>
+
+                  <div className="space-y-1 text-xs">
+                    <span className="font-semibold text-emerald-900 dark:text-emerald-200">Submitted Title:</span>
+                    <div className="p-3 rounded-lg border bg-emerald-100 text-emerald-950 border-emerald-400 font-bold text-sm shadow-xs">
+                      {fullReviewItem.title}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 text-xs">
+                    <span className="font-semibold text-emerald-900 dark:text-emerald-200">Submitted Description:</span>
+                    <div className="p-3 rounded-lg border bg-emerald-100 text-emerald-950 border-emerald-400 text-xs font-medium leading-relaxed whitespace-pre-wrap shadow-xs">
+                      {stripHtmlToPlain(fullReviewItem.description) || "No description provided."}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Existing Questions List */}
+              {!fullReviewItem.draft_data && Array.isArray(fullReviewItem.questions) && fullReviewItem.questions.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Questions List ({fullReviewItem.questions.length})
+                  </h4>
+                  <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                    {fullReviewItem.questions.map((q, qIdx) => (
+                      <div key={qIdx} className="p-3 rounded-lg border bg-background text-xs space-y-1.5">
+                        <div className="font-semibold text-foreground">
+                          Q{qIdx + 1}. {q.question}
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                          {q.options?.map((opt, optIdx) => {
+                            const isCorrect = Array.isArray(q.correctOptionIds)
+                              ? q.correctOptionIds.includes(opt.id)
+                              : q.correctOptionId === opt.id;
+                            return (
+                              <div
+                                key={optIdx}
+                                className={`p-1.5 px-2.5 rounded text-[11px] flex items-center justify-between border ${
+                                  isCorrect
+                                    ? "bg-emerald-100 border-emerald-400 font-semibold text-emerald-950"
+                                    : "bg-muted/40 border-transparent text-muted-foreground"
+                                }`}
+                              >
+                                <span>{opt.text}</span>
+                                {isCorrect && (
+                                  <Badge className="text-[8px] bg-emerald-600 text-white h-3.5 px-1">
+                                    Correct
+                                  </Badge>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               )}
+            </div>
+          )}
+
+          <DialogFooter className="flex items-center justify-between sm:justify-between border-t pt-4">
+            <Button variant="outline" onClick={() => setFullReviewOpen(false)}>
+              Close Review
+            </Button>
+
+            {fullReviewItem && fullReviewItem.status === "pending" && (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setFullReviewOpen(false);
+                    setSelectedItem(fullReviewItem);
+                    setRejectDialogOpen(true);
+                  }}
+                  className="gap-1.5"
+                >
+                  <X className="w-4 h-4" />
+                  Quick Reject
+                </Button>
+                <Button
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 font-medium"
+                  onClick={async () => {
+                    setFullReviewOpen(false);
+                    await handleQuickApprove(fullReviewItem.id || fullReviewItem, fullReviewItem.itemKind);
+                  }}
+                >
+                  <Check className="w-4 h-4" />
+                  Quick Approve
+                </Button>
+              </div>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>

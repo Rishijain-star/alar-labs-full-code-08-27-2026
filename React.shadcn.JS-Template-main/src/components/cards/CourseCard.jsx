@@ -49,7 +49,14 @@ export function CourseCard({
   enrolledView = false,
   progress = 0,
   customHref,
+  metadata = null,
+  rejection_reason = null,
+  rejectionReason = null,
+  contentApprovalStatus = null,
 }) {
+  const parsedMeta = typeof metadata === "object" && metadata !== null ? metadata : (function() { try { return JSON.parse(metadata || "{}"); } catch(_) { return {}; } })();
+  const approvalStatus = parsedMeta.content_approval_status || contentApprovalStatus;
+  const reasonText = parsedMeta.rejection_reason || rejection_reason || rejectionReason;
   const navigate = useNavigate();
   const { toast } = useToast();
   const [deleteCourse] = useDeleteCourseMutation();
@@ -105,6 +112,9 @@ export function CourseCard({
             <PriceBadge isFree={isFree} price={price} currency={currency} />
             {showActions && status && status !== "published" && (
               <Badge className="bg-amber-500 text-white border-0 capitalize">{status}</Badge>
+            )}
+            {(approvalStatus === "rejected" || reasonText) && (
+              <Badge className="bg-red-500 text-white border-0 capitalize">Rejected</Badge>
             )}
           </div>
           {showActions && (canEditCourse || canDeleteCourse) && (
@@ -199,6 +209,12 @@ export function CourseCard({
       </CardHeader>
 
       <CardContent className="pb-3 flex-1 flex flex-col">
+        {(approvalStatus === "rejected" || reasonText) && (
+          <div className="mb-2 text-xs p-2 rounded bg-destructive/10 text-destructive border border-destructive/20">
+            <span className="font-semibold">Rejection Feedback: </span>
+            {reasonText || "No specific reason provided."}
+          </div>
+        )}
         <p className="text-sm text-muted-foreground line-clamp-2">{plainDescription}</p>
 
         {Array.isArray(skills) && skills.length > 0 && (

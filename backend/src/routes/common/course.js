@@ -17,6 +17,7 @@ router.get("/", checkPermission("view_courses"), createRateLimiter("default"), c
 router.get("/slug/:slug", checkPermission("view_courses"), createRateLimiter("default"), c.getBySlug);
 router.get("/:id", checkPermission("view_courses"), createRateLimiter("default"), c.getById);
 router.post("/", checkPermission("create_courses"), createRateLimiter("create"), c.create);
+router.post("/bulk", checkPermission("create_courses"), createRateLimiter("create"), c.bulkCreate);
 
 /**
  * POST /api/courses/create-full

@@ -12,9 +12,17 @@ import { useUploadSiteAssetMutation } from "@/store/api/siteContentApi";
 import { Plus, Upload, Loader2 } from "lucide-react";
 import QuillRichEditor from "@/components/editor/QuillRichEditor";
 
+import { isStudent, isAdmin, isSuperAdmin } from "@/lib/auth";
+import MyVouchers from "@/pages/MyVouchers";
+
 const CURRENCIES = ["INR", "USD", "EUR", "GBP", "AUD", "CAD"];
 
 const VouchersCreate = () => {
+  const isStudentUser = isStudent() && !isAdmin() && !isSuperAdmin();
+  if (isStudentUser) {
+    return <MyVouchers />;
+  }
+
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef(null);
   

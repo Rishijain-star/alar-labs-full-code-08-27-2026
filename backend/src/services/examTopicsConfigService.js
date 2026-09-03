@@ -10,62 +10,120 @@ function getDefaultConfig() {
   };
 }
 
+function canonicalOption(opt) {
+  if (!opt || typeof opt !== "object") return null;
+  return {
+    id: String(opt.id || "").trim(),
+    text: String(opt.text || "").trim(),
+  };
+}
+
+function canonicalQuestion(q) {
+  if (!q || typeof q !== "object") return null;
+  const options = Array.isArray(q.options)
+    ? q.options.map(canonicalOption).filter(Boolean)
+    : [];
+  
+  const rawCorrect = Array.isArray(q.correctOptionIds)
+    ? q.correctOptionIds
+    : q.correctOptionId
+    ? [q.correctOptionId]
+    : [];
+  const correctOptionIds = Array.from(
+    new Set(rawCorrect.map((id) => String(id || "").trim()).filter(Boolean))
+  ).sort();
+
+  return {
+    id: String(q.id || "").trim(),
+    type: String(q.type || "multiple_choice").trim(),
+    question: String(q.question || "").trim(),
+    options,
+    correctOptionIds,
+    explanation: String(q.explanation || "").trim(),
+  };
+}
+
 function setContentFingerprint(set) {
   if (!set || typeof set !== "object") return "";
+  const questions = Array.isArray(set.questions)
+    ? set.questions.map(canonicalQuestion).filter(Boolean)
+    : [];
+
   return JSON.stringify({
-    title: set.title || "",
-    description: set.description || "",
-    timeLimitMinutes: set.timeLimitMinutes,
-    passingPercentage: set.passingPercentage,
-    questions: set.questions || [],
+    title: String(set.title || "").trim(),
+    description: String(set.description || "").trim(),
+    timeLimitMinutes: set.timeLimitMinutes !== undefined && set.timeLimitMinutes !== null ? Number(set.timeLimitMinutes) : null,
+    passingPercentage: set.passingPercentage !== undefined && set.passingPercentage !== null ? Number(set.passingPercentage) : null,
+    questions,
   });
 }
 
 function enrichSetDefaults(set, existing, userId) {
   const incoming = set && typeof set === "object" ? { ...set } : {};
+
+  if (!existing) {
+    return {
+      ...incoming,
+      status: incoming.status || "draft",
+      content_approval_status: incoming.content_approval_status ?? null,
+      created_by: incoming.created_by || userId || null,
+      createdAt: incoming.createdAt || new Date().toISOString(),
+      updatedAt: incoming.updatedAt || new Date().toISOString(),
+    };
+  }
+
+  const existingFingerprint = setContentFingerprint(existing);
+  const incomingFingerprint = setContentFingerprint(incoming);
+  const draftFingerprint = existing.draft_data ? setContentFingerprint(existing.draft_data) : null;
+
   const next = {
     ...incoming,
-    status: existing?.status || incoming.status || "draft",
-    content_approval_status:
-      existing?.content_approval_status ?? incoming.content_approval_status ?? null,
-    created_by: existing?.created_by || incoming.created_by || userId || null,
+    status: existing.status || incoming.status || "draft",
+    content_approval_status: existing.content_approval_status ?? incoming.content_approval_status ?? null,
+    created_by: existing.created_by || incoming.created_by || userId || null,
+    createdAt: existing.createdAt || existing.created_at || incoming.createdAt || null,
     updatedAt: incoming.updatedAt || new Date().toISOString(),
   };
 
-  if (!existing) {
-    next.status = "draft";
-    next.content_approval_status = null;
-    next.createdAt = incoming.createdAt || new Date().toISOString();
-    if (userId) next.created_by = userId;
-    return next;
-  }
-
-  next.createdAt = existing.createdAt || existing.created_at || incoming.createdAt || null;
-
-  if (
-    existing.status === "published" &&
-    existing.content_approval_status === "approved" &&
-    setContentFingerprint(existing) !== setContentFingerprint(incoming)
-  ) {
-    next.draft_data = {
-      title: incoming.title,
-      description: incoming.description,
-      timeLimitMinutes: incoming.timeLimitMinutes,
-      passingPercentage: incoming.passingPercentage,
-      questions: incoming.questions,
-    };
-    next.title = existing.title;
-    next.description = existing.description;
-    next.questions = existing.questions;
-    if (existing.timeLimitMinutes !== undefined) {
-      next.timeLimitMinutes = existing.timeLimitMinutes;
+  // If set is published & approved
+  if (existing.status === "published" && existing.content_approval_status === "approved") {
+    if (incomingFingerprint === existingFingerprint) {
+      // Content matches approved version exactly -> clear draft_data
+      next.draft_data = null;
+      next.title = existing.title;
+      next.description = existing.description;
+      next.questions = existing.questions;
+      if (existing.timeLimitMinutes !== undefined) next.timeLimitMinutes = existing.timeLimitMinutes;
+      if (existing.passingPercentage !== undefined) next.passingPercentage = existing.passingPercentage;
+      next.content_approval_status = "approved";
+    } else if (draftFingerprint && incomingFingerprint === draftFingerprint) {
+      // Content matches existing pending draft -> keep existing draft_data as is
+      next.draft_data = existing.draft_data;
+      next.title = existing.title;
+      next.description = existing.description;
+      next.questions = existing.questions;
+      if (existing.timeLimitMinutes !== undefined) next.timeLimitMinutes = existing.timeLimitMinutes;
+      if (existing.passingPercentage !== undefined) next.passingPercentage = existing.passingPercentage;
+      next.content_approval_status = "approved";
+    } else {
+      // Newly modified content! Save new draft_data for approval
+      next.draft_data = {
+        title: incoming.title,
+        description: incoming.description,
+        timeLimitMinutes: incoming.timeLimitMinutes,
+        passingPercentage: incoming.passingPercentage,
+        questions: incoming.questions,
+      };
+      next.title = existing.title;
+      next.description = existing.description;
+      next.questions = existing.questions;
+      if (existing.timeLimitMinutes !== undefined) next.timeLimitMinutes = existing.timeLimitMinutes;
+      if (existing.passingPercentage !== undefined) next.passingPercentage = existing.passingPercentage;
+      next.content_approval_status = "approved";
     }
-    if (existing.passingPercentage !== undefined) {
-      next.passingPercentage = existing.passingPercentage;
-    }
-    next.content_approval_status = "approved";
   } else {
-    next.draft_data = existing?.draft_data || null;
+    // Not published/approved yet (e.g. draft)
+    next.draft_data = existing.draft_data || null;
   }
 
   return next;
@@ -451,7 +509,7 @@ class ExamTopicsConfigService {
     return { set: updated, config: savedRow.config };
   }
 
-  async setContentApproval(type, setId, status, userId) {
+  async setContentApproval(type, setId, status, userId, rejection_reason = null) {
     if (!["approved", "rejected"].includes(status)) {
       throw new AppError("status must be approved or rejected", 400);
     }
@@ -483,8 +541,14 @@ class ExamTopicsConfigService {
       updated.content_approval_status = "approved";
       updated.content_approved_at = new Date().toISOString();
       updated.content_rejected_at = null;
+      updated.rejection_reason = null;
+      updated.rejected_at = null;
     } else {
-      updated.content_rejected_at = new Date().toISOString();
+      const reason = rejection_reason || "No reason provided";
+      const now = new Date().toISOString();
+      updated.content_rejected_at = now;
+      updated.rejection_reason = reason;
+      updated.rejected_at = now;
       updated.draft_data = null; 
       if (updated.content_approval_status !== "approved") {
         updated.content_approval_status = "rejected";
@@ -576,6 +640,205 @@ class ExamTopicsConfigService {
 
     return { correct, explanation };
   }
+
+  bulkUploadQuestions(csvContentOrRows) {
+    let rows = [];
+    if (typeof csvContentOrRows === "string") {
+      rows = parseCSV(csvContentOrRows);
+    } else if (Array.isArray(csvContentOrRows)) {
+      rows = csvContentOrRows;
+    } else if (csvContentOrRows && typeof csvContentOrRows === "object") {
+      rows = csvContentOrRows.rows || csvContentOrRows.data || [];
+    }
+
+    const validatedQuestions = [];
+    const errors = [];
+
+    rows.forEach((row, index) => {
+      const lineNum = index + 1;
+      
+      const normalized = {};
+      if (row && typeof row === "object") {
+        Object.keys(row).forEach((key) => {
+          if (key) {
+            normalized[key.trim().toLowerCase()] = row[key];
+          }
+        });
+      }
+
+      const questionText = String(
+        normalized.question ||
+        normalized["question text"] ||
+        normalized.prompt ||
+        normalized.q ||
+        ""
+      ).trim();
+
+      if (!questionText) {
+        errors.push(`Row ${lineNum}: Missing question text`);
+        return;
+      }
+
+      let type = String(normalized.type || "multiple_choice").toLowerCase().trim();
+      if (type.includes("true") || type.includes("tf")) type = "true_false";
+      else if (type.includes("blank") || type.includes("fill")) type = "fill_in_blank";
+      else type = "multiple_choice";
+
+      const explanation = String(normalized.explanation || normalized.notes || normalized.hint || "").trim();
+      const qId = `q_bulk_${Date.now()}_${index}_${Math.random().toString(36).slice(2, 6)}`;
+
+      if (type === "true_false") {
+        const correctVal = String(normalized["correct answer"] || normalized.correct || normalized.answer || "true").toLowerCase();
+        const isFalse = correctVal.includes("false") || correctVal.includes("f");
+        const correctOptionId = isFalse ? "tf_false" : "tf_true";
+        validatedQuestions.push({
+          id: qId,
+          type: "true_false",
+          question: questionText,
+          options: [
+            { id: "tf_true", text: "True" },
+            { id: "tf_false", text: "False" },
+          ],
+          correctOptionId,
+          correctOptionIds: [correctOptionId],
+          explanation,
+        });
+      } else if (type === "fill_in_blank") {
+        const correctVal = String(normalized["correct answer"] || normalized.correct || normalized.answer || normalized["option a"] || "").trim();
+        const optId = `opt_${Date.now()}_0`;
+        validatedQuestions.push({
+          id: qId,
+          type: "fill_in_blank",
+          question: questionText,
+          options: [{ id: optId, text: correctVal }],
+          correctOptionId: optId,
+          correctOptionIds: [optId],
+          explanation,
+        });
+      } else {
+        // Multiple Choice
+        const optA = String(normalized["option a"] || normalized.option1 || normalized["option 1"] || "").trim();
+        const optB = String(normalized["option b"] || normalized.option2 || normalized["option 2"] || "").trim();
+        const optC = String(normalized["option c"] || normalized.option3 || normalized["option 3"] || "").trim();
+        const optD = String(normalized["option d"] || normalized.option4 || normalized["option 4"] || "").trim();
+
+        const rawOpts = [optA, optB, optC, optD].filter(Boolean);
+        if (rawOpts.length < 2 && typeof normalized.options === "string") {
+          normalized.options.split("|").forEach(o => rawOpts.push(o.trim()));
+        }
+
+        if (rawOpts.length < 2) {
+          errors.push(`Row ${lineNum}: Multiple choice questions require at least 2 options`);
+          return;
+        }
+
+        const options = rawOpts.map((text, i) => ({
+          id: `opt_${Date.now()}_${i}_${Math.random().toString(36).slice(2, 5)}`,
+          text,
+        }));
+
+        const rawCorrect = String(normalized["correct answer"] || normalized.correct || normalized.answer || "a").toLowerCase().trim();
+        const correctOptionIds = [];
+
+        options.forEach((opt, i) => {
+          const letter = String.fromCharCode(97 + i); // a, b, c, d
+          const num = String(i + 1);
+          if (
+            rawCorrect === letter ||
+            rawCorrect === `option ${letter}` ||
+            rawCorrect.includes(letter) ||
+            rawCorrect === num ||
+            rawCorrect === opt.text.toLowerCase()
+          ) {
+            correctOptionIds.push(opt.id);
+          }
+        });
+
+        if (!correctOptionIds.length) {
+          correctOptionIds.push(options[0].id);
+        }
+
+        validatedQuestions.push({
+          id: qId,
+          type: "multiple_choice",
+          question: questionText,
+          options,
+          correctOptionId: correctOptionIds[0],
+          correctOptionIds,
+          explanation,
+        });
+      }
+    });
+
+    return {
+      questions: validatedQuestions,
+      summary: {
+        totalRows: rows.length,
+        validQuestionsCount: validatedQuestions.length,
+        errorsCount: errors.length,
+      },
+      errors,
+    };
+  }
+}
+
+function parseCSV(csvText) {
+  if (!csvText || typeof csvText !== "string") return [];
+  
+  const rows = [];
+  let curCell = "";
+  let curRow = [];
+  let inQuotes = false;
+  
+  for (let i = 0; i < csvText.length; i++) {
+    const char = csvText[i];
+    const nextChar = csvText[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && nextChar === '"') {
+        curCell += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      curRow.push(curCell.trim());
+      curCell = "";
+    } else if ((char === '\r' || char === '\n') && !inQuotes) {
+      if (char === '\r' && nextChar === '\n') i++;
+      curRow.push(curCell.trim());
+      if (curRow.some(cell => cell.length > 0)) {
+        rows.push(curRow);
+      }
+      curRow = [];
+      curCell = "";
+    } else {
+      curCell += char;
+    }
+  }
+  if (curCell || curRow.length > 0) {
+    curRow.push(curCell.trim());
+    if (curRow.some(cell => cell.length > 0)) {
+      rows.push(curRow);
+    }
+  }
+
+  if (rows.length < 2) return [];
+
+  const rawHeaders = rows[0];
+  const headers = rawHeaders.map((h) => h.toLowerCase().replace(/^["']|["']$/g, "").trim());
+  const resultObjects = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const values = rows[i];
+    const rowObj = {};
+    headers.forEach((h, idx) => {
+      rowObj[h] = values[idx] !== undefined ? values[idx] : "";
+    });
+    resultObjects.push(rowObj);
+  }
+
+  return resultObjects;
 }
 
 module.exports = new ExamTopicsConfigService();

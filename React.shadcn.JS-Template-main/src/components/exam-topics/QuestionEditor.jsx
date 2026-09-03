@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,10 +7,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, HelpCircle, CheckSquare, ListFilter, FileText } from "lucide-react";
+import { Plus, Trash2, HelpCircle, CheckSquare, ListFilter, FileText, FileSpreadsheet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createEmptyQuestion, newOptionId } from "@/lib/examTopicsConfig";
 import { ValidatableField, fieldInputClass } from "@/components/exam-topics/ValidatableField";
+import BulkQuestionUploadModal from "@/components/exam-topics/BulkQuestionUploadModal";
 
 export default function QuestionEditor({
   questions = [],
@@ -20,6 +22,12 @@ export default function QuestionEditor({
   shakeField = null,
   onClearError,
 }) {
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+
+  const handleBulkImported = (importedQuestions) => {
+    onClearError?.("questions-empty");
+    onChange([...questions, ...importedQuestions]);
+  };
   const updateQuestion = (index, patch) => {
     const next = questions.map((q, i) => (i === index ? { ...q, ...patch } : q));
     onChange(next);
@@ -395,10 +403,27 @@ export default function QuestionEditor({
       })}
 
       {!disabled && (
-        <Button type="button" variant="outline" onClick={addQuestion} className="w-full">
-          <Plus className="w-4 h-4 mr-2" /> Add question
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <Button type="button" variant="outline" onClick={addQuestion} className="flex-1">
+            <Plus className="w-4 h-4 mr-2" /> Add question
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsBulkModalOpen(true)}
+            className="flex-1 border-emerald-500/40 text-emerald-700 hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/40"
+          >
+            <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" />
+            Bulk Upload CSV / Excel
+          </Button>
+        </div>
       )}
+
+      <BulkQuestionUploadModal
+        open={isBulkModalOpen}
+        onOpenChange={setIsBulkModalOpen}
+        onQuestionsImported={handleBulkImported}
+      />
     </div>
   );
 }

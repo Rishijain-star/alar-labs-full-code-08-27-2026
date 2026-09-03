@@ -51,7 +51,9 @@ const ExamTopicsPage = lazy(() => import("./pages/ExamTopicsPage"));
 const Certification = lazy(() => import("./pages/Certification"));
 const CertificationDetail = lazy(() => import("./pages/CertificationDetail"));
 const CloudServices = lazy(() => import("./pages/CloudServices"));
+const CloudServiceDetailPage = lazy(() => import("./pages/CloudServiceDetailPage"));
 const Careers = lazy(() => import("./pages/Careers"));
+const CareerDetailPage = lazy(() => import("./pages/CareerDetailPage"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const VerifyPhone = lazy(() => import("./pages/VerifyPhone"));
@@ -267,7 +269,12 @@ function App() {
                           path="/cloud-services"
                           element={<CloudServices />}
                         />
+                        <Route
+                          path="/cloud-services/:id"
+                          element={<CloudServiceDetailPage />}
+                        />
                         <Route path="/careers" element={<Careers />} />
+                        <Route path="/careers/:id" element={<CareerDetailPage />} />
                         <Route
                           path="/programs/:sectionKey"
                           element={<ProgramPublicPage />}
@@ -795,10 +802,7 @@ function App() {
                           <Route
                             path="technology-readiness-assessment"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <TechnologyReadinessAssessmentAdmin />
                               </RouteGuard>
                             }
@@ -807,10 +811,7 @@ function App() {
                           <Route
                             path="certification-readiness-program"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <General1 />
                               </RouteGuard>
                             }
@@ -819,10 +820,7 @@ function App() {
                           <Route
                             path="tech-pathways"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <TechPathways />
                               </RouteGuard>
                             }
@@ -831,10 +829,7 @@ function App() {
                           <Route
                             path="skill-builder-labs"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <SkillBuilderLabsAdmin />
                               </RouteGuard>
                             }
@@ -843,10 +838,7 @@ function App() {
                           <Route
                             path="cloud-services"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <CloudServicesAdmin />
                               </RouteGuard>
                             }
@@ -855,10 +847,7 @@ function App() {
                           <Route
                             path="careers"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <CareersAdmin />
                               </RouteGuard>
                             }
@@ -867,10 +856,7 @@ function App() {
                           <Route
                             path="vouchers"
                             element={
-                              <RouteGuard
-                                permissions={DIGITAL_PROGRAMS_ADMIN_PERMISSIONS}
-                                adminOnlyDigitalPrograms
-                              >
+                              <RouteGuard permissions={[]}>
                                 <VouchersCreate />
                               </RouteGuard>
                             }
@@ -910,7 +896,7 @@ function App() {
                           <Route
                             path="exam-topics"
                             element={
-                              <RouteGuard permissions={EXAM_TOPICS_ADMIN_PERMISSIONS}>
+                              <RouteGuard permissions={[]}>
                                 <ExamTopicsAdmin />
                               </RouteGuard>
                             }

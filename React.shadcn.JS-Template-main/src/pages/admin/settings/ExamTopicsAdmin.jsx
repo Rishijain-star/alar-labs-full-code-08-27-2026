@@ -26,6 +26,7 @@ import {
   canEditExamTopics,
   canDeleteExamTopics,
   canPublishExamTopics,
+  canApproveExamTopics,
 } from "@/lib/examTopicsPermissions";
 import {
   normalizeExamTopicsConfig,
@@ -73,13 +74,70 @@ function useFieldValidation() {
   return { fieldErrors, shakeField, clearError, resetValidation, applyValidation };
 }
 
+import { isStudent, isAdmin, isSuperAdmin } from "@/lib/auth";
+
+export function StudentExamTopicsView() {
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">My Exam Topics & Practice</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Access certification exam topic questions, learning sets, and practice exams.
+          </p>
+        </div>
+        <Button asChild size="sm" className="gap-2">
+          <Link to="/exam-topics">
+            <GraduationCap className="h-4 w-4" />
+            Browse Exam Topics
+          </Link>
+        </Button>
+      </div>
+
+      <Card>
+        <CardContent className="py-12 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 text-primary">
+            <BookOpen className="w-8 h-8" />
+          </div>
+          <h3 className="text-lg font-semibold text-foreground">Practice Certification Exam Topics</h3>
+          <p className="text-sm text-muted-foreground max-w-md mt-1 mb-6">
+            Prepare for certification exams with curated question sets, practice modes, and immediate answer feedback.
+          </p>
+          <Button asChild>
+            <Link to="/exam-topics">Explore Exam Topics Catalog</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function ExamTopicsAdmin() {
   const canCreate = canCreateExamTopics();
   const canEdit = canEditExamTopics();
   const canDelete = canDeleteExamTopics();
   const canPublish = canPublishExamTopics();
+  const canApprove = canApproveExamTopics();
+  const isStudentUser = isStudent() && !isAdmin() && !isSuperAdmin() && !isApprover();
 
-  const { data, isLoading, isError, error, refetch } = useGetAdminExamTopicsConfigQuery();
+  if (isStudentUser || (!canCreate && !canEdit && !canDelete && !canPublish && !canApprove)) {
+    return <StudentExamTopicsView />;
+  }
+
+  return <AdminExamTopicsContent />;
+}
+
+function AdminExamTopicsContent() {
+  const canCreate = canCreateExamTopics();
+  const canEdit = canEditExamTopics();
+  const canDelete = canDeleteExamTopics();
+  const canPublish = canPublishExamTopics();
+  const canApprove = canApproveExamTopics();
+  const isStudentUser = isStudent() && !isAdmin() && !isSuperAdmin() && !isApprover();
+
+  const { data, isLoading, isError, error, refetch } = useGetAdminExamTopicsConfigQuery(undefined, {
+    skip: isStudentUser || (!canCreate && !canEdit && !canPublish && !canApprove),
+  });
   const [upsert, { isLoading: saving }] = useUpsertExamTopicsConfigMutation();
   const [publishSet, { isLoading: publishing }] = usePublishExamTopicsSetMutation();
 

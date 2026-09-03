@@ -109,6 +109,16 @@ export const courseApi = createApi({
       // No cache invalidation yet — course is a draft stub
     }),
 
+    bulkCreateCourses: builder.mutation({
+      query: (data) => ({
+        url: "/owner/courses/bulk",
+        method: "POST",
+        data,
+        meta: { withCredentials: true, showSuccessToast: true, successMessage: "Courses bulk created!" },
+      }),
+      invalidatesTags: ["Course"],
+    }),
+
     // ── PUT /owner/courses/:id ──────────────────────────────────────────────────────
     // STEP 3: Full update with all metadata + CDN URLs from uploads.
     updateCourse: builder.mutation({
@@ -142,10 +152,10 @@ export const courseApi = createApi({
     }),
 
     setCourseContentApproval: builder.mutation({
-      query: ({ id, status }) => ({
+      query: ({ id, status, rejection_reason }) => ({
         url: `/owner/courses/${id}/content-approval`,
         method: "PATCH",
-        data: { status },
+        data: { status, rejection_reason },
         meta: {
           withCredentials: true,
           showSuccessToast: true,
@@ -265,6 +275,7 @@ export const {
   useGetCourseSlugViewQuery,
   useGetCourseViewQuery,
   useCreateCourseMutation,
+  useBulkCreateCoursesMutation,
   useUpdateCourseMutation,
   useDeleteCourseMutation,
   usePublishCourseMutation,

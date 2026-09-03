@@ -71,10 +71,10 @@ export const examTopicsApi = createApi({
       ],
     }),
     setExamTopicsContentApproval: builder.mutation({
-      query: ({ type, setId, status }) => ({
+      query: ({ type, setId, status, rejection_reason }) => ({
         url: `/owner/exam-topics/sets/${type}/${setId}/content-approval`,
         method: "PATCH",
-        data: { status },
+        data: { status, rejection_reason },
         meta: {
           withCredentials: true,
           showSuccessToast: true,
@@ -95,6 +95,31 @@ export const examTopicsApi = createApi({
         meta: { withCredentials: false, showErrorToast: true },
       }),
     }),
+    bulkUploadQuestions: builder.mutation({
+      query: (body) => ({
+        url: "/owner/exam-topics/bulk-upload-questions",
+        method: "POST",
+        data: body,
+        meta: { withCredentials: true, showErrorToast: true },
+      }),
+    }),
+    saveExamAttempt: builder.mutation({
+      query: (body) => ({
+        url: "/exam-topics/attempts",
+        method: "POST",
+        data: body,
+        meta: { withCredentials: true, showErrorToast: false },
+      }),
+      invalidatesTags: ["ExamAttempts"],
+    }),
+    getExamAttempts: builder.query({
+      query: (setId) => ({
+        url: setId ? `/exam-topics/attempts/${setId}` : "/exam-topics/attempts",
+        method: "GET",
+        meta: { withCredentials: true },
+      }),
+      providesTags: ["ExamAttempts"],
+    }),
   }),
 });
 
@@ -107,4 +132,7 @@ export const {
   usePublishExamTopicsSetMutation,
   useSetExamTopicsContentApprovalMutation,
   useVerifyExamTopicsAnswerMutation,
+  useBulkUploadQuestionsMutation,
+  useSaveExamAttemptMutation,
+  useGetExamAttemptsQuery,
 } = examTopicsApi;

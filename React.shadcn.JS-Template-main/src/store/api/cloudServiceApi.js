@@ -115,10 +115,10 @@ export const cloudServiceApi = createApi({
       invalidatesTags: [{ type: "CloudServiceRequest", id: "LIST" }],
     }),
     setCloudServiceContentApproval: builder.mutation({
-      query: ({ id, status }) => ({
+      query: ({ id, status, rejection_reason }) => ({
         url: `/owner/cloud-services/${id}/approval`,
         method: "PUT",
-        data: { status },
+        data: { status, rejection_reason },
         meta: {
           withCredentials: true,
           showSuccessToast: false, // Handled manually in component

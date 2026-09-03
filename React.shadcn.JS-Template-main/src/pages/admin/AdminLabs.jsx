@@ -9,13 +9,14 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Beaker, Plus, Zap, BookOpen } from "lucide-react";
+import { Beaker, Plus, Zap, BookOpen, FileSpreadsheet } from "lucide-react";
 import GlobalListManager from "../../components/common/Globallistmanager";
 import { useGetLabsQuery } from "@/store/api/labApi";
 import { hasPermission } from "@/utils/permissions";
 import { resolveLabCardRating, resolveLabCardEnrolledCount } from "@/lib/labDisplayStats";
 import { isSuperAdmin, getUserId, isApprover } from "@/lib/auth";
 import { resolveItemCurrency } from "@/lib/localeFormat";
+import BulkLabUploadModal from "@/components/admin/BulkLabUploadModal";
 
 const DEFAULT_PER_PAGE = 12;
 const PER_PAGE_OPTIONS = [4, 8, 12, 16, 24];
@@ -51,6 +52,8 @@ export default function Lab() {
   const [levelFilter, setLevelFilter] = useState("all");
   const [platformFilter, setPlatformFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [isBulkLabModalOpen, setIsBulkLabModalOpen] = useState(false);
 
   useEffect(() => {
     setPage(1);
@@ -143,18 +146,17 @@ export default function Lab() {
       isRefreshing={isFetching}
       customActions={
         isMine && canCreateLabs ? (
-        <div className="flex items-center gap-2">
-         
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleAddSkillBuilder}
-            className="bg-amber-500 hover:bg-amber-600 text-white border-0"
-          >
-            <Zap className="mr-2 h-4 w-4" />
-            Create Skill Builder
-          </Button>
-        </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleAddSkillBuilder}
+              className="bg-amber-500 hover:bg-amber-600 text-white border-0"
+            >
+              <Zap className="mr-2 h-4 w-4" />
+              Create Skill Builder
+            </Button>
+          </div>
         ) : null
       }
       searchConfig={{
@@ -350,6 +352,12 @@ export default function Lab() {
           showInfo={false}
         />
       )}
+
+      <BulkLabUploadModal
+        open={isBulkLabModalOpen}
+        onOpenChange={setIsBulkLabModalOpen}
+        onSuccess={() => handleRefresh()}
+      />
     </GlobalListManager>
   );
 }

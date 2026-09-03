@@ -46,7 +46,14 @@ export function LabCard({
   prefetchOverview = false,
   enrolledView = false,
   progress = 0,
+  metadata = null,
+  rejection_reason = null,
+  rejectionReason = null,
+  contentApprovalStatus = null,
 }) {
+  const parsedMeta = typeof metadata === "object" && metadata !== null ? metadata : (function() { try { return JSON.parse(metadata || "{}"); } catch(_) { return {}; } })();
+  const approvalStatus = parsedMeta.content_approval_status || contentApprovalStatus;
+  const reasonText = parsedMeta.rejection_reason || rejection_reason || rejectionReason;
   const showLock =
     typeof isLocked === "boolean"
       ? isLocked
@@ -105,6 +112,9 @@ export function LabCard({
             <PriceBadge isFree={isFree} price={price} currency={currency} />
             {showActions && status && status !== "published" && (
               <Badge className="bg-amber-500 text-white border-0 capitalize">{status}</Badge>
+            )}
+            {(approvalStatus === "rejected" || reasonText) && (
+              <Badge className="bg-red-500 text-white border-0 capitalize">Rejected</Badge>
             )}
           </div>
           {showActions && (canEditLab || canDeleteLab) && (
@@ -196,6 +206,12 @@ export function LabCard({
       </CardHeader>
 
       <CardContent className="pb-3 flex-1 flex flex-col">
+        {(approvalStatus === "rejected" || reasonText) && (
+          <div className="mb-2 text-xs p-2 rounded bg-destructive/10 text-destructive border border-destructive/20">
+            <span className="font-semibold">Rejection Feedback: </span>
+            {reasonText || "No specific reason provided."}
+          </div>
+        )}
         <p className="text-sm text-muted-foreground line-clamp-2">
           {stripHtmlToPlain(description)}
         </p>
